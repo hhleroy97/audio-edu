@@ -3,8 +3,8 @@
 > Release notes with **commit-hash traceability**. Each push juncture updates this file.
 > Format: `short-hash` — conventional commit subject.
 >
-> **Convention:** Tag each publish (`git tag vX.Y.Z`). Record tag + resolved hash here.
-> The trace table lists logical feature commits only.
+> **Convention:** Tag each publish (`git tag vX.Y.Z`). Record tag + commit range here.
+> Resolve tip hash with `git rev-parse vX.Y.Z^{commit}`. Trace table = feature commits only.
 
 ## [Unreleased]
 
@@ -15,7 +15,6 @@ _Nothing yet._
 Initial scaffold: docs, monorepo, shared libs, knowledge graph, experiment 01, stubs 02–06.
 
 **Publish tag:** `v0.1.0`  
-**Publish tip:** `c78aa70` (`git rev-parse v0.1.0^{commit}`)  
 **Commit range:** `9ffbb11..v0.1.0`
 
 ### Commit trace
@@ -43,6 +42,5 @@ Initial scaffold: docs, monorepo, shared libs, knowledge graph, experiment 01, s
 ### Publish ritual (ongoing)
 
 1. Land logical commits (`docs:`, `feat:`, `test:`, etc.)
-2. Update this file — tag, tip hash, range, trace table
-3. `git tag vX.Y.Z` on publish tip
-4. `git push && git push --tags`
+2. Update this file — version section, tag, range, trace table
+3. `git tag -a vX.Y.Z` on publish tip · `git push && git push --tags`
