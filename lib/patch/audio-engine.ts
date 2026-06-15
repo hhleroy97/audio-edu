@@ -131,7 +131,12 @@ export class AudioEngine {
 
   private reconnectAll(): void {
     for (const runtime of this.nodes.values()) {
-      /* disconnect handled per-wire below */
+      try {
+        const out = runtime.getOutput("audio-out") ?? runtime.getTap();
+        out?.disconnect();
+      } catch {
+        /* noop */
+      }
     }
 
     for (const wire of this.wires) {
