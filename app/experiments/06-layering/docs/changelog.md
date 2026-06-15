@@ -1,8 +1,11 @@
 # Changelog — Experiment 06: Layering
 
+## 0.2.0 — 2026-06-15
+
+- Implemented 3-layer mixer with per-layer waveform, gain, cutoff
+- Added `lib/audio/layer-mixer.ts`, `LayerPanel`
+- Combined waveform overlay + FFT + spectrograph
+
 ## 0.1.0 — 2026-06-15
 
-- Initial stub: Coming soon page with `ExperimentShell`
-- Full docs: theory, architecture, sources, changelog
-- `metadata.json` validated against Zod schema
-- Prerequisites linked to 05-filtering; terminal node in Phase-1 arc
+- Initial stub with theory, architecture, sources, metadata
