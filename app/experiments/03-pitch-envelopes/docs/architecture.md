@@ -2,8 +2,7 @@
 
 ## Route
 
-`app/experiments/03-pitch-envelopes/page.tsx` — stub page wrapped in
-`ExperimentShell` (pending full implementation).
+`app/experiments/03-pitch-envelopes/page.tsx` — server page loads lesson; client playground in `PitchEnvelopesPlayground.tsx`.
 
 ## Planned audio signal chain
 
@@ -12,8 +11,7 @@ Tone.Envelope → osc.frequency (AudioParam)
 Tone.Oscillator → Tone.Gain → Tone.Analyser → destination
 ```
 
-- **Pitch envelope** — `lib/audio/envelope.ts` (planned) outputs a control signal
-  routed to `osc.frequency` via `setValueAtTime` / `linearRampToValueAtTime`.
+- **Pitch envelope** — `lib/audio/envelope.ts` schedules frequency ramps on trigger.
 - **Oscillator** — base frequency set by user; envelope adds offset in Hz or semitones.
 - **Analyser** — spectrograph reveals pitch trajectory over time.
 
