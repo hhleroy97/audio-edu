@@ -14,7 +14,7 @@ _Nothing yet._
 
 Initial scaffold: docs, monorepo, shared libs, knowledge graph, experiment 01, stubs 02–06.
 
-**Push ref:** `bc5e779`
+**Push ref:** `a2df5b3`
 
 ### Commit trace
 
