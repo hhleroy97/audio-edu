@@ -10,6 +10,35 @@
 
 _Nothing yet._
 
+## 0.3.0 — 2026-06-15
+
+Phase-one arc complete: experiments 03–06, micro-lesson loop, tutorial generator, graph watch.
+
+**Publish tag:** `v0.3.0`  
+**Commit range:** `v0.2.0..v0.3.0`
+
+### Commit trace
+
+| Hash | Subject |
+|------|---------|
+| `0594419` | feat(ui): add micro-lesson shell and experiment lesson loader |
+| `3f3476a` | feat(lib): add envelope, wavetable, filter, and layer-mixer modules |
+| `4dae790` | feat(03-pitch-envelopes): implement ADSR pitch envelope experiment |
+| `32832ba` | feat(04-wavetable): implement wavetable morph experiment |
+| `d840df1` | feat(05-filtering): implement subtractive filter experiment |
+| `81c6f44` | feat(06-layering): implement multi-layer oscillator stack |
+| `75d5fbd` | feat(experiments): wire micro-lessons into oscillator and unison pages |
+| `7ff0506` | feat(graph): add tutorial generator, watch mode, and refreshed graph output |
+| `59fa4cd` | docs: mark phase-one experiments complete and UI-pass ready |
+
+### Highlights
+
+- Micro-lesson shell: objectives + theory excerpt before every playground
+- Experiments 03–06: pitch envelopes, wavetable morph, filtering, layering
+- `lib/audio`: envelope, wavetable, filter, layer-mixer; matching viz components
+- `npm run graph:watch` + `npm run tutorials:generate` (18 gated `TutorialChunk`s)
+- Ready for UI pass — see `docs/UI-PASS.md`
+
 ## 0.2.0 — 2026-06-15
 
 Install lockfile, frontmatter parser fix, experiment 02 unison, extracted knowledge graph.

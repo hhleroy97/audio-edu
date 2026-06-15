@@ -2,48 +2,46 @@
 
 ## Route
 
-`app/experiments/05-filtering/page.tsx` — stub page wrapped in
-`ExperimentShell` (pending full implementation).
+`app/experiments/05-filtering/page.tsx` — server page loads lesson;
+client playground in `FilteringPlayground.tsx`.
 
-## Planned audio signal chain
+## Audio signal chain
 
 ```
 Tone.Oscillator (rich waveform) → Tone.Filter (lowpass) → Tone.Gain → Tone.Analyser → destination
 ```
 
-- **Filter** — `lib/audio/filter.ts` (planned) wraps `Tone.Filter` with cutoff
-  and Q (resonance) params.
-- **Source** — saw or wavetable for harmonically rich input.
+- **Filter** — `lib/audio/filter.ts` wraps `Tone.Filter` with cutoff and Q params.
+- **Source** — user-selectable waveform (saw default for rich harmonics).
 - **Analyser** — FFT shows real-time harmonic removal.
 
 ## State
 
-| State    | Location              | Pattern                |
-|----------|-----------------------|------------------------|
-| Cutoff   | page local `useState` | param-store            |
-| Resonance| page local `useState` | param-store            |
-| Playing  | context               | audio-context-provider |
+| State     | Location              | Pattern                |
+|-----------|-----------------------|------------------------|
+| Cutoff    | page local `useState` | param-store            |
+| Resonance | page local `useState` | param-store            |
+| Waveform  | page local `useState` | param-store            |
+| Playing   | context               | audio-context-provider |
 
 ## UI layout
 
-`ExperimentShell` chrome inherited from prior experiments.
+`ExperimentShell` with `MicroLesson` → playground controls:
 
-Planned controls:
 - Cutoff frequency slider (20 Hz – 20 kHz, log scale)
 - Resonance (Q) slider
-- Source waveform selector (reused)
-- `FilterResponseDisplay` — visual magnitude response curve
+- `WaveformSelector` for source timbre
+- Play/stop toggle
 
 Visualizations:
-- `FFTDisplay` — primary diagnostic; peaks vanish above cutoff
+- `FilterResponseDisplay` — magnitude response curve vs. cutoff/Q
+- `FFTDisplay` — peaks vanish above cutoff
 - `Spectrograph` — cutoff sweeps visible as brightness rolloff
 
 ## Shared modules reused
 
-- `lib/viz/FFTDisplay`
-- `lib/viz/Spectrograph`
-- `lib/ui/ParamSlider`
-- `lib/ui/WaveformSelector`
+- `lib/viz/FFTDisplay`, `lib/viz/Spectrograph`, `lib/viz/FilterResponseDisplay`
+- `lib/ui/ParamSlider`, `lib/ui/WaveformSelector`, `lib/ui/MicroLesson`
 
 ## Knowledge-graph hooks
 

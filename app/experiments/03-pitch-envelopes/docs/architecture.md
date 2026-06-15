@@ -2,9 +2,10 @@
 
 ## Route
 
-`app/experiments/03-pitch-envelopes/page.tsx` — server page loads lesson; client playground in `PitchEnvelopesPlayground.tsx`.
+`app/experiments/03-pitch-envelopes/page.tsx` — server page loads lesson via
+`loadExperimentLesson`; client playground in `PitchEnvelopesPlayground.tsx`.
 
-## Planned audio signal chain
+## Audio signal chain
 
 ```
 Tone.Envelope → osc.frequency (AudioParam)
@@ -12,7 +13,7 @@ Tone.Oscillator → Tone.Gain → Tone.Analyser → destination
 ```
 
 - **Pitch envelope** — `lib/audio/envelope.ts` schedules frequency ramps on trigger.
-- **Oscillator** — base frequency set by user; envelope adds offset in Hz or semitones.
+- **Oscillator** — base frequency from user; envelope adds offset in semitones.
 - **Analyser** — spectrograph reveals pitch trajectory over time.
 
 ## State
@@ -25,11 +26,10 @@ Tone.Oscillator → Tone.Gain → Tone.Analyser → destination
 
 ## UI layout
 
-`ExperimentShell` chrome inherited from prior experiments.
+`ExperimentShell` with `MicroLesson` → playground controls:
 
-Planned controls:
-- `EnvelopeEditor` — visual ADSR with draggable breakpoints
-- Pitch depth slider (semitones or cents of modulation)
+- `EnvelopeEditor` — ADSR sliders with `EnvelopeCurve` preview
+- Pitch depth slider (semitones of modulation)
 - Base frequency slider
 - Play/stop (retriggers envelope on each note-on)
 
@@ -39,9 +39,8 @@ Visualizations:
 
 ## Shared modules reused
 
-- `lib/viz/FFTDisplay`
-- `lib/viz/Spectrograph`
-- `lib/ui/ParamSlider`
+- `lib/viz/FFTDisplay`, `lib/viz/Spectrograph`, `lib/viz/EnvelopeCurve`
+- `lib/ui/ParamSlider`, `lib/ui/EnvelopeEditor`, `lib/ui/MicroLesson`
 
 ## Knowledge-graph hooks
 

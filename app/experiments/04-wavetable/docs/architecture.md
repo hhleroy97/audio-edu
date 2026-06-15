@@ -2,20 +2,19 @@
 
 ## Route
 
-`app/experiments/04-wavetable/page.tsx` — stub page wrapped in
-`ExperimentShell` (pending full implementation).
+`app/experiments/04-wavetable/page.tsx` — server page loads lesson;
+client playground in `WavetablePlayground.tsx`.
 
-## Planned audio signal chain
+## Audio signal chain
 
 ```
-PeriodicWave / custom buffer → Tone.Oscillator (type: custom)
-  ↑ table position (manual or Envelope-modulated)
-Tone.Gain → Tone.Analyser → destination
+Tone.Oscillator (sine) ─┐
+                         ├→ crossfade Gain nodes → Tone.Gain → Tone.Analyser → destination
+Tone.Oscillator (saw) ─┘
 ```
 
-- **Wavetable engine** — `lib/audio/wavetable.ts` (planned) loads frame bank,
-  interpolates between frames by position index.
-- **Position modulation** — optional `Tone.Envelope` → table position param.
+- **Wavetable engine** — `lib/audio/wavetable.ts` crossfades two oscillators by
+  morph position (0 = sine, 1 = saw).
 - **Analyser** — FFT shows harmonic shifts as position scrubs.
 
 ## State
@@ -24,27 +23,25 @@ Tone.Gain → Tone.Analyser → destination
 |----------------|-----------------------|------------------------|
 | Audio context  | `lib/audio/context.tsx` | audio-context-provider |
 | Table position | page local `useState` | param-store            |
-| Frame preview  | derived from position | —                      |
+| Frequency/gain | page local `useState` | param-store            |
 
 ## UI layout
 
-`ExperimentShell` chrome inherited from prior experiments.
+`ExperimentShell` with `MicroLesson` → playground controls:
 
-Planned controls:
-- Table position slider (0–N frames)
-- `WavetableDisplay` — visual frame bank with current position marker
-- Optional envelope depth for position modulation
-- Frequency and amplitude sliders (reused)
+- Table position slider (0–1 morph)
+- Frequency and amplitude sliders
+- Play/stop toggle
 
 Visualizations:
+- `WavetableDisplay` — morph preview with current position marker
 - `FFTDisplay` — harmonic content vs. table position
-- `Spectrograph` — timbral evolution when position is modulated
+- `Spectrograph` — timbral evolution when position changes
 
 ## Shared modules reused
 
-- `lib/viz/FFTDisplay`
-- `lib/viz/Spectrograph`
-- `lib/ui/ParamSlider`
+- `lib/viz/FFTDisplay`, `lib/viz/Spectrograph`, `lib/viz/WavetableDisplay`
+- `lib/ui/ParamSlider`, `lib/ui/MicroLesson`
 
 ## Knowledge-graph hooks
 

@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
-  "generatedAt": "2026-06-15T19:46:58.159Z",
-  "fingerprint": "6ef9ba97bb6cfb124d7ac207ea357680d64543d0e9e1d476be3d5339e4f7c3e3",
+  "generatedAt": "2026-06-15T19:47:44.918Z",
+  "fingerprint": "0fdfa7aa3fe977d80e22bc2b8dcbb8526132916f2f5f8f05de4dad8734499b71",
   "nodes": [
     {
       "id": "experiment:01-oscillator",
