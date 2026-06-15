@@ -3,8 +3,9 @@
 > Release notes with **commit-hash traceability**. Each push juncture updates this file.
 > Format: `short-hash` — conventional commit subject.
 >
-> **Convention:** `Push ref` is the tip hash at publish time. The trace table lists
-> logical feature commits only (changelog meta-commits are not duplicated).
+> **Convention:** `Publish tip` is the HEAD hash at push time. `Commit range` spans
+> the logical commits in that publish (changelog bookkeeping included). The trace
+> table lists feature commits only.
 
 ## [Unreleased]
 
@@ -14,7 +15,8 @@ _Nothing yet._
 
 Initial scaffold: docs, monorepo, shared libs, knowledge graph, experiment 01, stubs 02–06.
 
-**Push ref:** `71fe77b`
+**Publish tip:** `6eac0c6`  
+**Commit range:** `9ffbb11..6eac0c6`
 
 ### Commit trace
 
