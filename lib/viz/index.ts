@@ -4,3 +4,6 @@ export { WaveformOverlay } from "./WaveformOverlay";
 export { EnvelopeCurve } from "./EnvelopeCurve";
 export { WavetableDisplay } from "./WavetableDisplay";
 export { FilterResponseDisplay } from "./FilterResponseDisplay";
+export { Oscilloscope } from "./Oscilloscope";
+export { SpectrumDisplay } from "./SpectrumDisplay";
+export { SpectrogramDisplay } from "./SpectrogramDisplay";
