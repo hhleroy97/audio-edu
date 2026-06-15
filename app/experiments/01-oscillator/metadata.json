@@ -1,0 +1,25 @@
+{
+  "slug": "01-oscillator",
+  "version": "0.1.0",
+  "audioModules": ["lib/audio/oscillator", "lib/audio/gain"],
+  "uiComponents": [
+    "lib/viz/FFTDisplay",
+    "lib/viz/Spectrograph",
+    "lib/ui/WaveformSelector",
+    "lib/ui/ParamSlider"
+  ],
+  "statePatterns": ["audio-context-provider", "param-store"],
+  "relatedExperiments": ["02-unison"],
+  "prerequisites": [],
+  "conceptTags": ["oscillator", "waveform", "frequency", "amplitude", "fft"],
+  "difficulty": 1,
+  "estimatedCognitiveLoad": "low",
+  "gating": {
+    "tutorialGeneration": "auto",
+    "graphInclusion": "auto",
+    "publish": "human-review"
+  },
+  "changelog": [
+    { "version": "0.1.0", "date": "2026-06-15", "note": "initial draft" }
+  ]
+}
