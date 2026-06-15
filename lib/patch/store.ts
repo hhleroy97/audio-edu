@@ -15,6 +15,13 @@ import type { PatchNodeData, NodeKind } from "./ports";
 import { DEFAULT_UNLOCKED } from "./ports";
 import type { Lesson, Patch } from "@/lib/schemas/patch";
 import { lesson01Oscillator } from "./lessons/lesson-01-oscillator";
+import {
+  cloneGraph,
+  isUndoableEdgeChange,
+  isUndoableNodeChange,
+  MAX_HISTORY,
+  type GraphSnapshot,
+} from "./history";
 
 let engine: AudioEngine | null = null;
 
@@ -56,9 +63,39 @@ const initial = lesson01Oscillator.startingPatch
 
 export type PatchMode = "guided" | "playground";
 
+let historyBatchSnapshot: GraphSnapshot | null = null;
+let historyBatchQueued = false;
+
+function flushHistoryBatch(
+  set: (partial: Partial<PatchStore>) => void,
+  get: () => PatchStore
+) {
+  historyBatchQueued = false;
+  const snap = historyBatchSnapshot;
+  historyBatchSnapshot = null;
+  if (!snap || get().isTimeTraveling) return;
+
+  const { past } = get();
+  const last = past[past.length - 1];
+  if (
+    last &&
+    JSON.stringify(last.nodes) === JSON.stringify(snap.nodes) &&
+    JSON.stringify(last.edges) === JSON.stringify(snap.edges)
+  ) {
+    return;
+  }
+  set({
+    past: [...past, snap].slice(-MAX_HISTORY),
+    future: [],
+  });
+}
+
 export type PatchStore = {
   nodes: Node<PatchNodeData>[];
   edges: Edge[];
+  past: GraphSnapshot[];
+  future: GraphSnapshot[];
+  isTimeTraveling: boolean;
   isRunning: boolean;
   mode: PatchMode;
   activeLesson: Lesson;
@@ -66,8 +103,13 @@ export type PatchStore = {
   tourStepIndex: number;
   selectedNodeId: string | null;
   enginePhase: "idle" | "working" | "settled";
+  pushHistory: () => void;
+  undo: () => void;
+  redo: () => void;
+  clearHistory: () => void;
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
+  onNodeDragStart: () => void;
   onConnect: (connection: Connection) => void;
   isValidConnection: (connection: Connection | Edge) => boolean;
   addNode: (kind: NodeKind, position?: { x: number; y: number }) => void;
@@ -91,6 +133,9 @@ export type PatchStore = {
 export const usePatchStore = create<PatchStore>((set, get) => ({
   nodes: initial.nodes,
   edges: initial.edges,
+  past: [],
+  future: [],
+  isTimeTraveling: false,
   isRunning: false,
   mode: "guided",
   activeLesson: lesson01Oscillator,
@@ -99,7 +144,65 @@ export const usePatchStore = create<PatchStore>((set, get) => ({
   selectedNodeId: null,
   enginePhase: "idle",
 
+  pushHistory: () => {
+    if (get().isTimeTraveling) return;
+
+    if (!historyBatchSnapshot) {
+      historyBatchSnapshot = cloneGraph(get().nodes, get().edges);
+    }
+
+    if (!historyBatchQueued) {
+      historyBatchQueued = true;
+      queueMicrotask(() => flushHistoryBatch(set, get));
+    }
+  },
+
+  undo: () => {
+    const { past, nodes, edges, future } = get();
+    if (past.length === 0) return;
+
+    const previous = past[past.length - 1];
+    const current = cloneGraph(nodes, edges);
+
+    set({
+      isTimeTraveling: true,
+      past: past.slice(0, -1),
+      future: [current, ...future].slice(0, MAX_HISTORY),
+      nodes: previous.nodes,
+      edges: previous.edges,
+    });
+    get().syncEngine();
+    set({ isTimeTraveling: false });
+  },
+
+  redo: () => {
+    const { future, nodes, edges, past } = get();
+    if (future.length === 0) return;
+
+    const next = future[0];
+    const current = cloneGraph(nodes, edges);
+
+    set({
+      isTimeTraveling: true,
+      future: future.slice(1),
+      past: [...past, current].slice(-MAX_HISTORY),
+      nodes: next.nodes,
+      edges: next.edges,
+    });
+    get().syncEngine();
+    set({ isTimeTraveling: false });
+  },
+
+  clearHistory: () => set({ past: [], future: [] }),
+
+  onNodeDragStart: () => {
+    get().pushHistory();
+  },
+
   onNodesChange: (changes) => {
+    if (isUndoableNodeChange(changes)) {
+      get().pushHistory();
+    }
     set({
       nodes: applyNodeChanges(changes, get().nodes) as Node<PatchNodeData>[],
     });
@@ -107,12 +210,16 @@ export const usePatchStore = create<PatchStore>((set, get) => ({
   },
 
   onEdgesChange: (changes) => {
+    if (isUndoableEdgeChange(changes)) {
+      get().pushHistory();
+    }
     set({ edges: applyEdgeChanges(changes, get().edges) });
     get().syncEngine();
   },
 
   onConnect: (connection) => {
     if (!get().isValidConnection(connection)) return;
+    get().pushHistory();
     set({
       edges: addEdge(
         { ...connection, id: nanoid(), type: "patchCable" },
@@ -134,6 +241,7 @@ export const usePatchStore = create<PatchStore>((set, get) => ({
 
   addNode: (kind, position = { x: 200, y: 200 }) => {
     if (!get().unlockedNodes.includes(kind)) return;
+    get().pushHistory();
     const id = `${kind}-${nanoid(6)}`;
     const defaults: Record<NodeKind, Record<string, number | string | boolean>> = {
       oscillator: { waveform: "sine", frequency: 220, gain: 0.5 },
@@ -165,6 +273,7 @@ export const usePatchStore = create<PatchStore>((set, get) => ({
   },
 
   updateNodeParams: (id, params) => {
+    get().pushHistory();
     set({
       nodes: get().nodes.map((n) =>
         n.id === id
@@ -199,6 +308,8 @@ export const usePatchStore = create<PatchStore>((set, get) => ({
       edges: flow.edges,
       mode: "guided",
       tourStepIndex: 0,
+      past: [],
+      future: [],
       unlockedNodes: [
         ...DEFAULT_UNLOCKED,
         ...(lesson.unlocksNodes as NodeKind[]),

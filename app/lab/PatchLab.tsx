@@ -33,6 +33,7 @@ export function PatchLab() {
   const enginePhase = usePatchStore((s) => s.enginePhase);
   const onNodesChange = usePatchStore((s) => s.onNodesChange);
   const onEdgesChange = usePatchStore((s) => s.onEdgesChange);
+  const onNodeDragStart = usePatchStore((s) => s.onNodeDragStart);
   const onConnect = usePatchStore((s) => s.onConnect);
   const isValidConnection = usePatchStore((s) => s.isValidConnection);
   const addNode = usePatchStore((s) => s.addNode);
@@ -151,6 +152,7 @@ export function PatchLab() {
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            onNodeDragStart={onNodeDragStart}
             onConnect={onConnect}
             isValidConnection={isValidConnection}
             nodeTypes={patchNodeTypes}
