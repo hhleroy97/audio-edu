@@ -15,7 +15,7 @@ _Nothing yet._
 Initial scaffold: docs, monorepo, shared libs, knowledge graph, experiment 01, stubs 02–06.
 
 **Publish tag:** `v0.1.0`  
-**Publish tip:** `fdedb6f` (resolve via `git rev-parse v0.1.0`)  
+**Publish tip:** `c78aa70` (`git rev-parse v0.1.0^{commit}`)  
 **Commit range:** `9ffbb11..v0.1.0`
 
 ### Commit trace
