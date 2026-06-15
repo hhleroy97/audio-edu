@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { MicroLesson, type MicroLessonProps } from "./MicroLesson";
 
 type ExperimentShellProps = {
   title: string;
@@ -7,6 +8,7 @@ type ExperimentShellProps = {
   order: number;
   children: React.ReactNode;
   controls?: React.ReactNode;
+  lesson?: MicroLessonProps;
   className?: string;
 };
 
@@ -16,6 +18,7 @@ export function ExperimentShell({
   order,
   children,
   controls,
+  lesson,
   className,
 }: ExperimentShellProps) {
   return (
@@ -35,6 +38,14 @@ export function ExperimentShell({
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-secondary">{description}</p>
       </header>
+
+      {lesson && (
+        <MicroLesson
+          objectives={lesson.objectives}
+          excerpt={lesson.excerpt}
+          estimatedMinutes={lesson.estimatedMinutes}
+        />
+      )}
 
       {controls && (
         <section className="mb-8 grid gap-6 border border-border p-6 md:grid-cols-2">
