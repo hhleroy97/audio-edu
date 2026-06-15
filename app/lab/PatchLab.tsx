@@ -140,7 +140,7 @@ export function PatchLab() {
             fitView
             snapToGrid
             snapGrid={[16, 16]}
-            className="bg-base"
+            className="patch-lab-canvas bg-base"
           >
             <Background gap={16} color="#2a1f3d" />
             <Controls className="!border-border !bg-surface" />
@@ -223,6 +223,32 @@ export function PatchLab() {
           run={mode === "guided"}
           continuous
           onEvent={handleJoyride}
+          options={{
+            primaryColor: "#5ec8e8",
+            textColor: "#e8e4f0",
+            backgroundColor: "#120d1a",
+            arrowColor: "#120d1a",
+            spotlightPadding: 14,
+            spotlightRadius: 6,
+            overlayColor: "rgba(10, 6, 18, 0.72)",
+          }}
+          styles={{
+            spotlight: {
+              filter:
+                "drop-shadow(0 0 10px #5ec8e8) drop-shadow(0 0 22px rgba(94, 200, 232, 0.55))",
+            },
+            beaconOuter: {
+              boxShadow:
+                "0 0 0 2px rgba(10, 6, 18, 0.95), 0 0 14px #5ec8e8, 0 0 28px rgba(94, 200, 232, 0.45)",
+            },
+            beaconInner: {
+              boxShadow: "0 0 10px #5ec8e8",
+            },
+            tooltip: {
+              border: "1px solid #2a1f3d",
+              boxShadow: "0 0 24px rgba(94, 200, 232, 0.2)",
+            },
+          }}
         />
       )}
     </div>

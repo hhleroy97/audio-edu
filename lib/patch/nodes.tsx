@@ -1,16 +1,17 @@
 "use client";
 
 import { memo } from "react";
-import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { Position, type NodeProps } from "@xyflow/react";
 import { cn } from "@/lib/utils";
-import { NODE_COLORS, PORT_COLORS } from "@/lib/patch/ports";
+import { NODE_COLORS } from "@/lib/patch/ports";
+import { PortHandle } from "@/lib/patch/PortHandle";
 import { usePatchStore } from "@/lib/patch/store";
 import type { PatchNodeData } from "@/lib/patch/ports";
 
 type AudioNodeShellProps = NodeProps & {
   children?: React.ReactNode;
-  inputs?: { id: string; signal: keyof typeof PORT_COLORS; label: string }[];
-  outputs?: { id: string; signal: keyof typeof PORT_COLORS; label: string }[];
+  inputs?: { id: string; signal: "audio" | "cv" | "trigger"; label: string }[];
+  outputs?: { id: string; signal: "audio" | "cv" | "trigger"; label: string }[];
 };
 
 export const AudioNodeShell = memo(function AudioNodeShell({
@@ -41,13 +42,11 @@ export const AudioNodeShell = memo(function AudioNodeShell({
       <div className="relative px-3 py-3">
         {inputs.map((port) => (
           <div key={port.id} className="mb-2 flex items-center gap-2">
-            <Handle
+            <PortHandle
               type="target"
               position={Position.Left}
               id={port.id}
-              className="!h-3 !w-3 !border-2 !bg-base"
-              style={{ borderColor: PORT_COLORS[port.signal] }}
-              data-tour-id={`port-${port.id}`}
+              signal={port.signal}
             />
             <span className="text-secondary">{port.label}</span>
           </div>
@@ -56,13 +55,11 @@ export const AudioNodeShell = memo(function AudioNodeShell({
         {outputs.map((port) => (
           <div key={port.id} className="mt-2 flex items-center justify-end gap-2">
             <span className="text-secondary">{port.label}</span>
-            <Handle
+            <PortHandle
               type="source"
               position={Position.Right}
               id={port.id}
-              className="!h-3 !w-3 !border-2 !bg-base"
-              style={{ borderColor: PORT_COLORS[port.signal] }}
-              data-tour-id={`port-${port.id}`}
+              signal={port.signal}
             />
           </div>
         ))}

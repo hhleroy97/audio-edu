@@ -30,3 +30,27 @@
     stroke-dashoffset: -20;
   }
 }
+
+/* Patch lab — port handles & tour beacons: ambient glow on dark canvas */
+.patch-lab-canvas .react-flow__handle {
+  pointer-events: all;
+  cursor: crosshair;
+}
+
+.patch-lab-canvas .react-flow__handle:hover {
+  filter: brightness(1.15);
+}
+
+@keyframes port-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+.patch-lab-canvas .react-flow__handle.connectionindicator {
+  animation: port-pulse 1.6s ease-in-out infinite;
+}
