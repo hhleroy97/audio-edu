@@ -10,7 +10,34 @@
 
 _Nothing yet._
 
-## 0.3.0 — 2026-06-15
+## 0.4.0 — 2026-06-15
+
+Patch Lab: React Flow node-graph canvas with live Web Audio routing and guided lesson 01.
+
+**Publish tag:** `v0.4.0`  
+**Commit range:** `v0.3.0..v0.4.0`
+
+### Commit trace
+
+| Hash | Subject |
+|------|---------|
+| `1e02d24` | docs: add UI overhaul handoff and prior-art provenance |
+| `d34fa98` | build: add React Flow, zustand, nanoid, and react-joyride |
+| `404bb65` | feat(patch): add Zod contracts, AudioEngine, and connection registry |
+| `89f7fc5` | feat(patch): add zustand store and React Flow node components |
+| `6aedcc4` | feat(viz): add labeled oscilloscope, spectrum, and spectrogram displays |
+| `9cbb7ea` | feat(lab): add Patch Lab canvas with guided lesson 01 |
+| `780305a` | docs: update UI-pass checklist for v0.4.0 patch lab |
+| `5a02643` | fix(patch): disconnect audio nodes before reconnecting wires |
+
+### Highlights
+
+- `/lab` — modular-synth style patching (oscillator → analyser → output)
+- AudioEngine reconciles React Flow edges to Web Audio `connect()` calls
+- Prior art: xyflow Web Audio tutorial, synflow connection trees, plinth save model
+- Analysis column with labeled oscilloscope, log FFT, and spectrogram
+- Lesson 01 guided tour via react-joyride
+
 
 Phase-one arc complete: experiments 03–06, micro-lesson loop, tutorial generator, graph watch.
 
