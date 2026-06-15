@@ -1,0 +1,212 @@
+[
+  {
+    "id": "01-oscillator-identify-the-four-core-waveforms-by-sigh",
+    "experimentId": "01-oscillator",
+    "concept": "oscillator",
+    "title": "Identify the four core waveforms by sight and sound",
+    "body": "Identify the four core waveforms by sight and sound. Introduces the oscillator as the fundamental sound source. Learner selects a waveform, adjusts frequency and amplitude, and observes the resulting spectrum on a live FFT display — establishing the visual vocabulary reused throughout.",
+    "estimatedMinutes": 3,
+    "prerequisites": [],
+    "gate": "human-review"
+  },
+  {
+    "id": "01-oscillator-relate-frequency-to-perceived-pitch",
+    "experimentId": "01-oscillator",
+    "concept": "oscillator",
+    "title": "Relate frequency to perceived pitch",
+    "body": "Relate frequency to perceived pitch. Introduces the oscillator as the fundamental sound source. Learner selects a waveform, adjusts frequency and amplitude, and observes the resulting spectrum on a live FFT display — establishing the visual vocabulary reused throughout.",
+    "estimatedMinutes": 3,
+    "prerequisites": [],
+    "gate": "human-review"
+  },
+  {
+    "id": "01-oscillator-read-an-fft-display-to-see-harmonic-cont",
+    "experimentId": "01-oscillator",
+    "concept": "oscillator",
+    "title": "Read an FFT display to see harmonic content",
+    "body": "Read an FFT display to see harmonic content. Introduces the oscillator as the fundamental sound source. Learner selects a waveform, adjusts frequency and amplitude, and observes the resulting spectrum on a live FFT display — establishing the visual vocabulary reused throughout.",
+    "estimatedMinutes": 3,
+    "prerequisites": [],
+    "gate": "human-review"
+  },
+  {
+    "id": "02-unison-explain-how-detuning-creates-beating-and",
+    "experimentId": "02-unison",
+    "concept": "unison",
+    "title": "Explain how detuning creates beating and perceived thickness",
+    "body": "Explain how detuning creates beating and perceived thickness. Extends the single oscillator with multiple detuned voices panned across the stereo field. Learner adjusts voice count, detune amount, and spread while watching how beating and spectral smearing appear on the FFT — the first step toward thick bass and pad textures.",
+    "estimatedMinutes": 3,
+    "prerequisites": [
+      "01-oscillator"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "02-unison-relate-unison-voice-count-to-spectral-sm",
+    "experimentId": "02-unison",
+    "concept": "unison",
+    "title": "Relate unison voice count to spectral smearing on the FFT",
+    "body": "Relate unison voice count to spectral smearing on the FFT. Extends the single oscillator with multiple detuned voices panned across the stereo field. Learner adjusts voice count, detune amount, and spread while watching how beating and spectral smearing appear on the FFT — the first step toward thick bass and pad textures.",
+    "estimatedMinutes": 3,
+    "prerequisites": [
+      "01-oscillator"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "02-unison-pan-detuned-voices-for-stereo-width-with",
+    "experimentId": "02-unison",
+    "concept": "unison",
+    "title": "Pan detuned voices for stereo width without losing mono compatibility",
+    "body": "Pan detuned voices for stereo width without losing mono compatibility. Extends the single oscillator with multiple detuned voices panned across the stereo field. Learner adjusts voice count, detune amount, and spread while watching how beating and spectral smearing appear on the FFT — the first step toward thick bass and pad textures.",
+    "estimatedMinutes": 3,
+    "prerequisites": [
+      "01-oscillator"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "03-pitch-envelopes-describe-how-an-envelope-modulates-pitch",
+    "experimentId": "03-pitch-envelopes",
+    "concept": "envelope",
+    "title": "Describe how an envelope modulates pitch over time",
+    "body": "Describe how an envelope modulates pitch over time. Introduces pitch modulation via ADSR-style envelopes applied to oscillator frequency. Learner shapes attack and decay to create plucks, drops, and sweeps while observing pitch movement on the spectrograph — bridging static tones and time-varying timbre.",
+    "estimatedMinutes": 4,
+    "prerequisites": [
+      "02-unison"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "03-pitch-envelopes-identify-attack,-decay,-sustain,-and-rel",
+    "experimentId": "03-pitch-envelopes",
+    "concept": "envelope",
+    "title": "Identify attack, decay, sustain, and release stages on a pitch sweep",
+    "body": "Identify attack, decay, sustain, and release stages on a pitch sweep. Introduces pitch modulation via ADSR-style envelopes applied to oscillator frequency. Learner shapes attack and decay to create plucks, drops, and sweeps while observing pitch movement on the spectrograph — bridging static tones and time-varying timbre.",
+    "estimatedMinutes": 4,
+    "prerequisites": [
+      "02-unison"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "03-pitch-envelopes-relate-pitch-envelope-shape-to-transient",
+    "experimentId": "03-pitch-envelopes",
+    "concept": "envelope",
+    "title": "Relate pitch envelope shape to transient character on the spectrograph",
+    "body": "Relate pitch envelope shape to transient character on the spectrograph. Introduces pitch modulation via ADSR-style envelopes applied to oscillator frequency. Learner shapes attack and decay to create plucks, drops, and sweeps while observing pitch movement on the spectrograph — bridging static tones and time-varying timbre.",
+    "estimatedMinutes": 4,
+    "prerequisites": [
+      "02-unison"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "04-wavetable-explain-wavetable-synthesis-as-crossfadi",
+    "experimentId": "04-wavetable",
+    "concept": "wavetable",
+    "title": "Explain wavetable synthesis as crossfading between periodic snapshots",
+    "body": "Explain wavetable synthesis as crossfading between periodic snapshots. Introduces wavetable synthesis: a bank of single-cycle waveforms crossfaded by table position. Learner scrubs and modulates position to morph timbre while observing harmonic changes on the FFT — expanding beyond the four static waveforms from experiment 01.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "03-pitch-envelopes"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "04-wavetable-relate-table-position-to-harmonic-conten",
+    "experimentId": "04-wavetable",
+    "concept": "wavetable",
+    "title": "Relate table position to harmonic content on the FFT",
+    "body": "Relate table position to harmonic content on the FFT. Introduces wavetable synthesis: a bank of single-cycle waveforms crossfaded by table position. Learner scrubs and modulates position to morph timbre while observing harmonic changes on the FFT — expanding beyond the four static waveforms from experiment 01.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "03-pitch-envelopes"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "04-wavetable-use-an-envelope-to-modulate-wavetable-po",
+    "experimentId": "04-wavetable",
+    "concept": "wavetable",
+    "title": "Use an envelope to modulate wavetable position over time",
+    "body": "Use an envelope to modulate wavetable position over time. Introduces wavetable synthesis: a bank of single-cycle waveforms crossfaded by table position. Learner scrubs and modulates position to morph timbre while observing harmonic changes on the FFT — expanding beyond the four static waveforms from experiment 01.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "03-pitch-envelopes"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "05-filtering-explain-low-pass-filtering-as-harmonic-s",
+    "experimentId": "05-filtering",
+    "concept": "filter",
+    "title": "Explain low-pass filtering as harmonic subtraction",
+    "body": "Explain low-pass filtering as harmonic subtraction. Introduces subtractive filtering: a low-pass filter removes harmonics above cutoff while resonance boosts energy at the cutoff point. Learner sweeps cutoff and resonance on a rich source, watching harmonic removal in real time on the FFT — the defining step of subtractive synthesis.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "04-wavetable"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "05-filtering-relate-cutoff-frequency-to-the-fft-rollo",
+    "experimentId": "05-filtering",
+    "concept": "filter",
+    "title": "Relate cutoff frequency to the FFT rolloff point",
+    "body": "Relate cutoff frequency to the FFT rolloff point. Introduces subtractive filtering: a low-pass filter removes harmonics above cutoff while resonance boosts energy at the cutoff point. Learner sweeps cutoff and resonance on a rich source, watching harmonic removal in real time on the FFT — the defining step of subtractive synthesis.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "04-wavetable"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "05-filtering-describe-how-resonance-emphasizes-freque",
+    "experimentId": "05-filtering",
+    "concept": "filter",
+    "title": "Describe how resonance emphasizes frequencies near cutoff",
+    "body": "Describe how resonance emphasizes frequencies near cutoff. Introduces subtractive filtering: a low-pass filter removes harmonics above cutoff while resonance boosts energy at the cutoff point. Learner sweeps cutoff and resonance on a rich source, watching harmonic removal in real time on the FFT — the defining step of subtractive synthesis.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "04-wavetable"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "06-layering-combine-two-or-more-oscillator-layers-wi",
+    "experimentId": "06-layering",
+    "concept": "layering",
+    "title": "Combine two or more oscillator layers with independent level and timbre",
+    "body": "Combine two or more oscillator layers with independent level and timbre. Culminates the Phase-1 arc by stacking multiple oscillator layers — each with independent waveform, level, and optional unison — through a shared filter. Learner balances sub, body, and top layers while reading the combined spectrum on the FFT, mirroring real-world bass patch construction.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "05-filtering"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "06-layering-identify-each-layer's-contribution-on-th",
+    "experimentId": "06-layering",
+    "concept": "layering",
+    "title": "Identify each layer's contribution on the FFT",
+    "body": "Identify each layer's contribution on the FFT. Culminates the Phase-1 arc by stacking multiple oscillator layers — each with independent waveform, level, and optional unison — through a shared filter. Learner balances sub, body, and top layers while reading the combined spectrum on the FFT, mirroring real-world bass patch construction.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "05-filtering"
+    ],
+    "gate": "human-review"
+  },
+  {
+    "id": "06-layering-apply-filtering-to-the-summed-output-of-",
+    "experimentId": "06-layering",
+    "concept": "layering",
+    "title": "Apply filtering to the summed output of a multi-oscillator patch",
+    "body": "Apply filtering to the summed output of a multi-oscillator patch. Culminates the Phase-1 arc by stacking multiple oscillator layers — each with independent waveform, level, and optional unison — through a shared filter. Learner balances sub, body, and top layers while reading the combined spectrum on the FFT, mirroring real-world bass patch construction.",
+    "estimatedMinutes": 5,
+    "prerequisites": [
+      "05-filtering"
+    ],
+    "gate": "human-review"
+  }
+]

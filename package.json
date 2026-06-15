@@ -10,6 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "graph:extract": "tsx scripts/extract-graph.ts",
+    "graph:watch": "tsx scripts/graph-watch.ts",
+    "tutorials:generate": "tsx scripts/generate-tutorials.ts",
     "validate:metadata": "tsx scripts/validate-metadata.ts"
   },
   "dependencies": {
