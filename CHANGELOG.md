@@ -10,6 +10,30 @@
 
 _Nothing yet._
 
+## 0.2.0 — 2026-06-15
+
+Install lockfile, frontmatter parser fix, experiment 02 unison, extracted knowledge graph.
+
+**Publish tag:** `v0.2.0`  
+**Commit range:** `v0.1.0..v0.2.0`
+
+### Commit trace
+
+| Hash | Subject |
+|------|---------|
+| `7ed7759` | build: add package-lock.json from dependency install |
+| `4bbb186` | fix(graph): parse YAML frontmatter arrays, objects, and block scalars |
+| `453657e` | feat(lib): add unison voice stack and waveform overlay visualization |
+| `03c1a18` | feat(02-unison): implement unison and detuning experiment |
+| `4ef2578` | chore(graph): extract deterministic knowledge graph for six experiments |
+
+### Highlights
+
+- `package-lock.json` — reproducible installs; build and tests verified
+- Frontmatter parser handles `[]`, nested `compatibility`, and `summary >` blocks
+- Experiment 02: detuned voice stack, stereo spread, waveform overlay
+- Knowledge graph output: 6 experiments, 171 deterministic edges
+
 ## 0.1.0 — 2026-06-15
 
 Initial scaffold: docs, monorepo, shared libs, knowledge graph, experiment 01, stubs 02–06.
