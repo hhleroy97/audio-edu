@@ -1,0 +1,29 @@
+{
+  "slug": "05-filtering",
+  "version": "0.1.0",
+  "audioModules": [
+    "lib/audio/oscillator",
+    "lib/audio/filter",
+    "lib/audio/gain"
+  ],
+  "uiComponents": [
+    "lib/viz/FFTDisplay",
+    "lib/viz/Spectrograph",
+    "lib/ui/ParamSlider",
+    "lib/ui/FilterResponseDisplay"
+  ],
+  "statePatterns": ["audio-context-provider", "param-store"],
+  "relatedExperiments": ["06-layering"],
+  "prerequisites": ["04-wavetable"],
+  "conceptTags": ["filter", "cutoff", "resonance"],
+  "difficulty": 3,
+  "estimatedCognitiveLoad": "medium",
+  "gating": {
+    "tutorialGeneration": "auto",
+    "graphInclusion": "auto",
+    "publish": "human-review"
+  },
+  "changelog": [
+    { "version": "0.1.0", "date": "2026-06-15", "note": "initial draft" }
+  ]
+}

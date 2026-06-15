@@ -1,0 +1,29 @@
+{
+  "slug": "04-wavetable",
+  "version": "0.1.0",
+  "audioModules": [
+    "lib/audio/wavetable",
+    "lib/audio/gain",
+    "lib/audio/envelope"
+  ],
+  "uiComponents": [
+    "lib/viz/FFTDisplay",
+    "lib/viz/Spectrograph",
+    "lib/ui/ParamSlider",
+    "lib/ui/WavetableDisplay"
+  ],
+  "statePatterns": ["audio-context-provider", "param-store"],
+  "relatedExperiments": ["05-filtering"],
+  "prerequisites": ["03-pitch-envelopes"],
+  "conceptTags": ["wavetable", "timbre", "morph"],
+  "difficulty": 3,
+  "estimatedCognitiveLoad": "medium",
+  "gating": {
+    "tutorialGeneration": "auto",
+    "graphInclusion": "auto",
+    "publish": "human-review"
+  },
+  "changelog": [
+    { "version": "0.1.0", "date": "2026-06-15", "note": "initial draft" }
+  ]
+}

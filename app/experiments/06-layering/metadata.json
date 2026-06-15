@@ -1,0 +1,32 @@
+{
+  "slug": "06-layering",
+  "version": "0.1.0",
+  "audioModules": [
+    "lib/audio/oscillator",
+    "lib/audio/unison",
+    "lib/audio/filter",
+    "lib/audio/gain",
+    "lib/audio/layer-mixer"
+  ],
+  "uiComponents": [
+    "lib/viz/FFTDisplay",
+    "lib/viz/Spectrograph",
+    "lib/ui/ParamSlider",
+    "lib/ui/WaveformSelector",
+    "lib/ui/LayerPanel"
+  ],
+  "statePatterns": ["audio-context-provider", "param-store", "layer-store"],
+  "relatedExperiments": [],
+  "prerequisites": ["05-filtering"],
+  "conceptTags": ["layering", "multi-oscillator"],
+  "difficulty": 4,
+  "estimatedCognitiveLoad": "high",
+  "gating": {
+    "tutorialGeneration": "auto",
+    "graphInclusion": "auto",
+    "publish": "human-review"
+  },
+  "changelog": [
+    { "version": "0.1.0", "date": "2026-06-15", "note": "initial draft" }
+  ]
+}
