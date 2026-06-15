@@ -18,6 +18,7 @@ import { Oscilloscope } from "@/lib/viz/Oscilloscope";
 import { SpectrumDisplay } from "@/lib/viz/SpectrumDisplay";
 import { SpectrogramDisplay } from "@/lib/viz/SpectrogramDisplay";
 import { AgentStateIndicator } from "@/lib/ui/AgentStateIndicator";
+import { LessonPanel } from "@/lib/ui/LessonPanel";
 import type { NodeKind } from "@/lib/patch/ports";
 
 const SAMPLE_RATE = 48000;
@@ -146,6 +147,21 @@ export function PatchLab() {
       </header>
 
       <div className="flex min-h-0 flex-1">
+        {isGuided && currentStep && (
+          <LessonPanel
+            lesson={activeLesson}
+            steps={steps}
+            stepIndex={tourStepIndex}
+            isLastStep={isLastStep}
+            onContinue={handleContinue}
+            onDismiss={dismissTour}
+            onDemo={() => {
+              void run();
+              handleContinue();
+            }}
+          />
+        )}
+
         <div className="relative min-w-0 flex-1">
           <ReactFlow
             nodes={nodes}
@@ -184,59 +200,9 @@ export function PatchLab() {
               ))}
             </Panel>
           </ReactFlow>
-
-          {isGuided && currentStep && (
-            <div
-              className="absolute bottom-4 left-4 z-50 max-w-md border border-cold/40 bg-surface p-4 shadow-[0_0_24px_rgba(94,200,232,0.15)]"
-              role="dialog"
-              aria-label="Lesson step"
-            >
-              <p className="font-mono text-[10px] uppercase tracking-wider text-cold">
-                Step {tourStepIndex + 1}/{steps.length} · {currentStep.kind}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed">{currentStep.content}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {currentStep.kind === "demo" && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      void run();
-                      handleContinue();
-                    }}
-                    className="border border-cold px-3 py-1 font-mono text-xs text-cold"
-                  >
-                    Hear demo
-                  </button>
-                )}
-                {currentStep.kind === "do" && (
-                  <p className="font-mono text-[10px] text-secondary">
-                    Complete the action on the canvas to continue…
-                  </p>
-                )}
-                {currentStep.kind !== "do" && currentStep.kind !== "demo" && (
-                  <button
-                    type="button"
-                    onClick={handleContinue}
-                    className="border border-cold px-3 py-1 font-mono text-xs text-cold"
-                  >
-                    {isLastStep ? "Enter playground" : "Continue"}
-                  </button>
-                )}
-                {!isLastStep && currentStep.kind !== "do" && (
-                  <button
-                    type="button"
-                    onClick={dismissTour}
-                    className="border border-border px-3 py-1 font-mono text-xs text-secondary"
-                  >
-                    Skip
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
-        <aside className="w-80 shrink-0 overflow-y-auto border-l border-border bg-surface p-3">
+        <aside className="flex w-80 shrink-0 flex-col overflow-y-auto border-l border-border bg-surface p-3">
           <Oscilloscope
             analyser={analyser}
             isActive={isRunning}

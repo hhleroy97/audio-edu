@@ -7,3 +7,4 @@ export { FilterResponseDisplay } from "./FilterResponseDisplay";
 export { Oscilloscope } from "./Oscilloscope";
 export { SpectrumDisplay } from "./SpectrumDisplay";
 export { SpectrogramDisplay } from "./SpectrogramDisplay";
+export { LessonDiagram } from "./LessonDiagram";

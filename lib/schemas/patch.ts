@@ -23,11 +23,23 @@ export const Patch = z.object({
   edges: z.array(PatchEdge),
 });
 
+export const LessonDiagram = z.enum([
+  "oscillator-intro",
+  "audio-ports",
+  "signal-chain",
+  "run-transport",
+  "lesson-complete",
+]);
+
 export const TourStep = z.object({
   id: z.string(),
   kind: z.enum(["explain", "demo", "do", "reflect"]),
   target: z.string().optional(),
   content: z.string(),
+  /** Extended prose for the lesson column */
+  detail: z.string().optional(),
+  /** Inline diagram visual for the lesson column */
+  diagram: LessonDiagram.optional(),
   demoPatch: Patch.optional(),
   requires: z
     .object({
@@ -54,5 +66,6 @@ export type PortType = z.infer<typeof PortType>;
 export type PatchNode = z.infer<typeof PatchNode>;
 export type PatchEdge = z.infer<typeof PatchEdge>;
 export type Patch = z.infer<typeof Patch>;
+export type LessonDiagram = z.infer<typeof LessonDiagram>;
 export type TourStep = z.infer<typeof TourStep>;
 export type Lesson = z.infer<typeof Lesson>;
