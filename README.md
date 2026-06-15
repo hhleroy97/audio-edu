@@ -49,12 +49,24 @@ Each experiment includes:
 
 ## Phase One arc
 
-1. Oscillator basics (implemented)
-2. Unison & detuning (stub)
-3. Pitch envelopes (stub)
-4. Wavetable modulation (stub)
-5. Filtering (stub)
-6. Layering (stub)
+1. Oscillator basics ✅
+2. Unison & detuning ✅
+3. Pitch envelopes ✅
+4. Wavetable modulation ✅
+5. Filtering ✅
+6. Layering ✅
+
+All experiments include micro-lesson → playground flow. Ready for UI pass (shadcn/Magic UI).
+
+## Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Dev server |
+| `npm run graph:extract` | Deterministic knowledge graph |
+| `npm run graph:watch` | Auto-extract on doc changes |
+| `npm run tutorials:generate` | Emit gated `TutorialChunk` JSON |
+| `npm test` | Vitest |
 
 See [HANDOFF.md](./HANDOFF.md) for full vision.
 
