@@ -41,8 +41,11 @@ export default function HomePage() {
           Make invisible systems visible.
         </h1>
         <p className="mt-4 max-w-xl text-sm leading-relaxed text-secondary">
-          A RIDDIM-focused sound-design arc. Each experiment layers new controls
-          on the last — FFT and spectrograph stay on from experiment 01.
+          A RIDDIM-focused sound-design arc. Patch nodes on the canvas in the{" "}
+          <Link href="/lab" className="text-cold hover:underline">
+            Patch Lab
+          </Link>
+          , or explore legacy experiment pages below.
         </p>
       </header>
 
@@ -74,6 +77,9 @@ export default function HomePage() {
       </ol>
 
       <footer className="mt-16 border-t border-border pt-8 font-mono text-xs text-secondary">
+        <Link href="/lab" className="mr-6 hover:text-cold">
+          Patch Lab →
+        </Link>
         <Link href="/graph" className="hover:text-cold">
           Knowledge graph →
         </Link>
