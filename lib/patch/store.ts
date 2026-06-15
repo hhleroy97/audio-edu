@@ -81,6 +81,7 @@ export type PatchStore = {
   completeLesson: () => void;
   setTourStep: (index: number) => void;
   advanceTour: () => void;
+  dismissTour: () => void;
   setSelectedNode: (id: string | null) => void;
   syncEngine: () => void;
   toPatch: () => Patch;
@@ -208,8 +209,10 @@ export const usePatchStore = create<PatchStore>((set, get) => ({
 
   completeLesson: () => {
     const lesson = get().activeLesson;
+    const stepCount = lesson.pages.flatMap((p) => p.steps).length;
     set({
       mode: "playground",
+      tourStepIndex: stepCount,
       unlockedNodes: [
         ...new Set([
           ...get().unlockedNodes,
@@ -217,6 +220,10 @@ export const usePatchStore = create<PatchStore>((set, get) => ({
         ]),
       ],
     });
+  },
+
+  dismissTour: () => {
+    get().completeLesson();
   },
 
   setTourStep: (index) => set({ tourStepIndex: index }),

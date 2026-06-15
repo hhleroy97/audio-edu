@@ -9,11 +9,10 @@ import {
   Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Joyride, STATUS } from "react-joyride";
-import type { EventData } from "react-joyride";
 import { usePatchStore } from "@/lib/patch/store";
 import { patchNodeTypes } from "@/lib/patch/nodes";
 import { patchEdgeTypes } from "@/lib/patch/edges";
+import { isDoStepSatisfied } from "@/lib/patch/tour-utils";
 import { Oscilloscope } from "@/lib/viz/Oscilloscope";
 import { SpectrumDisplay } from "@/lib/viz/SpectrumDisplay";
 import { SpectrogramDisplay } from "@/lib/viz/SpectrogramDisplay";
@@ -39,10 +38,20 @@ export function PatchLab() {
   const run = usePatchStore((s) => s.run);
   const stop = usePatchStore((s) => s.stop);
   const advanceTour = usePatchStore((s) => s.advanceTour);
+  const dismissTour = usePatchStore((s) => s.dismissTour);
   const getAnalyser = usePatchStore((s) => s.getAnalyser);
   const syncEngine = usePatchStore((s) => s.syncEngine);
 
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
+
+  const steps = useMemo(
+    () => activeLesson.pages.flatMap((p) => p.steps),
+    [activeLesson]
+  );
+
+  const isGuided = mode === "guided" && tourStepIndex < steps.length;
+  const currentStep = isGuided ? steps[tourStepIndex] : null;
+  const isLastStep = isGuided && tourStepIndex === steps.length - 1;
 
   useEffect(() => {
     syncEngine();
@@ -52,39 +61,38 @@ export function PatchLab() {
     if (isRunning) setAnalyser(getAnalyser());
   }, [isRunning, getAnalyser, edges, nodes]);
 
-  const steps = useMemo(
-    () => activeLesson.pages.flatMap((p) => p.steps),
-    [activeLesson]
-  );
+  /** Highlight current tour target without a blocking joyride overlay. */
+  useEffect(() => {
+    document
+      .querySelectorAll("[data-tour-highlight]")
+      .forEach((el) => el.removeAttribute("data-tour-highlight"));
 
-  const joyrideSteps = useMemo(
-    () =>
-      mode === "guided"
-        ? steps.map((s) => ({
-            target: s.target ?? "body",
-            content: s.content,
-            disableBeacon: true,
-          }))
-        : [],
-    [mode, steps]
-  );
+    if (!isGuided || !currentStep?.target) return;
 
-  const handleJoyride = useCallback(
-    (data: EventData) => {
-      const { status, type, index } = data;
-      if (type === "step:after" && index === tourStepIndex) {
-        const step = steps[index];
-        if (step?.kind === "demo") return;
-        advanceTour();
-      }
-      if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
-        usePatchStore.getState().completeLesson();
-      }
-    },
-    [advanceTour, steps, tourStepIndex]
-  );
+    const target = document.querySelector(currentStep.target);
+    target?.setAttribute("data-tour-highlight", "true");
 
-  const currentStep = steps[tourStepIndex];
+    return () => {
+      target?.removeAttribute("data-tour-highlight");
+    };
+  }, [isGuided, currentStep?.target, tourStepIndex]);
+
+  /** Auto-advance "do" steps when the learner satisfies the requirement. */
+  useEffect(() => {
+    if (!isGuided || !currentStep || currentStep.kind !== "do") return;
+    if (!isDoStepSatisfied(currentStep, edges)) return;
+
+    const timer = window.setTimeout(() => advanceTour(), 400);
+    return () => window.clearTimeout(timer);
+  }, [isGuided, currentStep, edges, advanceTour, tourStepIndex]);
+
+  const handleContinue = useCallback(() => {
+    if (isLastStep) {
+      dismissTour();
+    } else {
+      advanceTour();
+    }
+  }, [isLastStep, dismissTour, advanceTour]);
 
   return (
     <div className="flex h-screen flex-col bg-base">
@@ -106,6 +114,15 @@ export function PatchLab() {
             }
             message={isRunning ? "audio live" : "idle"}
           />
+          {isGuided && (
+            <button
+              type="button"
+              onClick={dismissTour}
+              className="border border-border px-3 py-2 font-mono text-xs uppercase text-secondary hover:border-cold hover:text-cold"
+            >
+              Skip lesson
+            </button>
+          )}
           <button
             type="button"
             data-tour-id="transport-run"
@@ -162,32 +179,50 @@ export function PatchLab() {
             </Panel>
           </ReactFlow>
 
-          {mode === "guided" && currentStep && (
-            <div className="absolute bottom-4 left-4 max-w-md border border-border bg-surface/95 p-4 backdrop-blur">
+          {isGuided && currentStep && (
+            <div
+              className="absolute bottom-4 left-4 z-50 max-w-md border border-cold/40 bg-surface p-4 shadow-[0_0_24px_rgba(94,200,232,0.15)]"
+              role="dialog"
+              aria-label="Lesson step"
+            >
               <p className="font-mono text-[10px] uppercase tracking-wider text-cold">
                 Step {tourStepIndex + 1}/{steps.length} · {currentStep.kind}
               </p>
               <p className="mt-2 text-sm leading-relaxed">{currentStep.content}</p>
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {currentStep.kind === "demo" && (
                   <button
                     type="button"
                     onClick={() => {
                       void run();
-                      advanceTour();
+                      handleContinue();
                     }}
                     className="border border-cold px-3 py-1 font-mono text-xs text-cold"
                   >
                     Hear demo
                   </button>
                 )}
+                {currentStep.kind === "do" && (
+                  <p className="font-mono text-[10px] text-secondary">
+                    Complete the action on the canvas to continue…
+                  </p>
+                )}
                 {currentStep.kind !== "do" && currentStep.kind !== "demo" && (
                   <button
                     type="button"
-                    onClick={() => advanceTour()}
+                    onClick={handleContinue}
+                    className="border border-cold px-3 py-1 font-mono text-xs text-cold"
+                  >
+                    {isLastStep ? "Enter playground" : "Continue"}
+                  </button>
+                )}
+                {!isLastStep && currentStep.kind !== "do" && (
+                  <button
+                    type="button"
+                    onClick={dismissTour}
                     className="border border-border px-3 py-1 font-mono text-xs text-secondary"
                   >
-                    Continue
+                    Skip
                   </button>
                 )}
               </div>
@@ -215,42 +250,6 @@ export function PatchLab() {
           />
         </aside>
       </div>
-
-      {mode === "guided" && joyrideSteps.length > 0 && (
-        <Joyride
-          steps={joyrideSteps}
-          stepIndex={tourStepIndex}
-          run={mode === "guided"}
-          continuous
-          onEvent={handleJoyride}
-          options={{
-            primaryColor: "#5ec8e8",
-            textColor: "#e8e4f0",
-            backgroundColor: "#120d1a",
-            arrowColor: "#120d1a",
-            spotlightPadding: 14,
-            spotlightRadius: 6,
-            overlayColor: "rgba(10, 6, 18, 0.72)",
-          }}
-          styles={{
-            spotlight: {
-              filter:
-                "drop-shadow(0 0 10px #5ec8e8) drop-shadow(0 0 22px rgba(94, 200, 232, 0.55))",
-            },
-            beaconOuter: {
-              boxShadow:
-                "0 0 0 2px rgba(10, 6, 18, 0.95), 0 0 14px #5ec8e8, 0 0 28px rgba(94, 200, 232, 0.45)",
-            },
-            beaconInner: {
-              boxShadow: "0 0 10px #5ec8e8",
-            },
-            tooltip: {
-              border: "1px solid #2a1f3d",
-              boxShadow: "0 0 24px rgba(94, 200, 232, 0.2)",
-            },
-          }}
-        />
-      )}
     </div>
   );
 }
