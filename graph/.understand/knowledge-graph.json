@@ -1,0 +1,2354 @@
+{
+  "version": "0.1.0",
+  "generatedAt": "2026-06-15T19:33:30.370Z",
+  "fingerprint": "49d367b5143253fdaf87f5aae5375a92826ddbdf8e84672d4c36320318a766e7",
+  "nodes": [
+    {
+      "id": "experiment:01-oscillator",
+      "label": "Oscillator Basics",
+      "type": "experiment",
+      "summary": "Introduces the oscillator as the fundamental sound source. Learner selects a waveform, adjusts frequency and amplitude, and observes the resulting spectrum on a live FFT display — establishing the visual vocabulary reused throughout.",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "concept:oscillator",
+      "label": "oscillator",
+      "type": "concept",
+      "summary": "Concept tag from 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:waveform",
+      "label": "waveform",
+      "type": "concept",
+      "summary": "Concept tag from 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:frequency",
+      "label": "frequency",
+      "type": "concept",
+      "summary": "Concept tag from 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:amplitude",
+      "label": "amplitude",
+      "type": "concept",
+      "summary": "Concept tag from 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:fft",
+      "label": "fft",
+      "type": "concept",
+      "summary": "Concept tag from 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/experiment.md"
+      ]
+    },
+    {
+      "id": "component:lib-audio-oscillator",
+      "label": "lib/audio/oscillator",
+      "type": "component",
+      "summary": "Audio/UI module used by 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/metadata.json#audioModules"
+      ]
+    },
+    {
+      "id": "component:lib-audio-gain",
+      "label": "lib/audio/gain",
+      "type": "component",
+      "summary": "Audio/UI module used by 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/metadata.json#audioModules"
+      ]
+    },
+    {
+      "id": "component:lib-viz-FFTDisplay",
+      "label": "lib/viz/FFTDisplay",
+      "type": "component",
+      "summary": "UI component used by 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "component:lib-viz-Spectrograph",
+      "label": "lib/viz/Spectrograph",
+      "type": "component",
+      "summary": "UI component used by 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "component:lib-ui-WaveformSelector",
+      "label": "lib/ui/WaveformSelector",
+      "type": "component",
+      "summary": "UI component used by 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "component:lib-ui-ParamSlider",
+      "label": "lib/ui/ParamSlider",
+      "type": "component",
+      "summary": "UI component used by 01-oscillator",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-0",
+      "label": "OscillatorNode",
+      "type": "source",
+      "summary": "OscillatorNode — https://developer.mozilla.org/en-US/docs/Web/API/OscillatorNode",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-1",
+      "label": "AnalyserNode",
+      "type": "source",
+      "summary": "AnalyserNode — https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-2",
+      "label": "Tone.Oscillator",
+      "type": "source",
+      "summary": "Tone.Oscillator — https://tonejs.github.io/docs/15.0.4/classes/Oscillator.html",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-3",
+      "label": "Tone.Analyser",
+      "type": "source",
+      "summary": "Tone.Analyser — https://tonejs.github.io/docs/15.0.4/classes/Analyser.html",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-4",
+      "label": "workshop-web-audio",
+      "type": "source",
+      "summary": "workshop-web-audio — https://github.com/mattdesl/workshop-web-audio",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-5",
+      "label": "Learning Synths",
+      "type": "source",
+      "summary": "Learning Synths — https://learningsynths.ableton.com/",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-6",
+      "label": "useSpectrogram.ts",
+      "type": "source",
+      "summary": "useSpectrogram.ts — https://github.com/codeacme17/echo-ui/blob/70c12a2f85c6f3eee6fec15e46e4446d25ecff05/packages/hooks/useSpectrogram.ts",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-7",
+      "label": "spectrogram-windowed.ts",
+      "type": "source",
+      "summary": "spectrogram-windowed.ts — https://github.com/katspaugh/wavesurfer.js/blob/48ddb37f3a132cfa7a5d417f2a8c1ad23a064252/src/plugins/spectrogram-windowed.ts",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:01-oscillator-8",
+      "label": "Understand-Anything",
+      "type": "source",
+      "summary": "Understand-Anything — https://github.com/Egonex-AI/Understand-Anything",
+      "experimentIds": [
+        "01-oscillator"
+      ],
+      "sources": [
+        "01-oscillator/docs/sources.md"
+      ]
+    },
+    {
+      "id": "experiment:02-unison",
+      "label": "Unison & Detuning",
+      "type": "experiment",
+      "summary": "Extends the single oscillator with multiple detuned voices panned across the stereo field. Learner adjusts voice count, detune amount, and spread while watching how beating and spectral smearing appear on the FFT — the first step toward thick bass and pad textures.",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "concept:unison",
+      "label": "unison",
+      "type": "concept",
+      "summary": "Concept tag from 02-unison",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:detune",
+      "label": "detune",
+      "type": "concept",
+      "summary": "Concept tag from 02-unison",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:stereo-spread",
+      "label": "stereo-spread",
+      "type": "concept",
+      "summary": "Concept tag from 02-unison",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/experiment.md"
+      ]
+    },
+    {
+      "id": "component:lib-audio-unison",
+      "label": "lib/audio/unison",
+      "type": "component",
+      "summary": "Audio/UI module used by 02-unison",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/metadata.json#audioModules"
+      ]
+    },
+    {
+      "id": "component:lib-viz-WaveformOverlay",
+      "label": "lib/viz/WaveformOverlay",
+      "type": "component",
+      "summary": "UI component used by 02-unison",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "source:02-unison-0",
+      "label": "StereoPannerNode",
+      "type": "source",
+      "summary": "StereoPannerNode — https://developer.mozilla.org/en-US/docs/Web/API/StereoPannerNode",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:02-unison-1",
+      "label": "Detune",
+      "type": "source",
+      "summary": "Detune — https://tonejs.github.io/docs/15.0.4/types/Unit.html#Detune",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:02-unison-2",
+      "label": "Tone.Panner",
+      "type": "source",
+      "summary": "Tone.Panner — https://tonejs.github.io/docs/15.0.4/classes/Panner.html",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:02-unison-3",
+      "label": "Beat (acoustics)",
+      "type": "source",
+      "summary": "Beat (acoustics) — https://en.wikipedia.org/wiki/Beat_(acoustics",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:02-unison-4",
+      "label": "Learning Synths",
+      "type": "source",
+      "summary": "Learning Synths — Unison — https://learningsynths.ableton.com/en/unison",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:02-unison-5",
+      "label": "Synth Secrets: Phase 4",
+      "type": "source",
+      "summary": "Synth Secrets: Phase 4 — https://www.soundonsound.com/techniques/synth-secrets-choosing-unison",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:02-unison-6",
+      "label": "Tone.FatsOscillator",
+      "type": "source",
+      "summary": "Tone.FatsOscillator — https://tonejs.github.io/docs/15.0.4/classes/FatsOscillator.html",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:02-unison-7",
+      "label": "OscillatorNode.detune",
+      "type": "source",
+      "summary": "OscillatorNode.detune — https://developer.mozilla.org/en-US/docs/Web/API/OscillatorNode/detune",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:02-unison-8",
+      "label": "Understand-Anything",
+      "type": "source",
+      "summary": "Understand-Anything — https://github.com/Egonex-AI/Understand-Anything",
+      "experimentIds": [
+        "02-unison"
+      ],
+      "sources": [
+        "02-unison/docs/sources.md"
+      ]
+    },
+    {
+      "id": "experiment:03-pitch-envelopes",
+      "label": "Pitch Envelopes",
+      "type": "experiment",
+      "summary": "Introduces pitch modulation via ADSR-style envelopes applied to oscillator frequency. Learner shapes attack and decay to create plucks, drops, and sweeps while observing pitch movement on the spectrograph — bridging static tones and time-varying timbre.",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "concept:envelope",
+      "label": "envelope",
+      "type": "concept",
+      "summary": "Concept tag from 03-pitch-envelopes",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:pitch",
+      "label": "pitch",
+      "type": "concept",
+      "summary": "Concept tag from 03-pitch-envelopes",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:adsr",
+      "label": "adsr",
+      "type": "concept",
+      "summary": "Concept tag from 03-pitch-envelopes",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/experiment.md"
+      ]
+    },
+    {
+      "id": "component:lib-audio-envelope",
+      "label": "lib/audio/envelope",
+      "type": "component",
+      "summary": "Audio/UI module used by 03-pitch-envelopes",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/metadata.json#audioModules"
+      ]
+    },
+    {
+      "id": "component:lib-ui-EnvelopeEditor",
+      "label": "lib/ui/EnvelopeEditor",
+      "type": "component",
+      "summary": "UI component used by 03-pitch-envelopes",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-0",
+      "label": "AudioParam",
+      "type": "source",
+      "summary": "AudioParam — https://developer.mozilla.org/en-US/docs/Web/API/AudioParam",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-1",
+      "label": "OscillatorNode.frequency",
+      "type": "source",
+      "summary": "OscillatorNode.frequency — https://developer.mozilla.org/en-US/docs/Web/API/OscillatorNode/frequency",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-2",
+      "label": "Tone.Envelope",
+      "type": "source",
+      "summary": "Tone.Envelope — https://tonejs.github.io/docs/15.0.4/classes/Envelope.html",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-3",
+      "label": "FrequencyEnvelope",
+      "type": "source",
+      "summary": "FrequencyEnvelope — https://tonejs.github.io/docs/15.0.4/classes/FrequencyEnvelope.html",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-4",
+      "label": "Learning Synths",
+      "type": "source",
+      "summary": "Learning Synths — Envelopes — https://learningsynths.ableton.com/en/envelopes",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-5",
+      "label": "Synth Secrets: Phase 5",
+      "type": "source",
+      "summary": "Synth Secrets: Phase 5 — https://www.soundonsound.com/techniques/synth-secrets-envelope-generators",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-6",
+      "label": "Automation events",
+      "type": "source",
+      "summary": "Automation events — https://www.w3.org/TR/webaudio/#automation-events",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-7",
+      "label": "Tone.Signal",
+      "type": "source",
+      "summary": "Tone.Signal — https://tonejs.github.io/docs/15.0.4/classes/Signal.html",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:03-pitch-envelopes-8",
+      "label": "Understand-Anything",
+      "type": "source",
+      "summary": "Understand-Anything — https://github.com/Egonex-AI/Understand-Anything",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "03-pitch-envelopes/docs/sources.md"
+      ]
+    },
+    {
+      "id": "experiment:04-wavetable",
+      "label": "Wavetable Modulation",
+      "type": "experiment",
+      "summary": "Introduces wavetable synthesis: a bank of single-cycle waveforms crossfaded by table position. Learner scrubs and modulates position to morph timbre while observing harmonic changes on the FFT — expanding beyond the four static waveforms from experiment 01.",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "concept:wavetable",
+      "label": "wavetable",
+      "type": "concept",
+      "summary": "Concept tag from 04-wavetable",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:timbre",
+      "label": "timbre",
+      "type": "concept",
+      "summary": "Concept tag from 04-wavetable",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:morph",
+      "label": "morph",
+      "type": "concept",
+      "summary": "Concept tag from 04-wavetable",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/experiment.md"
+      ]
+    },
+    {
+      "id": "component:lib-audio-wavetable",
+      "label": "lib/audio/wavetable",
+      "type": "component",
+      "summary": "Audio/UI module used by 04-wavetable",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/metadata.json#audioModules"
+      ]
+    },
+    {
+      "id": "component:lib-ui-WavetableDisplay",
+      "label": "lib/ui/WavetableDisplay",
+      "type": "component",
+      "summary": "UI component used by 04-wavetable",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-0",
+      "label": "PeriodicWave",
+      "type": "source",
+      "summary": "PeriodicWave — https://developer.mozilla.org/en-US/docs/Web/API/PeriodicWave",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-1",
+      "label": "setPeriodicWave",
+      "type": "source",
+      "summary": "setPeriodicWave — https://developer.mozilla.org/en-US/docs/Web/API/OscillatorNode/setPeriodicWave",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-2",
+      "label": "Tone.OmniOscillator",
+      "type": "source",
+      "summary": "Tone.OmniOscillator — https://tonejs.github.io/docs/15.0.4/classes/OmniOscillator.html",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-3",
+      "label": "Wavetable synthesis",
+      "type": "source",
+      "summary": "Wavetable synthesis — https://en.wikipedia.org/wiki/Wavetable_synthesis",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-4",
+      "label": "Learning Synths",
+      "type": "source",
+      "summary": "Learning Synths — Wavetables — https://learningsynths.ableton.com/en/wavetables",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-5",
+      "label": "Synth Secrets: Phase 12",
+      "type": "source",
+      "summary": "Synth Secrets: Phase 12 — https://www.soundonsound.com/techniques/synth-secrets-wavetable-synthesis",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-6",
+      "label": "PeriodicWave constraints",
+      "type": "source",
+      "summary": "PeriodicWave constraints — https://www.w3.org/TR/webaudio/#PeriodicWave-constraints",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-7",
+      "label": "Tone.FMOscillator",
+      "type": "source",
+      "summary": "Tone.FMOscillator — https://tonejs.github.io/docs/15.0.4/classes/FMOscillator.html",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:04-wavetable-8",
+      "label": "Understand-Anything",
+      "type": "source",
+      "summary": "Understand-Anything — https://github.com/Egonex-AI/Understand-Anything",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "04-wavetable/docs/sources.md"
+      ]
+    },
+    {
+      "id": "experiment:05-filtering",
+      "label": "Filtering",
+      "type": "experiment",
+      "summary": "Introduces subtractive filtering: a low-pass filter removes harmonics above cutoff while resonance boosts energy at the cutoff point. Learner sweeps cutoff and resonance on a rich source, watching harmonic removal in real time on the FFT — the defining step of subtractive synthesis.",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "concept:filter",
+      "label": "filter",
+      "type": "concept",
+      "summary": "Concept tag from 05-filtering",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:cutoff",
+      "label": "cutoff",
+      "type": "concept",
+      "summary": "Concept tag from 05-filtering",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:resonance",
+      "label": "resonance",
+      "type": "concept",
+      "summary": "Concept tag from 05-filtering",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/experiment.md"
+      ]
+    },
+    {
+      "id": "component:lib-audio-filter",
+      "label": "lib/audio/filter",
+      "type": "component",
+      "summary": "Audio/UI module used by 05-filtering",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/metadata.json#audioModules"
+      ]
+    },
+    {
+      "id": "component:lib-ui-FilterResponseDisplay",
+      "label": "lib/ui/FilterResponseDisplay",
+      "type": "component",
+      "summary": "UI component used by 05-filtering",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "source:05-filtering-0",
+      "label": "BiquadFilterNode",
+      "type": "source",
+      "summary": "BiquadFilterNode — https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:05-filtering-1",
+      "label": "BiquadFilterNode.frequency",
+      "type": "source",
+      "summary": "BiquadFilterNode.frequency — https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode/frequency",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:05-filtering-2",
+      "label": "BiquadFilterNode.Q",
+      "type": "source",
+      "summary": "BiquadFilterNode.Q — https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode/Q",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:05-filtering-3",
+      "label": "Tone.Filter",
+      "type": "source",
+      "summary": "Tone.Filter — https://tonejs.github.io/docs/15.0.4/classes/Filter.html",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:05-filtering-4",
+      "label": "Learning Synths",
+      "type": "source",
+      "summary": "Learning Synths — Filters — https://learningsynths.ableton.com/en/filters",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:05-filtering-5",
+      "label": "Synth Secrets: Phase 6",
+      "type": "source",
+      "summary": "Synth Secrets: Phase 6 — https://www.soundonsound.com/techniques/synth-secrets-filters",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:05-filtering-6",
+      "label": "BiquadFilterNode spec",
+      "type": "source",
+      "summary": "BiquadFilterNode spec — https://www.w3.org/TR/webaudio/#BiquadFilterNode",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:05-filtering-7",
+      "label": "Tone.FilterEnvelope",
+      "type": "source",
+      "summary": "Tone.FilterEnvelope — https://tonejs.github.io/docs/15.0.4/classes/FilterEnvelope.html",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:05-filtering-8",
+      "label": "Understand-Anything",
+      "type": "source",
+      "summary": "Understand-Anything — https://github.com/Egonex-AI/Understand-Anything",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "05-filtering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "experiment:06-layering",
+      "label": "Layering",
+      "type": "experiment",
+      "summary": "Culminates the Phase-1 arc by stacking multiple oscillator layers — each with independent waveform, level, and optional unison — through a shared filter. Learner balances sub, body, and top layers while reading the combined spectrum on the FFT, mirroring real-world bass patch construction.",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "concept:layering",
+      "label": "layering",
+      "type": "concept",
+      "summary": "Concept tag from 06-layering",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/experiment.md"
+      ]
+    },
+    {
+      "id": "concept:multi-oscillator",
+      "label": "multi-oscillator",
+      "type": "concept",
+      "summary": "Concept tag from 06-layering",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/experiment.md"
+      ]
+    },
+    {
+      "id": "component:lib-audio-layer-mixer",
+      "label": "lib/audio/layer-mixer",
+      "type": "component",
+      "summary": "Audio/UI module used by 06-layering",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/metadata.json#audioModules"
+      ]
+    },
+    {
+      "id": "component:lib-ui-LayerPanel",
+      "label": "lib/ui/LayerPanel",
+      "type": "component",
+      "summary": "UI component used by 06-layering",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/metadata.json#uiComponents"
+      ]
+    },
+    {
+      "id": "source:06-layering-0",
+      "label": "GainNode",
+      "type": "source",
+      "summary": "GainNode — https://developer.mozilla.org/en-US/docs/Web/API/GainNode",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:06-layering-1",
+      "label": "Tone.Channel",
+      "type": "source",
+      "summary": "Tone.Channel — https://tonejs.github.io/docs/15.0.4/classes/Channel.html",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:06-layering-2",
+      "label": "Tone.Merge",
+      "type": "source",
+      "summary": "Tone.Merge — https://tonejs.github.io/docs/15.0.4/classes/Merge.html",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:06-layering-3",
+      "label": "Tone.Gain",
+      "type": "source",
+      "summary": "Tone.Gain — https://tonejs.github.io/docs/15.0.4/classes/Gain.html",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:06-layering-4",
+      "label": "Learning Synths",
+      "type": "source",
+      "summary": "Learning Synths — Combining — https://learningsynths.ableton.com/en/combining",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:06-layering-5",
+      "label": "Layering Bass Sounds",
+      "type": "source",
+      "summary": "Layering Bass Sounds — https://www.soundonsound.com/techniques/layering-bass-sounds",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:06-layering-6",
+      "label": "What is Layering?",
+      "type": "source",
+      "summary": "What is Layering? — https://www.izotope.com/en/learn/what-is-layering-in-music-production",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:06-layering-7",
+      "label": "Subtractive synthesis",
+      "type": "source",
+      "summary": "Subtractive synthesis — https://en.wikipedia.org/wiki/Subtractive_synthesis",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "source:06-layering-8",
+      "label": "Understand-Anything",
+      "type": "source",
+      "summary": "Understand-Anything — https://github.com/Egonex-AI/Understand-Anything",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "06-layering/docs/sources.md"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:oscillator",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "01-oscillator/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:waveform",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "01-oscillator/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:frequency",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "01-oscillator/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:amplitude",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "01-oscillator/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:fft",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "01-oscillator/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "component:lib-audio-oscillator",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "01-oscillator/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "component:lib-audio-gain",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "01-oscillator/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "component:lib-viz-FFTDisplay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "01-oscillator/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "component:lib-viz-Spectrograph",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "01-oscillator/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "component:lib-ui-WaveformSelector",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "01-oscillator/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "component:lib-ui-ParamSlider",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "01-oscillator/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-0",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-1",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-2",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-3",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-4",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-5",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-6",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-7",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "source:01-oscillator-8",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "01-oscillator/docs/sources.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:frequency",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "01-oscillator/docs/theory.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:waveform",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "01-oscillator/docs/theory.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:amplitude",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "01-oscillator/docs/theory.md"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "concept:fft",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "01-oscillator/docs/theory.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:unison",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "02-unison/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:detune",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "02-unison/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:stereo-spread",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "02-unison/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:01-oscillator",
+      "to": "experiment:02-unison",
+      "predicate": "prerequisite-of",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#prerequisites"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "component:lib-audio-oscillator",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "component:lib-audio-gain",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "component:lib-audio-unison",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "component:lib-viz-FFTDisplay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "component:lib-viz-Spectrograph",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "component:lib-viz-WaveformOverlay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "component:lib-ui-ParamSlider",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "component:lib-ui-WaveformSelector",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "02-unison/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-0",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-1",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-2",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-3",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-4",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-5",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-6",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-7",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "source:02-unison-8",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "02-unison/docs/sources.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:oscillator",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "02-unison/docs/theory.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:detune",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "02-unison/docs/theory.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:stereo-spread",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "02-unison/docs/theory.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:unison",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "02-unison/docs/theory.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:detune",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "02-unison/docs/theory.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:stereo-spread",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "02-unison/docs/theory.md"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "concept:oscillator",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "02-unison/docs/theory.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:envelope",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:pitch",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:adsr",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:02-unison",
+      "to": "experiment:03-pitch-envelopes",
+      "predicate": "prerequisite-of",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/metadata.json#prerequisites"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "component:lib-audio-oscillator",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "component:lib-audio-gain",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "component:lib-audio-envelope",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "component:lib-viz-FFTDisplay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "component:lib-viz-Spectrograph",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "component:lib-ui-ParamSlider",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "component:lib-ui-EnvelopeEditor",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-0",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-1",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-2",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-3",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-4",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-5",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-6",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-7",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "source:03-pitch-envelopes-8",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "03-pitch-envelopes/docs/sources.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:envelope",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "03-pitch-envelopes/docs/theory.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:adsr",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "03-pitch-envelopes/docs/theory.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:pitch",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "03-pitch-envelopes/docs/theory.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:envelope",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "03-pitch-envelopes/docs/theory.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:pitch",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "03-pitch-envelopes/docs/theory.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:adsr",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "03-pitch-envelopes/docs/theory.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "concept:unison",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "03-pitch-envelopes/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:wavetable",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "04-wavetable/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:timbre",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "04-wavetable/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:morph",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "04-wavetable/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "experiment:04-wavetable",
+      "predicate": "prerequisite-of",
+      "confidence": 1,
+      "evidence": "04-wavetable/metadata.json#prerequisites"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "component:lib-audio-wavetable",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "04-wavetable/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "component:lib-audio-gain",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "04-wavetable/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "component:lib-audio-envelope",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "04-wavetable/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "component:lib-viz-FFTDisplay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "04-wavetable/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "component:lib-viz-Spectrograph",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "04-wavetable/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "component:lib-ui-ParamSlider",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "04-wavetable/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "component:lib-ui-WavetableDisplay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "04-wavetable/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-0",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-1",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-2",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-3",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-4",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-5",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-6",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-7",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:04-wavetable-8",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "04-wavetable/docs/sources.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:wavetable",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:morph",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:oscillator",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:timbre",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:envelope",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:pitch",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:wavetable",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:timbre",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:morph",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "concept:envelope",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "04-wavetable/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:filter",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "05-filtering/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:cutoff",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "05-filtering/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:resonance",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "05-filtering/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "experiment:05-filtering",
+      "predicate": "prerequisite-of",
+      "confidence": 1,
+      "evidence": "05-filtering/metadata.json#prerequisites"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "component:lib-audio-oscillator",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "05-filtering/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "component:lib-audio-filter",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "05-filtering/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "component:lib-audio-gain",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "05-filtering/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "component:lib-viz-FFTDisplay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "05-filtering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "component:lib-viz-Spectrograph",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "05-filtering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "component:lib-ui-ParamSlider",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "05-filtering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "component:lib-ui-FilterResponseDisplay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "05-filtering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-0",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-1",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-2",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-3",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-4",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-5",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-6",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-7",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "source:05-filtering-8",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "05-filtering/docs/sources.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:filter",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "05-filtering/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:cutoff",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "05-filtering/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:resonance",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "05-filtering/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:envelope",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "05-filtering/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:filter",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "05-filtering/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:cutoff",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "05-filtering/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:resonance",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "05-filtering/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "concept:timbre",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "05-filtering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:layering",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "06-layering/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:multi-oscillator",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "06-layering/experiment.md#concepts"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "experiment:06-layering",
+      "predicate": "prerequisite-of",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#prerequisites"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-audio-oscillator",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-audio-unison",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-audio-filter",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-audio-gain",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-audio-layer-mixer",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#audioModules"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-viz-FFTDisplay",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-viz-Spectrograph",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-ui-ParamSlider",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-ui-WaveformSelector",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "component:lib-ui-LayerPanel",
+      "predicate": "uses",
+      "confidence": 1,
+      "evidence": "06-layering/metadata.json#uiComponents"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-0",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-1",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-2",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-3",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-4",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-5",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-6",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-7",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "source:06-layering-8",
+      "predicate": "cites",
+      "confidence": 1,
+      "evidence": "06-layering/docs/sources.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:oscillator",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:unison",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:wavetable",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:layering",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:multi-oscillator",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:amplitude",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:filter",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:resonance",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:layering",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:multi-oscillator",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:filter",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "concept:unison",
+      "predicate": "references",
+      "confidence": 0.9,
+      "evidence": "06-layering/docs/theory.md"
+    }
+  ],
+  "stats": {
+    "experiments": 6,
+    "concepts": 19,
+    "sources": 54,
+    "edges": 171,
+    "deterministic": 171,
+    "llm": 0
+  }
+}
