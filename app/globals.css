@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base: #0a0612;
+  --color-surface: #120d1a;
+  --color-border: #2a1f3d;
+  --color-primary: #e8e4f0;
+  --color-secondary: #8a7fa0;
+  --color-hot: #e8343a;
+  --color-cold: #5ec8e8;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-base text-primary antialiased;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+
+  canvas {
+    @apply w-full border border-border bg-surface;
+  }
+}
