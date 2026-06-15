@@ -21,46 +21,97 @@ export type ExperimentScan = {
 
 function parseSimpleYaml(yaml: string): Record<string, unknown> {
   const result: Record<string, unknown> = {};
-  let currentKey: string | null = null;
-  let listItems: string[] = [];
+  const lines = yaml.split("\n");
+  let i = 0;
 
-  const flushList = () => {
-    if (currentKey) {
-      result[currentKey] = listItems;
-      listItems = [];
-      currentKey = null;
-    }
-  };
-
-  for (const line of yaml.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-
-    if (trimmed.startsWith("- ") && currentKey) {
-      listItems.push(trimmed.slice(2).trim().replace(/^["']|["']$/g, ""));
+  while (i < lines.length) {
+    const trimmed = lines[i].trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      i++;
       continue;
     }
 
-    flushList();
+    if (!/^[a-zA-Z]/.test(lines[i])) {
+      i++;
+      continue;
+    }
 
-    if (trimmed.includes(":")) {
-      const colonIdx = trimmed.indexOf(":");
-      const key = trimmed.slice(0, colonIdx).trim();
-      const val = trimmed.slice(colonIdx + 1).trim();
-      if (val === "" || val === ">") {
-        currentKey = key;
-      } else {
-        result[key] = val.replace(/^["']|["']$/g, "");
-        currentKey = null;
+    const colonIdx = trimmed.indexOf(":");
+    if (colonIdx === -1) {
+      i++;
+      continue;
+    }
+
+    const key = trimmed.slice(0, colonIdx).trim();
+    const val = trimmed.slice(colonIdx + 1).trim();
+
+    if (val === "[]") {
+      result[key] = [];
+      i++;
+      continue;
+    }
+
+    if (val !== "" && val !== ">") {
+      result[key] = val.replace(/^["']|["']$/g, "");
+      i++;
+      continue;
+    }
+
+    i++;
+    const listItems: string[] = [];
+    const nested: Record<string, unknown> = {};
+    const blockLines: string[] = [];
+
+    while (i < lines.length) {
+      const line = lines[i];
+      if (/^[a-zA-Z][\w-]*:/.test(line)) break;
+
+      const t = line.trim();
+      if (t.startsWith("- ")) {
+        listItems.push(t.slice(2).trim().replace(/^["']|["']$/g, ""));
+      } else if (/^[\w]+:/.test(t)) {
+        const subColon = t.indexOf(":");
+        const subKey = t.slice(0, subColon).trim();
+        const subVal = t.slice(subColon + 1).trim();
+        nested[subKey] =
+          subVal === "true" ? true : subVal === "false" ? false : subVal;
+      } else if (t) {
+        blockLines.push(t);
       }
-    } else if (currentKey && trimmed) {
-      const existing = (result[currentKey] as string) ?? "";
-      result[currentKey] = `${existing} ${trimmed}`.trim();
+      i++;
+    }
+
+    if (listItems.length > 0) {
+      result[key] = listItems;
+    } else if (Object.keys(nested).length > 0) {
+      result[key] = nested;
+    } else if (blockLines.length > 0) {
+      result[key] = blockLines.join(" ");
+    } else {
+      result[key] = [];
     }
   }
 
-  flushList();
   return result;
+}
+
+function coerceStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map(String);
+  if (value === "[]" || value === "" || value === undefined) return [];
+  return [String(value)];
+}
+
+function coerceCompatibility(
+  value: unknown
+): { requiresAudioPlayback?: boolean; mobileFriendly?: boolean } | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const obj = value as Record<string, unknown>;
+  return {
+    requiresAudioPlayback:
+      obj.requiresAudioPlayback === true || obj.requiresAudioPlayback === "true",
+    mobileFriendly:
+      obj.mobileFriendly === true || obj.mobileFriendly === "true",
+  };
 }
 
 export function extractFrontmatter(text: string): Record<string, unknown> {
@@ -115,9 +166,17 @@ export function scanExperiment(expDir: string, slug: string): ExperimentScan {
     order: Number(fmRaw.order),
     difficulty: Number(fmRaw.difficulty),
     estimatedMinutes: Number(fmRaw.estimatedMinutes),
-    learningObjectives: (fmRaw.learningObjectives as string[]) ?? [],
-    prerequisites: (fmRaw.prerequisites as string[]) ?? [],
-    concepts: (fmRaw.concepts as string[]) ?? [],
+    learningObjectives: coerceStringArray(fmRaw.learningObjectives),
+    prerequisites: coerceStringArray(fmRaw.prerequisites),
+    concepts: coerceStringArray(fmRaw.concepts),
+    changelog: coerceStringArray(fmRaw.changelog),
+    compatibility: coerceCompatibility(fmRaw.compatibility),
+    summary:
+      typeof fmRaw.summary === "string"
+        ? fmRaw.summary
+        : Array.isArray(fmRaw.summary)
+          ? (fmRaw.summary as string[]).join(" ")
+          : undefined,
   });
 
   const metadata = ExperimentMetadata.parse(metadataRaw);
