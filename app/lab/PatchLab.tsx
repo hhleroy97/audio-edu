@@ -12,6 +12,7 @@ import "@xyflow/react/dist/style.css";
 import { usePatchStore } from "@/lib/patch/store";
 import { patchNodeTypes } from "@/lib/patch/nodes";
 import { patchEdgeTypes } from "@/lib/patch/edges";
+import { PatchKeyboardHandler } from "@/lib/patch/PatchKeyboardHandler";
 import { isDoStepSatisfied } from "@/lib/patch/tour-utils";
 import { Oscilloscope } from "@/lib/viz/Oscilloscope";
 import { SpectrumDisplay } from "@/lib/viz/SpectrumDisplay";
@@ -154,11 +155,14 @@ export function PatchLab() {
             isValidConnection={isValidConnection}
             nodeTypes={patchNodeTypes}
             edgeTypes={patchEdgeTypes}
+            deleteKeyCode={null}
+            elementsSelectable
             fitView
             snapToGrid
             snapGrid={[16, 16]}
             className="patch-lab-canvas bg-base"
           >
+            <PatchKeyboardHandler />
             <Background gap={16} color="#2a1f3d" />
             <Controls className="!border-border !bg-surface" />
             <MiniMap

@@ -80,7 +80,7 @@ export function OscillatorFlowNode(props: NodeProps) {
       <label className="mb-2 flex flex-col gap-1">
         <span className="text-secondary">wave</span>
         <select
-          className="border border-border bg-base px-2 py-1 text-primary"
+          className="nodrag nopan border border-border bg-base px-2 py-1 text-primary"
           value={String(params.waveform ?? "sine")}
           onChange={(e) =>
             update(props.id, { waveform: e.target.value })
@@ -104,7 +104,7 @@ export function OscillatorFlowNode(props: NodeProps) {
           onChange={(e) =>
             update(props.id, { frequency: Number(e.target.value) })
           }
-          className="accent-cold"
+          className="nodrag nopan accent-cold"
         />
       </label>
     </AudioNodeShell>
@@ -131,7 +131,7 @@ export function OutputFlowNode(props: NodeProps) {
           step={0.01}
           value={Number(params.gain ?? 0.8)}
           onChange={(e) => update(props.id, { gain: Number(e.target.value) })}
-          className="accent-cold"
+          className="nodrag nopan accent-cold"
         />
       </label>
     </AudioNodeShell>
