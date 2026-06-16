@@ -544,15 +544,35 @@ function createLfoRuntime(
   id: string,
   params: Record<string, number | string | boolean>
 ): RuntimeNode {
-  const osc = ctx.createOscillator();
+  let osc = ctx.createOscillator();
   const depthGain = ctx.createGain();
-  applyLfoShape(osc, ctx, params);
-  const initialHz = resolveLfoRateHz(params, Number(params.transportBpm ?? 140));
-  osc.frequency.value = initialHz;
+  const applyShapeAndRate = (atTime: number) => {
+    applyLfoShape(osc, ctx, params);
+    const hz = resolveLfoRateHz(params, Number(params.transportBpm ?? 140));
+    osc.frequency.value = hz;
+  };
+  applyShapeAndRate(ctx.currentTime);
   depthGain.gain.value = Number(params.depth ?? 1);
-  osc.connect(depthGain);
+
+  const wireLfo = () => {
+    osc.connect(depthGain);
+  };
+  wireLfo();
 
   let started = false;
+
+  const rebuildLfo = (atTime: number) => {
+    try {
+      osc.disconnect();
+      if (started) osc.stop(atTime);
+    } catch {
+      /* noop */
+    }
+    started = false;
+    osc = ctx.createOscillator();
+    applyShapeAndRate(atTime);
+    wireLfo();
+  };
 
   return {
     id,
@@ -590,7 +610,9 @@ function createLfoRuntime(
         osc.start(atTime);
         started = true;
       } catch {
-        /* already running */
+        rebuildLfo(atTime);
+        osc.start(atTime);
+        started = true;
       }
     },
     stop: (atTime) => {
@@ -601,6 +623,7 @@ function createLfoRuntime(
         /* noop */
       }
       started = false;
+      rebuildLfo(atTime + 0.06);
     },
     dispose: () => {
       try {
@@ -863,6 +886,24 @@ function createWavetableRuntime(
     gainB.connect(keyGate);
   };
 
+  const rebuildOscPair = (atTime: number) => {
+    try {
+      oscA.disconnect();
+      oscB.disconnect();
+      if (started) {
+        oscA.stop(atTime);
+        oscB.stop(atTime);
+      }
+    } catch {
+      /* noop */
+    }
+    started = false;
+    oscA = ctx.createOscillator();
+    oscB = ctx.createOscillator();
+    applyParams(params, atTime);
+    wireOsc();
+  };
+
   keyGate.connect(level);
 
   const applyParams = (
@@ -908,9 +949,16 @@ function createWavetableRuntime(
     },
     start: (atTime) => {
       if (started) return;
-      oscA.start(atTime);
-      oscB.start(atTime);
-      started = true;
+      try {
+        oscA.start(atTime);
+        oscB.start(atTime);
+        started = true;
+      } catch {
+        rebuildOscPair(atTime);
+        oscA.start(atTime);
+        oscB.start(atTime);
+        started = true;
+      }
     },
     stop: (atTime) => {
       if (!started) return;
@@ -921,6 +969,7 @@ function createWavetableRuntime(
         /* noop */
       }
       started = false;
+      rebuildOscPair(atTime + 0.06);
     },
     dispose: () => {
       try {
@@ -949,10 +998,10 @@ function createFmRuntime(
   keyGate.gain.value = 0;
   level.gain.value = Number(params.gain ?? 0.5);
 
-  const carrier = ctx.createOscillator();
-  const modulator = ctx.createOscillator();
   const modDepth = ctx.createGain();
 
+  let carrierOsc = ctx.createOscillator();
+  let modulatorOsc = ctx.createOscillator();
   let started = false;
   let gateOpen = false;
 
@@ -963,20 +1012,42 @@ function createFmRuntime(
     const freq = Number(p.frequency ?? 110);
     const ratio = Number(p.ratio ?? 1);
     const glide = Number(p.glideMs ?? params.glideMs ?? 0);
-    carrier.type = parseWaveformParam(p.carrierWave);
-    modulator.type = parseWaveformParam(p.modWave);
-    rampFrequency(carrier.frequency, freq, atTime, glide, gateOpen);
-    rampFrequency(modulator.frequency, freq * ratio, atTime, glide, gateOpen);
+    carrierOsc.type = parseWaveformParam(p.carrierWave);
+    modulatorOsc.type = parseWaveformParam(p.modWave);
+    rampFrequency(carrierOsc.frequency, freq, atTime, glide, gateOpen);
+    rampFrequency(modulatorOsc.frequency, freq * ratio, atTime, glide, gateOpen);
     modDepth.gain.setTargetAtTime(Number(p.index ?? 300), atTime, 0.02);
     if (p.gain !== undefined) {
       level.gain.setTargetAtTime(Number(p.gain), atTime, 0.02);
     }
   };
 
-  modulator.connect(modDepth);
-  modDepth.connect(carrier.frequency);
-  carrier.connect(keyGate);
+  const wireFm = () => {
+    modulatorOsc.connect(modDepth);
+    modDepth.connect(carrierOsc.frequency);
+    carrierOsc.connect(keyGate);
+  };
+
+  const rebuildFm = (atTime: number) => {
+    try {
+      carrierOsc.disconnect();
+      modulatorOsc.disconnect();
+      if (started) {
+        carrierOsc.stop(atTime);
+        modulatorOsc.stop(atTime);
+      }
+    } catch {
+      /* noop */
+    }
+    started = false;
+    carrierOsc = ctx.createOscillator();
+    modulatorOsc = ctx.createOscillator();
+    applyFm(params, atTime);
+    wireFm();
+  };
+
   keyGate.connect(level);
+  wireFm();
   applyFm(params, ctx.currentTime);
 
   return {
@@ -986,7 +1057,7 @@ function createFmRuntime(
     getInput: () => null,
     getParam: (handle) => {
       if (handle === "cv-index") return modDepth.gain;
-      if (handle === "cv-freq") return carrier.frequency;
+      if (handle === "cv-freq") return carrierOsc.frequency;
       return null;
     },
     getTap: () => level,
@@ -1000,29 +1071,40 @@ function createFmRuntime(
     },
     start: (atTime) => {
       if (started) return;
-      carrier.start(atTime);
-      modulator.start(atTime);
-      started = true;
+      try {
+        carrierOsc.start(atTime);
+        modulatorOsc.start(atTime);
+        started = true;
+      } catch {
+        rebuildFm(atTime);
+        carrierOsc.start(atTime);
+        modulatorOsc.start(atTime);
+        started = true;
+      }
     },
     stop: (atTime) => {
       if (!started) return;
       try {
-        carrier.stop(atTime + 0.02);
-        modulator.stop(atTime + 0.02);
+        carrierOsc.stop(atTime + 0.02);
+        modulatorOsc.stop(atTime + 0.02);
       } catch {
         /* noop */
       }
       started = false;
+      rebuildFm(atTime + 0.06);
     },
     dispose: () => {
       try {
-        if (started) carrier.stop();
-        if (started) modulator.stop();
+        if (started) {
+          carrierOsc.stop();
+          modulatorOsc.stop();
+        }
       } catch {
         /* noop */
       }
-      carrier.disconnect();
-      modulator.disconnect();
+      started = false;
+      carrierOsc.disconnect();
+      modulatorOsc.disconnect();
       modDepth.disconnect();
       keyGate.disconnect();
       level.disconnect();
@@ -1506,7 +1588,7 @@ function createModFxRuntime(
   const dry = ctx.createGain();
   const wet = ctx.createGain();
   const depthGain = ctx.createGain();
-  const modOsc = ctx.createOscillator();
+  let modOsc = ctx.createOscillator();
   const modScale = ctx.createGain();
 
   input.connect(dry);
@@ -1569,6 +1651,19 @@ function createModFxRuntime(
     }
   };
 
+  const rebuildModOsc = (atTime: number) => {
+    try {
+      modOsc.disconnect();
+      if (started) modOsc.stop(atTime);
+    } catch {
+      /* noop */
+    }
+    started = false;
+    modOsc = ctx.createOscillator();
+    modOsc.frequency.setValueAtTime(Number(params.rate ?? 0.4), atTime);
+    wireFx();
+  };
+
   wireFx();
 
   const applyParams = (atTime: number) => {
@@ -1600,8 +1695,14 @@ function createModFxRuntime(
     },
     start: (atTime) => {
       if (started) return;
-      modOsc.start(atTime);
-      started = true;
+      try {
+        modOsc.start(atTime);
+        started = true;
+      } catch {
+        rebuildModOsc(atTime);
+        modOsc.start(atTime);
+        started = true;
+      }
     },
     stop: (atTime) => {
       if (!started) return;
@@ -1611,6 +1712,7 @@ function createModFxRuntime(
         /* noop */
       }
       started = false;
+      rebuildModOsc(atTime + 0.06);
     },
     dispose: () => {
       try {
