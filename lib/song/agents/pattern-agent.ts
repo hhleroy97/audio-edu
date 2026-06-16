@@ -70,6 +70,40 @@ function degreesAtBeat(
   };
 }
 
+/** Emit one note event per chord tone at each body hit (#117). */
+function expandBodyChordNotes(
+  events: PatternEventType[],
+  harmonyPlan: SectionHarmonyPlanType | undefined,
+  beatsPerBar: number,
+  fallbackMidi: (localBeat: number) => number
+): PatternEventType[] {
+  const out: PatternEventType[] = [];
+
+  for (const ev of events) {
+    if (ev.kind !== "note" || ev.layer !== "body") {
+      out.push(ev);
+      continue;
+    }
+
+    if (harmonyPlan?.barSlots?.length) {
+      const barIdx = Math.floor(ev.beat / beatsPerBar);
+      const slot = harmonyPlan.barSlots[barIdx % harmonyPlan.barSlots.length];
+      const midis =
+        slot?.bodyMidis && slot.bodyMidis.length > 0
+          ? slot.bodyMidis
+          : [fallbackMidi(ev.beat)];
+      for (const midi of midis) {
+        out.push({ ...ev, midi });
+      }
+      continue;
+    }
+
+    out.push({ ...ev, midi: fallbackMidi(ev.beat) });
+  }
+
+  return out;
+}
+
 function buildSectionPatternEvents(
   spec: RulePackSectionSpecType,
   pack: ArrangementRulePackType,
@@ -106,17 +140,21 @@ function buildSectionPatternEvents(
   const withMidi = (
     events: PatternEventType[],
     layer: "sub" | "body" | "top"
-  ): PatternEventType[] =>
-    events.map((ev) => {
+  ): PatternEventType[] => {
+    if (layer === "body") {
+      return expandBodyChordNotes(events, harmonyPlan, beatsPerBar, (beat) =>
+        midiForLayer("body", beat)
+      );
+    }
+    return events.map((ev) => {
       if (ev.kind !== "note" || ev.layer !== layer) return ev;
       const midi =
         layer === "sub"
           ? midiForLayer("sub", ev.beat)
-          : layer === "body"
-            ? midiForLayer("body", ev.beat)
-            : ev.midi;
+          : ev.midi;
       return { ...ev, midi };
     });
+  };
 
   const events: PatternEventType[] = [];
 

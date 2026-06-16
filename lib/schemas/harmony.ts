@@ -10,7 +10,7 @@ export const HarmonyDef = z.object({
   bodyOctave: z.number().int().min(0).max(8).default(2),
   /** Override pack.scale for chord spelling (e.g. "minor" vs pentatonic). */
   scaleOverride: z.string().optional(),
-  voicingMode: z.enum(["root", "fifth"]).default("root"),
+  voicingMode: z.enum(["root", "fifth", "triad", "spread"]).default("root"),
   barsPerChord: z.union([z.literal(1), z.literal(2), z.literal(4)]).default(1),
   /** Extra scale-degree offset per section kind (cycles progression index). */
   kindOffsets: z.record(SectionKind, z.number().int()).optional(),
@@ -24,6 +24,8 @@ export const BarHarmonySlot = z.object({
   subDegree: z.number().int().min(1).max(7),
   bodyDegrees: z.array(z.number().int().min(1).max(7)),
   rootMidi: z.number().int().min(0).max(127),
+  /** Voiced body chord in MIDI (#117). */
+  bodyMidis: z.array(z.number().int().min(0).max(127)).min(1).max(4).optional(),
 });
 
 export type BarHarmonySlotType = z.infer<typeof BarHarmonySlot>;
@@ -93,6 +95,9 @@ export const EvaluationDef = z.object({
   minDistinctBodyMidis: z.number().int().min(0).default(0),
   minMicroTimingSpreadMs: z.number().min(0).default(0),
   minPhraseVariationBars: z.number().int().min(0).default(0),
+  minSimultaneousBodyNotes: z.number().int().min(0).default(0),
+  minArchetypePresetsUsed: z.number().int().min(0).default(0),
+  minPhraseMacroKeyframes: z.number().int().min(0).default(0),
 });
 
 export type EvaluationDefType = z.infer<typeof EvaluationDef>;
@@ -116,6 +121,9 @@ export const EvaluationReport = z.object({
     distinctBodyMidis: z.number().default(0),
     microTimingSpreadMs: z.number().default(0),
     phraseVariationBars: z.number().default(0),
+    simultaneousBodyNotes: z.number().default(0),
+    archetypePresetCount: z.number().default(0),
+    phraseMacroKeyframes: z.number().default(0),
   }),
 });
 

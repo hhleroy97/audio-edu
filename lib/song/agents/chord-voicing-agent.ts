@@ -1,4 +1,4 @@
-import { Chord, Note, Progression, Scale } from "tonal";
+import { Chord, Note, Progression, Scale, Voicing } from "tonal";
 import type {
   BarHarmonySlotType,
   HarmonyDefType,
@@ -7,6 +7,15 @@ import type {
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
 import type { HarmonyAgentResult } from "./harmony-agent";
 import { progressionToDegrees, rootMidiForDegree } from "./harmony-agent";
+import { midiFromScaleDegree } from "../pattern/tonal-notes";
+
+const BASS_VOICING_DICT: Record<string, string[]> = {
+  "": ["1P 5P"],
+  m: ["1P 5P"],
+  m7: ["1P 5P 7m"],
+  sus4: ["1P 4P 5P"],
+  sus2: ["1P 2M 5P"],
+};
 
 function scaleName(pack: ArrangementRulePackType, harmony: HarmonyDefType): string {
   return harmony.scaleOverride ?? pack.scale;
@@ -46,6 +55,50 @@ function bodyDegreesForChord(
     : [rootDegree, fifthDegree];
 }
 
+function bodyMidisForSlot(
+  pack: ArrangementRulePackType,
+  harmony: HarmonyDefType,
+  chordSymbol: string,
+  rootDegree: number,
+  bodyDegrees: number[]
+): number[] {
+  const scaleNameStr = scaleName(pack, harmony);
+  const bodyOctave = harmony.bodyOctave;
+
+  if (harmony.voicingMode === "root") {
+    return [
+      midiFromScaleDegree(pack.key, scaleNameStr, rootDegree, bodyOctave),
+    ];
+  }
+
+  if (harmony.voicingMode === "fifth") {
+    return bodyDegrees.map((degree) =>
+      midiFromScaleDegree(pack.key, scaleNameStr, degree, bodyOctave)
+    );
+  }
+
+  const bassHigh = Note.transpose(pack.key, "4P") ?? "B";
+  const range: [string, string] = [`${pack.key}1`, `${bassHigh}4`];
+  const voicings = Voicing.search(chordSymbol, range, BASS_VOICING_DICT);
+  const picked = voicings[0] ?? voicings[voicings.length - 1];
+
+  if (picked?.length) {
+    let midis = picked
+      .map((name) => Note.midi(name))
+      .filter((m): m is number => m !== undefined);
+    if (harmony.voicingMode === "spread" && midis.length >= 2) {
+      midis = [...midis, midis[1]! + 12];
+    }
+    if (midis.length > 0) {
+      return [...new Set(midis)].slice(0, 4);
+    }
+  }
+
+  return bodyDegrees.map((degree) =>
+    midiFromScaleDegree(pack.key, scaleNameStr, degree, bodyOctave)
+  );
+}
+
 /** Bar-aligned roman progression → per-bar degree slots (#106). */
 export function runChordVoicingAgent(
   pack: ArrangementRulePackType,
@@ -82,7 +135,16 @@ export function runChordVoicingAgent(
         scaleNameStr,
         chordSymbol,
         rootDegree,
-        harmony.voicingMode
+        harmony.voicingMode === "triad" || harmony.voicingMode === "spread"
+          ? "fifth"
+          : harmony.voicingMode
+      );
+      const bodyMidis = bodyMidisForSlot(
+        pack,
+        harmony,
+        chordSymbol,
+        rootDegree,
+        bodyDegrees
       );
 
       barSlots.push({
@@ -96,6 +158,7 @@ export function runChordVoicingAgent(
           rootDegree,
           harmony.subOctave
         ),
+        bodyMidis,
       });
     }
 
@@ -148,4 +211,25 @@ export function countBarChordChanges(plans: SectionHarmonyPlanType[]): number {
     }
   }
   return changes;
+}
+
+/** Max body notes sharing the same beat in selected sections (#121). */
+export function countMaxSimultaneousBodyNotes(
+  sections: { id: string; events: { kind: string; layer?: string; beat?: number; midi?: number }[] }[],
+  sectionIds: Set<string>
+): number {
+  let max = 0;
+  for (const section of sections) {
+    if (!sectionIds.has(section.id)) continue;
+    const byBeat = new Map<number, number>();
+    for (const ev of section.events) {
+      if (ev.kind !== "note" || ev.layer !== "body" || ev.midi === undefined) continue;
+      const key = Math.round(ev.beat! * 16) / 16;
+      byBeat.set(key, (byBeat.get(key) ?? 0) + 1);
+    }
+    for (const count of byBeat.values()) {
+      max = Math.max(max, count);
+    }
+  }
+  return max;
 }
