@@ -31,6 +31,9 @@ const DEFAULT_EVAL = {
   minDistinctBodyMidis: 3,
   minMicroTimingSpreadMs: 1,
   minPhraseVariationBars: 4,
+  minSimultaneousBodyNotes: 2,
+  minArchetypePresetsUsed: 3,
+  minPhraseMacroKeyframes: 4,
 };
 
 /** Standard 16-bar riddim — intro / build / drop / break / outro. */

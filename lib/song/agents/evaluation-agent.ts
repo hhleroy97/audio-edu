@@ -15,6 +15,9 @@ import {
   countDistinctBodyMidis,
   microTimingSpreadMs,
 } from "./melodic-phrase-agent";
+import { countMaxSimultaneousBodyNotes } from "./chord-voicing-agent";
+import { countPhraseMacroKeyframes } from "./beat-automation-agent";
+import { countUniqueArchetypePresets } from "./timbre-scoring-agent";
 
 function chordMetricsFromSong(
   song: SongDefType,
@@ -31,12 +34,20 @@ function chordMetricsFromSong(
 
     const rootsByBar = new Map<number, number>();
     for (const ev of section.events) {
-      if (ev.kind !== "note" || ev.layer !== "sub" || ev.midi === undefined) continue;
+      if (ev.kind !== "note" || ev.midi === undefined) continue;
+      if (ev.layer !== "sub" && ev.layer !== "body") continue;
       const bar = Math.floor(ev.beat / beatsPerBar);
-      if (!rootsByBar.has(bar)) rootsByBar.set(bar, ev.midi);
-      rootMidis.add(ev.midi);
+      const cur = rootsByBar.get(bar);
+      if (ev.layer === "sub") {
+        rootsByBar.set(bar, ev.midi);
+      } else if (cur === undefined || ev.midi < cur) {
+        rootsByBar.set(bar, ev.midi);
+      }
     }
-
+    for (const ev of section.events) {
+      if (ev.kind !== "note" || ev.midi === undefined) continue;
+      if (ev.layer === "sub" || ev.layer === "body") rootMidis.add(ev.midi);
+    }
     const bars = [...rootsByBar.keys()].sort((a, b) => a - b);
     for (let i = 1; i < bars.length; i++) {
       const prev = rootsByBar.get(bars[i - 1]!);
@@ -214,6 +225,34 @@ export function runEvaluationAgent(
     );
   }
 
+  const simultaneousBodyNotes = countMaxSimultaneousBodyNotes(
+    song.sections,
+    dropSectionIds
+  );
+  const voicingMode = pack.harmony?.voicingMode ?? "root";
+  if (
+    voicingMode !== "root" &&
+    simultaneousBodyNotes < rules.minSimultaneousBodyNotes
+  ) {
+    errors.push(
+      `expected ≥${rules.minSimultaneousBodyNotes} simultaneous body notes in drops, got ${simultaneousBodyNotes}`
+    );
+  }
+
+  const archetypePresetCount = countUniqueArchetypePresets([...bodyPresets]);
+  if (archetypePresetCount < rules.minArchetypePresetsUsed) {
+    errors.push(
+      `expected ≥${rules.minArchetypePresetsUsed} archetype body presets, got ${archetypePresetCount}`
+    );
+  }
+
+  const phraseMacroKeyframes = countPhraseMacroKeyframes(song.sections, pack);
+  if (phraseMacroKeyframes < rules.minPhraseMacroKeyframes) {
+    errors.push(
+      `expected ≥${rules.minPhraseMacroKeyframes} phrase macro keyframes, got ${phraseMacroKeyframes}`
+    );
+  }
+
   if (totalNoteCount < 8) {
     warnings.push("sparse arrangement — fewer than 8 total notes");
   }
@@ -237,6 +276,9 @@ export function runEvaluationAgent(
       distinctBodyMidis,
       microTimingSpreadMs: timingSpreadMs,
       phraseVariationBars,
+      simultaneousBodyNotes,
+      archetypePresetCount,
+      phraseMacroKeyframes,
     },
   });
 }
