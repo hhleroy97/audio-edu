@@ -75,4 +75,23 @@ export class MasterChain {
     }
     this.disposables.length = 0;
   }
+
+  setParams(
+    config: Partial<MasterChainConfig>,
+    atTime?: number
+  ): void {
+    const t = atTime ?? (this.input.context as AudioContext).currentTime;
+    if (config.inputGain !== undefined) {
+      this.input.gain.setTargetAtTime(config.inputGain, t, 0.04);
+    }
+    if (config.glueThreshold !== undefined) {
+      this.glue.threshold.setTargetAtTime(config.glueThreshold, t, 0.04);
+    }
+    if (config.limiterThreshold !== undefined) {
+      this.limiter.threshold.setTargetAtTime(config.limiterThreshold, t, 0.04);
+    }
+    if (config.outputGainDb !== undefined) {
+      this.output.gain.setTargetAtTime(dbToLinear(config.outputGainDb), t, 0.04);
+    }
+  }
 }

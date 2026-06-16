@@ -27,6 +27,20 @@ export type {
   DrumHitType,
   PatternCombinatorType,
 } from "./song";
+export {
+  StemMetrics,
+  LayerMixAdjust,
+  MasterMixAdjust,
+  MixAnalysis,
+  MixDef,
+} from "./mix";
+export type {
+  StemMetricsType,
+  LayerMixAdjustType,
+  MasterMixAdjustType,
+  MixAnalysisType,
+  MixDefType,
+} from "./mix";
 export { ExperimentFrontmatter } from "./frontmatter";
 export { PortType, PatchNode, PatchEdge, Patch, PatchPreset, TourStep, Lesson } from "./patch";
 export {

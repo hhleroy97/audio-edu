@@ -87,6 +87,23 @@ export {
 export type { LayerMixStripConfig } from "./multibus/mix-profiles";
 export { MixProfile } from "@/lib/schemas/song";
 export type { MixProfileType } from "@/lib/schemas/song";
+
+export {
+  analyzeAudioBuffer,
+  analyzeSongMix,
+  proposeMixDef,
+  lintMixDef,
+  applyMixDef,
+  mergeMixIntoSong,
+  runMixPass,
+} from "./mix";
+export type {
+  BufferMetrics,
+  SongMixAnalysis,
+  MixLintResult,
+  MixPassResult,
+  MixPassOptions,
+} from "./mix";
 export { applySongGainToFlow } from "./multibus/layer-engine";
 export { LayerEngine } from "./multibus/layer-engine";
 export { SongLayerEngine } from "./multibus/song-layer-engine";

@@ -1,0 +1,11 @@
+export { analyzeAudioBuffer, estimateSpectralCentroidHz } from "./analyze-buffer";
+export type { BufferMetrics } from "./analyze-buffer";
+export { analyzeSongMix } from "./analyze-song";
+export type { SongMixAnalysis } from "./analyze-song";
+export { renderSoloLayerStem } from "./render-solo-stem";
+export { proposeMixDef } from "./propose-mix";
+export { lintMixDef } from "./lint-mix";
+export type { MixLintResult } from "./lint-mix";
+export { applyMixDef, mergeMixIntoSong } from "./apply-mix";
+export { runMixPass } from "./mix-pass";
+export type { MixPassResult, MixPassOptions } from "./mix-pass";

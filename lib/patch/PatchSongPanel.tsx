@@ -10,9 +10,11 @@ import {
   manifestToJson,
   renderMultibusStems,
   renderSongOffline,
+  runMixPass,
   songTotalBeats,
   validateSong,
 } from "@/lib/song";
+import { MixDef } from "@/lib/schemas/mix";
 import type { SongDefType } from "@/lib/schemas/song";
 import { MULTIBUS_SONG_TEMPLATES, SONG_TEMPLATES } from "@/lib/song/templates";
 import { usePatchStore } from "@/lib/patch/store";
@@ -34,6 +36,7 @@ export function PatchSongPanel() {
   const [playing, setPlaying] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [sectionLabel, setSectionLabel] = useState<string | null>(null);
+  const [mixBusy, setMixBusy] = useState(false);
 
   const layerEngineRef = useRef<SongLayerEngine | null>(null);
   const multibusSchedulerRef = useRef<MultibusAudioScheduler | null>(null);
@@ -164,6 +167,51 @@ export function PatchSongPanel() {
     }
   }, [song, multibus]);
 
+  const runAutoMix = useCallback(async () => {
+    if (!song || !multibus || !layerEngineRef.current) return;
+    stopSong();
+    setMixBusy(true);
+    setStatus("mix pass · analyzing stems…");
+    try {
+      const result = await runMixPass(song, {
+        engine: layerEngineRef.current,
+        apply: true,
+      });
+      const n = result.mix.layers.length;
+      setStatus(
+        result.applied
+          ? `mix pass applied · ${n} layer tweak${n === 1 ? "" : "s"}`
+          : `mix pass ready · ${n} proposals (gate: ${result.mix.gate})`
+      );
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : "mix pass failed");
+    } finally {
+      setMixBusy(false);
+    }
+  }, [song, multibus, stopSong]);
+
+  const exportMixDef = useCallback(async () => {
+    if (!song || !multibus) return;
+    setMixBusy(true);
+    setStatus("mix pass · offline analysis…");
+    try {
+      const { mix } = await runMixPass(song, { apply: false });
+      const json = JSON.stringify(MixDef.parse(mix), null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${song.meta.id}-mix-def.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setStatus("mix def exported");
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : "mix export failed");
+    } finally {
+      setMixBusy(false);
+    }
+  }, [song, multibus]);
+
   const lintMessages = song ? lintSong(song) : null;
   const progressPct =
     totalBeats > 0 ? Math.min(100, (progressBeat / totalBeats) * 100) : 0;
@@ -248,6 +296,27 @@ export function PatchSongPanel() {
       >
         {multibus ? "export stem manifest" : "export manifest"}
       </button>
+
+      {multibus && (
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            onClick={() => void runAutoMix()}
+            disabled={!song || playing || mixBusy}
+            className="nodrag nopan flex-1 border border-cold bg-module-header px-2 py-1 font-mono text-[9px] uppercase text-cold hover:bg-cold/10 disabled:opacity-40"
+          >
+            apply mix pass
+          </button>
+          <button
+            type="button"
+            onClick={() => void exportMixDef()}
+            disabled={!song || mixBusy}
+            className="nodrag nopan flex-1 border border-module-border bg-module-header px-2 py-1 font-mono text-[9px] uppercase text-secondary hover:border-cold hover:text-cold disabled:opacity-40"
+          >
+            export mix def
+          </button>
+        </div>
+      )}
 
       {status && <p className="mt-2 text-[8px] text-cold/80">{status}</p>}
     </div>

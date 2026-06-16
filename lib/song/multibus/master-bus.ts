@@ -1,3 +1,4 @@
+import type { MasterMixAdjustType } from "@/lib/schemas/mix";
 import type { MixProfileType } from "./mix-profiles";
 import {
   inferMixProfile,
@@ -95,6 +96,25 @@ export class MasterBus {
 
   getMixProfile(layerId: string): MixProfileType | undefined {
     return this.slots.get(layerId)?.mixProfile;
+  }
+
+  setLayerStripEq(
+    layerId: string,
+    eq: { hpfHz?: number; lpfHz?: number },
+    atTime?: number
+  ): void {
+    this.slots.get(layerId)?.strip.setEq(eq, atTime);
+  }
+
+  setMasterChainParams(params: MasterMixAdjustType, atTime?: number): void {
+    this.masterChain.setParams(
+      {
+        inputGain: params.inputGain,
+        glueThreshold: params.glueThreshold,
+        limiterThreshold: params.limiterThreshold,
+      },
+      atTime
+    );
   }
 
   dispose(): void {
