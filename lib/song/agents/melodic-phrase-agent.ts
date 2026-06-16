@@ -110,49 +110,50 @@ function applyHocket(
 function ensureBodyMidiSpread(
   events: PatternEventType[],
   minDistinct: number,
-  rng: () => number
+  _rng: () => number
 ): PatternEventType[] {
-  const bodyIndices: number[] = [];
-  const midis = new Set<number>();
-
-  events.forEach((ev, index) => {
-    if (ev.kind === "note" && ev.layer === "body" && ev.midi !== undefined) {
-      bodyIndices.push(index);
-      midis.add(ev.midi);
-    }
-  });
-
-  if (midis.size >= minDistinct) return events;
-
   const out = [...events];
-  const jumps = [12, 7, -12, 5];
-  let jumpIdx = 0;
 
-  for (const index of bodyIndices) {
+  const distinctBodyMidis = (): Set<number> => {
+    const midis = new Set<number>();
+    for (const ev of out) {
+      if (ev.kind === "note" && ev.layer === "body" && ev.midi !== undefined) {
+        midis.add(ev.midi);
+      }
+    }
+    return midis;
+  };
+
+  if (distinctBodyMidis().size >= minDistinct) return out;
+
+  const bodyIndices = out
+    .map((ev, index) =>
+      ev.kind === "note" && ev.layer === "body" && ev.midi !== undefined
+        ? index
+        : -1
+    )
+    .filter((index) => index >= 0);
+
+  const anchor =
+    bodyIndices
+      .map((index) => out[index])
+      .find(
+        (ev): ev is PatternEventType & { kind: "note"; midi: number } =>
+          ev?.kind === "note" && ev.midi !== undefined
+      )?.midi ?? 42;
+
+  let candidate = anchor;
+  for (let i = bodyIndices.length - 1; i >= 0; i--) {
+    const midis = distinctBodyMidis();
     if (midis.size >= minDistinct) break;
+
+    const index = bodyIndices[i]!;
     const ev = out[index];
     if (ev?.kind !== "note" || ev.midi === undefined) continue;
 
-    for (let attempt = 0; attempt < jumps.length && midis.size < minDistinct; attempt++) {
-      const jump = jumps[(jumpIdx + attempt) % jumps.length]!;
-      const candidate = Math.min(127, Math.max(0, ev.midi + jump));
-      if (midis.has(candidate)) continue;
-      out[index] = { ...ev, midi: candidate };
-      midis.add(candidate);
-      jumpIdx++;
-      break;
-    }
-  }
-
-  if (midis.size < minDistinct && bodyIndices.length > 0) {
-    const idx = bodyIndices[Math.floor(rng() * bodyIndices.length)]!;
-    const ev = out[idx];
-    if (ev?.kind === "note" && ev.midi !== undefined) {
-      const candidate = Math.min(127, ev.midi + 12);
-      if (!midis.has(candidate)) {
-        out[idx] = { ...ev, midi: candidate };
-      }
-    }
+    while (midis.has(candidate)) candidate += 5;
+    out[index] = { ...ev, midi: candidate };
+    candidate += 5;
   }
 
   return out;
