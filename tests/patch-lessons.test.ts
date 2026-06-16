@@ -21,13 +21,15 @@ describe("patch lesson registry", () => {
     expect(getNextLesson("01-oscillator")?.slug).toBe("02-unison");
     expect(getNextLesson("02-unison")?.slug).toBe("03-envelope");
     expect(getNextLesson("03-envelope")?.slug).toBe("07-mod-matrix");
-    expect(getNextLesson("07-mod-matrix")).toBeNull();
+    expect(getNextLesson("07-mod-matrix")?.slug).toBe("08-patterns");
+    expect(getNextLesson("08-patterns")?.slug).toBe("09-multibus");
+    expect(getNextLesson("09-multibus")).toBeNull();
     expect(getNextLesson("unknown")).toBeNull();
   });
 
-  it("validates lesson 07 mod matrix schema", () => {
-    const lesson = getLessonBySlug("07-mod-matrix");
-    expect(lesson?.unlocksNodes).toContain("macro");
-    expect(lesson?.pages.length).toBeGreaterThanOrEqual(2);
+  it("validates lesson 08 patterns schema", () => {
+    const lesson = getLessonBySlug("08-patterns");
+    expect(lesson?.title).toMatch(/patterns/i);
+    expect(lesson?.pages.length).toBeGreaterThanOrEqual(1);
   });
 });

@@ -23,6 +23,7 @@ import { ModulePalette } from "@/lib/patch/ModulePalette";
 import { PatchPresetPanel } from "@/lib/patch/PatchPresetPanel";
 import { PatchSignalTapPanel } from "@/lib/patch/PatchSignalTapPanel";
 import { PatchTransportPanel } from "@/lib/patch/PatchTransportPanel";
+import { PatchSongPanel } from "@/lib/patch/PatchSongPanel";
 import { PatchModMatrix } from "@/lib/patch/PatchModMatrix";
 import { isScopeTappable } from "@/lib/patch/scope-tap";
 import type { NodeKind } from "@/lib/patch/ports";
@@ -307,6 +308,7 @@ export function PatchLab() {
         </div>
 
         <aside className="patch-lab-aside flex w-80 shrink-0 flex-col overflow-y-auto p-3">
+          <PatchSongPanel />
           <PatchTransportPanel />
           <PatchModMatrix />
           <PatchSignalTapPanel />
