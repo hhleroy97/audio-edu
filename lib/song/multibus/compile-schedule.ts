@@ -34,6 +34,13 @@ export type CompiledAction =
     }
   | {
       atTime: number;
+      type: "drumHit";
+      sampleId: string;
+      velocity: number;
+      absoluteBeat: number;
+    }
+  | {
+      atTime: number;
       type: "automation";
       layerId: string;
       nodeId: string;
@@ -108,10 +115,9 @@ export function compileMultibusSchedule(
       for (const hit of section.drumHits) {
         const absBeat = sectionStartBeat + hit.beat;
         actions.push({
-          type: "gate",
-          layerId: "drums",
-          open: true,
-          durationSec: 0.08,
+          type: "drumHit",
+          sampleId: hit.sampleId,
+          velocity: hit.velocity ?? 0.8,
           absoluteBeat: absBeat,
           atTime: epochTime + beatToSeconds(absBeat, bpm),
         });
@@ -122,10 +128,9 @@ export function compileMultibusSchedule(
   if (song.drums?.hits.length) {
     for (const hit of song.drums.hits) {
       actions.push({
-        type: "gate",
-        layerId: "drums",
-        open: true,
-        durationSec: 0.08,
+        type: "drumHit",
+        sampleId: hit.sampleId,
+        velocity: hit.velocity ?? 0.8,
         absoluteBeat: hit.beat,
         atTime: epochTime + beatToSeconds(hit.beat, bpm),
       });

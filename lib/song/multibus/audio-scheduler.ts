@@ -46,6 +46,9 @@ export function dispatchMultibusAction(
       void layer.start();
       break;
     }
+    case "drumHit":
+      engine.playDrumHit(action.sampleId, action.atTime, action.velocity);
+      break;
     case "gate": {
       if (!action.layerId || action.layerId === "drums") return;
       const layer = engine.getLayer(action.layerId);

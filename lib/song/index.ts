@@ -121,6 +121,17 @@ export type {
   MultibusAudioSchedulerOptions,
 } from "./multibus/audio-scheduler";
 
+export {
+  buildRiddimDrumGrid,
+  ensureRiddimDrums,
+  sectionDrumHitsForDrop,
+  DrumEngine,
+  SidechainDucker,
+} from "./drums";
+export type { RiddimDrumGridOptions } from "./drums";
+export { DEFAULT_SIDECHAIN, SidechainDef, DRUM_SAMPLE_IDS } from "@/lib/schemas/drums";
+export type { SidechainDefType, DrumSampleId } from "@/lib/schemas/drums";
+
 export { lintSong } from "./lint-song";
 export type { SongLintResult } from "./lint-song";
 

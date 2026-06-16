@@ -1,4 +1,6 @@
 import type { SongDefType, SongLayerDefType } from "@/lib/schemas/song";
+import type { SidechainDefType } from "@/lib/schemas/drums";
+import { DrumEngine, SidechainDucker } from "../drums";
 import { applyMixDefaultsToLayer } from "./mix-profiles";
 import { MasterBus } from "./master-bus";
 import { LayerEngine } from "./layer-engine";
@@ -13,6 +15,8 @@ export type SongLayerEngineOptions = {
 export class SongLayerEngine {
   readonly ctx: AudioContext | OfflineAudioContext;
   readonly masterBus: MasterBus;
+  readonly drumEngine: DrumEngine;
+  readonly sidechain: SidechainDucker;
   private readonly layers = new Map<string, LayerEngine>();
 
   constructor(options: SongLayerEngineOptions = {}) {
@@ -25,6 +29,8 @@ export class SongLayerEngine {
       destination: options.destination,
       enableMasterChain: options.enableMasterChain,
     });
+    this.drumEngine = new DrumEngine(this.ctx, this.masterBus.getDrumDestination());
+    this.sidechain = new SidechainDucker(this.masterBus);
   }
 
   getLayer(layerId: string): LayerEngine | undefined {
@@ -68,6 +74,19 @@ export class SongLayerEngine {
             defaultMidi: p.defaultMidi,
           }));
     this.loadLayers(defs);
+    this.configureSidechain(song.drums?.sidechain ?? null);
+  }
+
+  configureSidechain(config: SidechainDefType | null): void {
+    this.sidechain.setConfig(config);
+  }
+
+  /** Schedule procedural drum + optional kick sidechain duck. */
+  playDrumHit(sampleId: string, atTime: number, velocity = 0.8): void {
+    this.drumEngine.scheduleHit(sampleId, atTime, velocity);
+    if (sampleId === "kick") {
+      this.sidechain.triggerKick(atTime);
+    }
   }
 
   setTransportBpm(bpm: number): void {
@@ -105,6 +124,7 @@ export class SongLayerEngine {
   dispose(): void {
     this.stopAll();
     this.disposeLayers();
+    this.drumEngine.dispose();
     this.masterBus.dispose();
   }
 }

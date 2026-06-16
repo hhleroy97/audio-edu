@@ -1,4 +1,5 @@
 import { getPatchPreset } from "@/lib/patch/presets/index";
+import { isDrumSampleId } from "@/lib/schemas/drums";
 import type { SongDefType } from "@/lib/schemas/song";
 import { songTotalBeats } from "./timeline";
 
@@ -98,6 +99,23 @@ export function lintSong(song: SongDefType): SongLintResult {
 
   if (song.meta.bars < 4 && song.schemaVersion >= 2) {
     warnings.push("arrangement songs typically use ≥4 bars");
+  }
+
+  for (const hit of song.drums?.hits ?? []) {
+    if (!isDrumSampleId(hit.sampleId)) {
+      errors.push(`unknown drum sampleId: ${hit.sampleId}`);
+    }
+    if (hit.beat >= maxBeat + 0.001) {
+      errors.push(`drum hit at beat ${hit.beat} exceeds song length`);
+    }
+  }
+
+  for (const section of song.sections) {
+    for (const hit of section.drumHits ?? []) {
+      if (!isDrumSampleId(hit.sampleId)) {
+        errors.push(`unknown drum sampleId in ${section.id}: ${hit.sampleId}`);
+      }
+    }
   }
 
   return { ok: errors.length === 0, errors, warnings };

@@ -14,6 +14,8 @@ export type LayerBusSlot = {
   mixProfile: MixProfileType;
   strip: LayerMixStrip;
   fader: GainNode;
+  /** Sidechain multiplier — 1 = full level, ducked on kick hits. */
+  duckGain: GainNode;
 };
 
 export type MasterBusOptions = {
@@ -71,10 +73,13 @@ export class MasterBus {
     const strip = new LayerMixStrip(this.ctx, stripConfig);
     const fader = this.ctx.createGain();
     fader.gain.value = busGain;
+    const duckGain = this.ctx.createGain();
+    duckGain.gain.value = 1;
     strip.output.connect(fader);
-    fader.connect(this.preMaster);
+    fader.connect(duckGain);
+    duckGain.connect(this.preMaster);
 
-    this.slots.set(layerId, { layerId, mixProfile: profile, strip, fader });
+    this.slots.set(layerId, { layerId, mixProfile: profile, strip, fader, duckGain });
     return strip.input;
   }
 
@@ -83,6 +88,28 @@ export class MasterBus {
     if (!slot) return;
     const t = atTime ?? this.ctx.currentTime;
     slot.fader.gain.setTargetAtTime(Math.max(0, Math.min(1, gain)), t, 0.04);
+  }
+
+  /** Drum bus lands on pre-master (same chain as layer faders). */
+  getDrumDestination(): AudioNode {
+    return this.preMaster;
+  }
+
+  /** Kick-triggered duck — modulates duckGain only, not song layerGain fader. */
+  scheduleSidechainDuck(
+    layerId: string,
+    atTime: number,
+    depth: number,
+    attackSec: number,
+    releaseSec: number
+  ): void {
+    const slot = this.slots.get(layerId);
+    if (!slot) return;
+    const g = slot.duckGain.gain;
+    g.cancelScheduledValues(atTime);
+    g.setValueAtTime(1, atTime);
+    g.linearRampToValueAtTime(Math.max(0, 1 - depth), atTime + attackSec);
+    g.linearRampToValueAtTime(1, atTime + attackSec + releaseSec);
   }
 
   setMasterGain(gain: number, atTime?: number): void {
@@ -121,6 +148,7 @@ export class MasterBus {
     for (const slot of this.slots.values()) {
       slot.strip.dispose();
       slot.fader.disconnect();
+      slot.duckGain.disconnect();
     }
     this.slots.clear();
     this.preMaster.disconnect();

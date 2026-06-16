@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SidechainDef } from "./drums";
 
 /** Song-level metadata — reproducible procedural riddim artifacts. */
 export const SongMeta = z.object({
@@ -43,6 +44,7 @@ export const DrumHit = z.object({
 
 export const DrumLaneDef = z.object({
   hits: z.array(DrumHit).default([]),
+  sidechain: SidechainDef.optional(),
 });
 
 export const PatternCombinator = z.enum(["stack", "cat", "slow"]);

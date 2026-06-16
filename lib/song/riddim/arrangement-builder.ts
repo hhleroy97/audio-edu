@@ -1,4 +1,5 @@
 import { SongDef, type SectionDefType, type SongDefType } from "@/lib/schemas/song";
+import { ensureRiddimDrums } from "../drums/riddim-drum-grid";
 import { expandModProfile } from "./mod-schemas";
 import {
   buildHalftimeGroove,
@@ -162,7 +163,7 @@ export function buildRiddimArrangement(
     events: buildSectionEvents(spec),
   }));
 
-  return SongDef.parse({
+  const base = SongDef.parse({
     meta: {
       id: config.id,
       title: config.title,
@@ -177,6 +178,10 @@ export function buildRiddimArrangement(
     schemaVersion: 2,
     layers: config.layers ?? DEFAULT_RIDDIM_LAYERS,
     sections,
+  });
+
+  return ensureRiddimDrums(base, {
+    muteSectionIds: ["intro", "break", "outro"],
   });
 }
 
