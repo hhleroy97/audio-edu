@@ -108,14 +108,25 @@ export class AudioEngine {
   }
 
   setActiveNoteHz(hz: number): void {
+    this.propagateActiveNoteHz(hz, this.ctx.currentTime);
+  }
+
+  private propagateActiveNoteHz(hz: number, atTime: number): void {
     this.activeNoteHz = Math.max(20, Math.min(20000, hz));
-    const t = this.ctx.currentTime;
+    const pitchKinds = new Set<RuntimeNode["kind"]>([
+      "oscillator",
+      "fm",
+      "wavetable",
+    ]);
     for (const runtime of this.nodes.values()) {
       if (runtime.kind === "lfo") {
         runtime.setParams(
           { noteHz: this.activeNoteHz, transportBpm: this.transportBpm },
-          t
+          atTime
         );
+      }
+      if (pitchKinds.has(runtime.kind)) {
+        runtime.setParams({ frequency: this.activeNoteHz }, atTime);
       }
     }
   }
@@ -525,15 +536,7 @@ export class AudioEngine {
   }
 
   setActiveNoteHzAt(hz: number, atTime: number): void {
-    this.activeNoteHz = Math.max(20, Math.min(20000, hz));
-    for (const runtime of this.nodes.values()) {
-      if (runtime.kind === "lfo") {
-        runtime.setParams(
-          { noteHz: this.activeNoteHz, transportBpm: this.transportBpm },
-          atTime
-        );
-      }
-    }
+    this.propagateActiveNoteHz(hz, atTime);
   }
 
   /** Schedule param changes on a graph node at `atTime` (song automation). */
