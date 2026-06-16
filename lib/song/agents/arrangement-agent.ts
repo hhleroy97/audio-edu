@@ -250,6 +250,7 @@ function runPipelineSync(
     pack,
     sections: merged.sections,
     layerIds,
+    seed: req.seed,
   });
   const autoLint = lintAutomationAgent(autoResult);
   if (!autoLint.ok) {
@@ -526,6 +527,7 @@ export function regenerateSection(
     pack,
     sections: patternResult.sections,
     layerIds,
+    seed: `${request.seed}:${sectionId}`,
   });
   emit(onProgress, "automation", "done", undefined, "running");
 

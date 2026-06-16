@@ -59,6 +59,19 @@ export { runModFxAgent, lintModFxAgent, DEFAULT_MOD_FX } from "./modfx-agent";
 export type { ModFxAgentInput, ModFxAgentResult } from "./modfx-agent";
 
 export {
+  runModCatalogAgent,
+  lintModCatalogAgent,
+  resolveBodyModProfile,
+  resolveTopModProfile,
+  countUniqueModProfiles,
+  catalogCoversProfiles,
+} from "./mod-catalog-agent";
+export type {
+  ModCatalogAgentInput,
+  ModCatalogAgentResult,
+} from "./mod-catalog-agent";
+
+export {
   runArrangement,
   runArrangementAsync,
   regenerateSection,
@@ -73,6 +86,9 @@ export {
   ARRANGEMENT_RULE_PACK_LIST,
   RIDDIM_STANDARD_16,
   RIDDIM_SICK_DROP_16,
+  RIDDIM_YOI_16,
+  RIDDIM_TEAROUT_16,
+  RIDDIM_INFEKT_16,
   getRulePack,
   listRulePacks,
 } from "./rule-packs";

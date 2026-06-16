@@ -1,7 +1,6 @@
 import type { DrumLaneDefType, SectionDefType } from "@/lib/schemas/song";
 import type { ModFxDefType } from "@/lib/schemas/mod-fx";
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
-import { expandModProfile } from "../riddim/mod-schemas";
 
 export type ModFxAgentInput = {
   pack: ArrangementRulePackType;
@@ -52,14 +51,7 @@ export function runModFxAgent(input: ModFxAgentInput): ModFxAgentResult {
     const fxSpec =
       modFx.bySectionKind?.[spec.kind] ?? {};
 
-    const topProfile =
-      spec.topModProfileId ?? fxSpec.topModProfileId;
-
     const extraEvents = [...section.events];
-
-    if (topProfile && input.layerIds.has("top")) {
-      extraEvents.push(...expandModProfile(topProfile, "top"));
-    }
 
     const reverbMix =
       fxSpec.drumSendReverb ?? modFx.defaultDrumSendReverb;

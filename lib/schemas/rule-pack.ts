@@ -3,6 +3,7 @@ import { AgentGate } from "./agents";
 import { EvaluationDef, GrooveDef, HarmonyDef, TransitionDef } from "./harmony";
 import { MelodyDef } from "./melody";
 import { ModFxDef } from "./mod-fx";
+import { ModCatalogDef } from "./mod-catalog";
 import { RiddimPocketDef } from "./rhythm";
 import { RulePackSectionKind } from "./section-kind";
 import { TimbreDef } from "./timbre";
@@ -49,6 +50,7 @@ export const ArrangementRulePack = z.object({
   rhythm: RiddimPocketDef.optional(),
   timbre: TimbreDef.optional(),
   modFx: ModFxDef.optional(),
+  modCatalog: ModCatalogDef.optional(),
 });
 
 export type ArrangementRulePackType = z.infer<typeof ArrangementRulePack>;

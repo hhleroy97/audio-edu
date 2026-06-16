@@ -1,11 +1,16 @@
 import type { ModAutomationType, SectionDefType } from "@/lib/schemas/song";
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
+import {
+  resolveBodyModProfile,
+  resolveTopModProfile,
+} from "./mod-catalog-agent";
 import { expandModProfile } from "../riddim/mod-schemas";
 
 export type AutomationAgentInput = {
   pack: ArrangementRulePackType;
   sections: SectionDefType[];
   layerIds: Set<string>;
+  seed: string;
 };
 
 export type AutomationAgentResult = {
@@ -19,17 +24,20 @@ export type AutomationAgentResult = {
 export function runAutomationAgent(
   input: AutomationAgentInput
 ): AutomationAgentResult {
-  const { pack, layerIds } = input;
+  const { pack, layerIds, seed } = input;
   const sections = input.sections.map((section) => {
     const spec = pack.sections.find((s) => s.id === section.id);
     if (!spec) return section;
 
     const extraEvents = [...section.events];
-    if (spec.modProfileId && layerIds.has("body")) {
-      extraEvents.push(...expandModProfile(spec.modProfileId, "body"));
+    const bodyProfile = resolveBodyModProfile(pack, spec, seed);
+    const topProfile = resolveTopModProfile(pack, spec, seed);
+
+    if (bodyProfile && layerIds.has("body")) {
+      extraEvents.push(...expandModProfile(bodyProfile, "body"));
     }
-    if (spec.topModProfileId && layerIds.has("top")) {
-      extraEvents.push(...expandModProfile(spec.topModProfileId, "top"));
+    if (topProfile && layerIds.has("top")) {
+      extraEvents.push(...expandModProfile(topProfile, "top"));
     }
 
     const automations: ModAutomationType[] = [...(section.automations ?? [])];

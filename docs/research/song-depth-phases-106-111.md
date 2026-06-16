@@ -298,6 +298,7 @@ RhythmPhraseDef = {
 |-------|-----------|
 | **109** | `lib/song/drums/drum-send-bus.ts`, `lib/song/multibus/prepare-engine.ts`, `drumSendFx` pattern event, `ModFxAgent` per-section sends |
 | **108** | `lib/song/agents/timbre-runtime-agent.ts`, pipeline `timbreRuntime`, `minSectionPresetSwaps` eval |
+| **110** | `lib/song/agents/mod-catalog-agent.ts`, `yoi-formant-wobble` + `dsf-allpass-comb-swell` profiles, 3 archetype rule packs |
 
 ---
 

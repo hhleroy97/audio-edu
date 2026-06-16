@@ -115,6 +115,32 @@ export const RIDDIM_MOD_PROFILES: Record<string, RiddimModProfile> = {
       { beat: 12, nodeId: "lfo-cut", param: "depth", value: 340 },
     ],
   },
+  "yoi-formant-wobble": {
+    id: "yoi-formant-wobble",
+    label: "Yoi talk — dual formant vowel wobble",
+    presetId: "yoi-talk-wobble",
+    layerRole: "body",
+    sources: ["#1", "#2", "#69"],
+    keyframes: [
+      { beat: 0, nodeId: "lfo-1", param: "depth", value: 340 },
+      { beat: 4, nodeId: "fmt-1", param: "vowel", value: "O" },
+      { beat: 8, nodeId: "lfo-1", param: "depth", value: 420 },
+      { beat: 12, nodeId: "fmt-1", param: "vowel", value: "U" },
+    ],
+  },
+  "dsf-allpass-comb-swell": {
+    id: "dsf-allpass-comb-swell",
+    label: "DSF allpass → comb — build metallic swell",
+    presetId: "dsf-allpass-comb",
+    layerRole: "body",
+    sources: ["#59", "#71", "#64"],
+    keyframes: [
+      { beat: 0, nodeId: "mfx-1", param: "depth", value: 0.38 },
+      { beat: 4, nodeId: "lfo-1", param: "depth", value: 260 },
+      { beat: 6, nodeId: "mfx-1", param: "depth", value: 0.52 },
+      { beat: 7, nodeId: "fm-1", param: "index", value: 320 },
+    ],
+  },
 };
 
 export function getModProfile(id: string): RiddimModProfile | undefined {
