@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AgentGate } from "./agents";
+import { EvaluationDef, GrooveDef, HarmonyDef, TransitionDef } from "./harmony";
 import { SongLayerDef } from "./song";
 
 export const RulePackSectionKind = z.enum([
@@ -42,6 +43,10 @@ export const ArrangementRulePack = z.object({
   sections: z.array(RulePackSectionSpec).min(1),
   drumMuteSectionIds: z.array(z.string()).default(["intro", "break", "outro"]),
   gate: AgentGate.default("human-review"),
+  harmony: HarmonyDef.optional(),
+  groove: GrooveDef.optional(),
+  transition: TransitionDef.optional(),
+  evaluation: EvaluationDef.optional(),
 });
 
 export type ArrangementRulePackType = z.infer<typeof ArrangementRulePack>;

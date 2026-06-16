@@ -4,9 +4,13 @@ import { SongDef } from "./song";
 /** Which specialist ran in an arrangement pass. */
 export const ArrangementSubAgentId = z.enum([
   "section",
+  "harmony",
   "pattern",
+  "transition",
+  "groove",
   "drum",
   "automation",
+  "evaluation",
   "mix",
 ]);
 
@@ -34,6 +38,8 @@ export const ArrangementRequest = z.object({
   key: z.string().optional(),
   /** Run mix sub-agent after merge (respects MixDef gate). */
   runMixPass: z.boolean().default(false),
+  /** Re-run pipeline with seed suffix when EvaluationAgent fails. */
+  maxEvalRetries: z.number().int().min(0).max(3).default(0),
 });
 
 export type ArrangementRequestType = z.infer<typeof ArrangementRequest>;

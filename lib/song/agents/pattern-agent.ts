@@ -1,4 +1,5 @@
 import type { PatternEventType, SectionDefType } from "@/lib/schemas/song";
+import type { SectionHarmonyPlanType } from "@/lib/schemas/harmony";
 import type {
   ArrangementRulePackType,
   PatternAgentConfigType,
@@ -21,6 +22,7 @@ export type PatternAgentInput = {
   sections: SectionDefType[];
   seed: string;
   layerIds: Set<string>;
+  harmonyPlans?: SectionHarmonyPlanType[];
   config?: Partial<PatternAgentConfigType>;
 };
 
@@ -221,10 +223,24 @@ function buildSectionPatternEvents(
 
 /** Generate pattern events per section using tonal scale degrees + riddim grids. */
 export function runPatternAgent(input: PatternAgentInput): PatternAgentResult {
-  const config = { ...DEFAULT_CONFIG, ...input.config };
+  const planBySection = new Map(
+    (input.harmonyPlans ?? []).map((p) => [p.sectionId, p])
+  );
+
   const sections = input.sections.map((section) => {
     const spec = sectionSpecFor(input.pack, section.id);
     if (!spec) return section;
+
+    const plan = planBySection.get(section.id);
+    const config: PatternAgentConfigType = plan
+      ? {
+          subOctave: input.pack.harmony?.subOctave ?? DEFAULT_CONFIG.subOctave,
+          bodyOctave: input.pack.harmony?.bodyOctave ?? DEFAULT_CONFIG.bodyOctave,
+          subDegrees: plan.subDegrees,
+          bodyDegrees: plan.bodyDegrees,
+        }
+      : { ...DEFAULT_CONFIG, ...input.config };
+
     const events = buildSectionPatternEvents(
       spec,
       input.pack,

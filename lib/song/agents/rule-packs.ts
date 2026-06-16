@@ -13,6 +13,21 @@ export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
   layers: DEFAULT_RIDDIM_LAYERS,
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
+  harmony: {
+    progression: ["i", "i", "iv", "i"],
+    subOctave: 1,
+    bodyOctave: 2,
+  },
+  groove: {
+    ghostSnare: { enabled: true, velocity: 0.28, beatInBar: 3 },
+    hatEuclidean: { pulses: 5, steps: 16 },
+    enableCatPhrases: true,
+  },
+  transition: {
+    preDropBodyDipBeats: 2,
+    preDropBodyGain: 0.12,
+  },
+  evaluation: { minDropNotes: 4, minDrumHits: 8, minDropSections: 1 },
   sections: [
     { id: "intro", label: "Intro", kind: "intro", startBar: 0, endBar: 2 },
     { id: "build", label: "Build", kind: "build", startBar: 2, endBar: 4 },
@@ -47,6 +62,21 @@ export const RIDDIM_SICK_DROP_16: ArrangementRulePackType = {
   layers: DEFAULT_RIDDIM_LAYERS,
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
+  harmony: {
+    progression: ["i", "i", "iv", "i"],
+    subOctave: 1,
+    bodyOctave: 2,
+  },
+  groove: {
+    ghostSnare: { enabled: true, velocity: 0.28, beatInBar: 3 },
+    hatEuclidean: { pulses: 5, steps: 16 },
+    enableCatPhrases: true,
+  },
+  transition: {
+    preDropBodyDipBeats: 2,
+    preDropBodyGain: 0.12,
+  },
+  evaluation: { minDropNotes: 4, minDrumHits: 8, minDropSections: 1 },
   sections: [
     { id: "intro", label: "Intro", kind: "intro", startBar: 0, endBar: 2 },
     { id: "build", label: "Build", kind: "build", startBar: 2, endBar: 4 },
