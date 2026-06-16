@@ -15,6 +15,12 @@
 - `mergeResearchSupplements()` in `graph/extract/research.ts`; extract script merges research JSON
 - Updated `graph/index.md`, `riddim-synthesis.md` §6, `riddim-feature-roadmap.md` academic refs
 
+### Pro modulation milestone (planned)
+
+- GSD roadmap phases 71–75: `.planning/ROADMAP.md`
+- Executive plan: `docs/research/pro-modulation-plan.md`
+- Phase D gap table in `riddim-feature-roadmap.md`
+
 ## 0.4.0 — 2026-06-15
 
 Patch Lab: React Flow node-graph canvas with live Web Audio routing and guided lesson 01.

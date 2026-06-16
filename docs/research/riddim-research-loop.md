@@ -141,7 +141,8 @@ Already cited in `UI_OVERHAUL_HANDOFF.md`; expanded with 2024–2026 landscape:
 - [x] Vital riddim techniques — cycle 2
 - [x] arXiv FM-DDSP (Caspe DDX7) — cycle 2
 - [ ] Reddit direct thread URLs (site blocks bots; use manual paste)
-- [ ] GitHits code reads: synflow, audio-nodes (needs `githits login`)
+- [ ] GitHits code reads: synflow, audio-nodes (needs `githits login`) — **authed 2026-06-16**; use in phase 72/73
+- [x] Pro modulation implementation plan — `.planning/ROADMAP.md` phases 71–75
 - [x] Reference track homework list — cycle 2
 - [x] Serum 2 vs Vital mod matrix — cycle 2
 

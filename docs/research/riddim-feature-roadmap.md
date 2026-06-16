@@ -144,6 +144,23 @@ Shipped as of this roadmap:
 
 ---
 
+## Phase D — Pro modulation (planned → execute)
+
+> **Implementation:** `.planning/ROADMAP.md` phases 71–75 · `docs/research/pro-modulation-plan.md`
+
+| # | Feature | Pro bar | Status |
+|---|---------|---------|--------|
+| D1 | Bipolar CV + offset on mod routes | Serum matrix attenuverter | 📋 Phase 71 |
+| D2 | Live effective param preview | Vital/Serum mod readout | 📋 Phase 72 |
+| D3 | Sample-hold LFO + key-track rate | Non-static Infekt movement | 📋 Phase 73 |
+| D4 | Macro CV fan-out | Performance control | 📋 Phase 73 |
+| D5 | Dual-LFO pro presets + lesson 07 | Reference sound in-browser | 📋 Phase 74 |
+| D6 | Resample / scope descriptors / grid | Subtronics workflow | 📋 Phase 75 (stretch) |
+
+When D1–D5 ship, update this table to ✅ and bump milestone to **v0.5.0-pro-mod**.
+
+---
+
 ## Academic references (new)
 
 See `docs/research/sources.md` § Academic & DSP for full citations.
