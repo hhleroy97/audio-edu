@@ -23,7 +23,8 @@ describe("patch lesson registry", () => {
     expect(getNextLesson("03-envelope")?.slug).toBe("07-mod-matrix");
     expect(getNextLesson("07-mod-matrix")?.slug).toBe("08-patterns");
     expect(getNextLesson("08-patterns")?.slug).toBe("09-multibus");
-    expect(getNextLesson("09-multibus")).toBeNull();
+    expect(getNextLesson("09-multibus")?.slug).toBe("10-arrangement-agents");
+    expect(getNextLesson("10-arrangement-agents")).toBeNull();
     expect(getNextLesson("unknown")).toBeNull();
   });
 

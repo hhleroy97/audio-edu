@@ -5,6 +5,7 @@ import { lesson03Envelope } from "./lesson-03-envelope";
 import { lesson07ModMatrix } from "./lesson-07-mod-matrix";
 import { lesson08Patterns } from "./lesson-08-patterns";
 import { lesson09Multibus } from "./lesson-09-multibus";
+import { lesson10Arrangement } from "./lesson-10-arrangement";
 
 export const LESSONS: Lesson[] = [
   lesson01Oscillator,
@@ -13,6 +14,7 @@ export const LESSONS: Lesson[] = [
   lesson07ModMatrix,
   lesson08Patterns,
   lesson09Multibus,
+  lesson10Arrangement,
 ];
 
 export function getLessonBySlug(slug: string): Lesson | undefined {
