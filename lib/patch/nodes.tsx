@@ -1,157 +1,237 @@
 "use client";
 
-import { memo } from "react";
-import { Position, type NodeProps } from "@xyflow/react";
-import { cn } from "@/lib/utils";
-import { NODE_COLORS } from "@/lib/patch/ports";
-import { PortHandle } from "@/lib/patch/PortHandle";
+import { type NodeProps } from "@xyflow/react";
+import {
+  displayOctave,
+  noteLabelForFrequency,
+} from "@/lib/patch/piano-keyboard";
 import { usePatchStore } from "@/lib/patch/store";
+import { ModuleDisplay, ModuleShell } from "@/lib/patch/ModuleShell";
+import { ModuleControlGrid } from "@/lib/patch/ModuleControlGrid";
+import {
+  DETUNE_CONTROLS,
+  ENVELOPE_CONTROLS,
+  OSCILLATOR_CONTROLS,
+  OUTPUT_CONTROLS,
+} from "@/lib/patch/module-controls";
+import { WaveformShape } from "@/lib/viz/WaveformShape";
+import { parseWaveformType } from "@/lib/viz/waveform-sample";
+import { UnisonSpreadDisplay } from "@/lib/viz/UnisonSpreadDisplay";
+import { AmplitudeEnvelopeDisplay } from "@/lib/viz/AmplitudeEnvelopeDisplay";
+import { DEFAULT_AMPLITUDE_ADSR } from "@/lib/audio/adsr-amplitude";
+import { WaveformSelector } from "@/lib/ui/WaveformSelector";
+import type { WaveformType } from "@/lib/audio";
 import type { PatchNodeData } from "@/lib/patch/ports";
 
-type AudioNodeShellProps = NodeProps & {
-  children?: React.ReactNode;
-  inputs?: { id: string; signal: "audio" | "cv" | "trigger"; label: string }[];
-  outputs?: { id: string; signal: "audio" | "cv" | "trigger"; label: string }[];
-};
-
-export const AudioNodeShell = memo(function AudioNodeShell({
-  id,
-  data,
-  selected,
-  children,
-  inputs = [],
-  outputs = [],
-}: AudioNodeShellProps) {
-  const kind = (data as PatchNodeData).kind;
-  const color = NODE_COLORS[kind] ?? "#8a7fa0";
-
-  return (
-    <div
-      className={cn(
-        "min-w-[180px] border bg-surface font-mono text-xs shadow-lg",
-        selected ? "border-cold ring-1 ring-cold/40" : "border-border"
-      )}
-      data-tour-id={`node-${kind}`}
-    >
-      <div
-        className="border-b border-border px-3 py-2 uppercase tracking-wider"
-        style={{ color }}
-      >
-        {(data as PatchNodeData).label}
-      </div>
-      <div className="relative px-3 py-3">
-        {inputs.map((port) => (
-          <div key={port.id} className="mb-2 flex items-center gap-2">
-            <PortHandle
-              type="target"
-              position={Position.Left}
-              id={port.id}
-              signal={port.signal}
-            />
-            <span className="text-secondary">{port.label}</span>
-          </div>
-        ))}
-        {children}
-        {outputs.map((port) => (
-          <div key={port.id} className="mt-2 flex items-center justify-end gap-2">
-            <span className="text-secondary">{port.label}</span>
-            <PortHandle
-              type="source"
-              position={Position.Right}
-              id={port.id}
-              signal={port.signal}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-});
+function moduleLabel(data: PatchNodeData) {
+  return data.label;
+}
 
 export function OscillatorFlowNode(props: NodeProps) {
   const update = usePatchStore((s) => s.updateNodeParams);
-  const params = (props.data as PatchNodeData).params;
+  const pianoOctaveOffset = usePatchStore((s) => s.pianoOctaveOffset);
+  const data = props.data as PatchNodeData;
+  const params = data.params;
+  const frequency = Number(params.frequency ?? 261.63);
+  const noteLabel = noteLabelForFrequency(frequency);
+  const waveform = parseWaveformType(params.waveform);
 
   return (
-    <AudioNodeShell
-      {...props}
+    <ModuleShell
+      id={props.id}
+      kind="oscillator"
+      label={moduleLabel(data)}
+      selected={props.selected}
       outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
     >
-      <label className="mb-2 flex flex-col gap-1">
-        <span className="text-secondary">wave</span>
-        <select
-          className="nodrag nopan border border-border bg-base px-2 py-1 text-primary"
-          value={String(params.waveform ?? "sine")}
-          onChange={(e) =>
-            update(props.id, { waveform: e.target.value })
+      <ModuleDisplay className="mb-2">
+        <WaveformShape waveform={waveform} className="w-full" />
+      </ModuleDisplay>
+      <div className="mb-2">
+        <span className="module-label">wave</span>
+        <WaveformSelector
+          variant="module"
+          className="nodrag nopan mt-1"
+          value={waveform}
+          onChange={(value: WaveformType) =>
+            update(props.id, { waveform: value })
           }
-        >
-          <option value="sine">sine</option>
-          <option value="square">square</option>
-          <option value="sawtooth">sawtooth</option>
-          <option value="triangle">triangle</option>
-        </select>
-      </label>
-      <label className="flex flex-col gap-1">
-        <span className="text-secondary">
-          {Number(params.frequency ?? 220).toFixed(0)} Hz
-        </span>
-        <input
-          type="range"
-          min={55}
-          max={880}
-          value={Number(params.frequency ?? 220)}
-          onChange={(e) =>
-            update(props.id, { frequency: Number(e.target.value) })
-          }
-          className="nodrag nopan accent-cold"
         />
-      </label>
-    </AudioNodeShell>
+      </div>
+      <div className="module-readout mb-2">
+        <span className="text-[var(--module-accent)]">{noteLabel}</span>
+        <span className="text-secondary"> · {frequency.toFixed(0)} Hz</span>
+        <p className="mt-1 text-[9px] leading-relaxed text-secondary/70">
+          A–K keys · WETYU upper · Oct {displayOctave(pianoOctaveOffset)} Z↓ X↑
+        </p>
+      </div>
+      <ModuleControlGrid
+        kind="oscillator"
+        layout="oscillator"
+        controls={OSCILLATOR_CONTROLS}
+        params={params}
+        onParamChange={(param, value) => update(props.id, { [param]: value })}
+      />
+    </ModuleShell>
+  );
+}
+
+export function DetuneFlowNode(props: NodeProps) {
+  const update = usePatchStore((s) => s.updateNodeParams);
+  const nodes = usePatchStore((s) => s.nodes);
+  const edges = usePatchStore((s) => s.edges);
+  const data = props.data as PatchNodeData;
+  const params = data.params;
+  const voices = Math.round(Number(params.voices ?? 3));
+  const detune = Number(params.detune ?? 15);
+  const spread = Number(params.spread ?? 0.8);
+  const kind = data.kind === "unison" ? "unison" : "detune";
+
+  const inEdge = edges.find(
+    (e) => e.target === props.id && e.targetHandle === "audio-in"
+  );
+  const sourceNode = nodes.find((n) => n.id === inEdge?.source);
+  const sourceConnected = sourceNode?.data.kind === "oscillator";
+  const sourceFreq = sourceConnected
+    ? Number(sourceNode.data.params.frequency ?? 220)
+    : null;
+  const sourceLabel = sourceFreq ? noteLabelForFrequency(sourceFreq) : null;
+
+  return (
+    <ModuleShell
+      id={props.id}
+      kind={kind}
+      label={moduleLabel(data)}
+      selected={props.selected}
+      inputs={[{ id: "audio-in", signal: "audio", label: "in" }]}
+      outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
+    >
+      <ModuleDisplay className="mb-2">
+        <UnisonSpreadDisplay
+          voices={voices}
+          detune={detune}
+          spread={spread}
+          className="w-full"
+        />
+      </ModuleDisplay>
+      <p className="module-hint mb-2">
+        {sourceConnected && sourceLabel ? (
+          <>
+            tracking{" "}
+            <span className="text-[var(--module-accent)]">{sourceLabel}</span>
+          </>
+        ) : (
+          <span className="text-hot">patch osc → in</span>
+        )}
+      </p>
+      <ModuleControlGrid
+        kind={kind}
+        layout="detune"
+        controls={DETUNE_CONTROLS}
+        params={params}
+        onParamChange={(param, value) =>
+          update(props.id, {
+            [param]: param === "voices" ? Math.round(value) : value,
+          })
+        }
+      />
+    </ModuleShell>
+  );
+}
+
+export function EnvelopeFlowNode(props: NodeProps) {
+  const update = usePatchStore((s) => s.updateNodeParams);
+  const data = props.data as PatchNodeData;
+  const params = data.params;
+  const adsr = {
+    attack: Number(params.attack ?? DEFAULT_AMPLITUDE_ADSR.attack),
+    decay: Number(params.decay ?? DEFAULT_AMPLITUDE_ADSR.decay),
+    sustain: Number(params.sustain ?? DEFAULT_AMPLITUDE_ADSR.sustain),
+    release: Number(params.release ?? DEFAULT_AMPLITUDE_ADSR.release),
+  };
+
+  return (
+    <ModuleShell
+      id={props.id}
+      kind="envelope"
+      label={moduleLabel(data)}
+      selected={props.selected}
+      inputs={[{ id: "audio-in", signal: "audio", label: "in" }]}
+      outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
+    >
+      <ModuleDisplay className="mb-2">
+        <AmplitudeEnvelopeDisplay adsr={adsr} className="w-full" />
+      </ModuleDisplay>
+      <p className="module-hint mb-2">amplitude · key gated</p>
+      <ModuleControlGrid
+        kind="envelope"
+        layout="envelope"
+        controls={ENVELOPE_CONTROLS}
+        params={params}
+        onParamChange={(param, value) => update(props.id, { [param]: value })}
+      />
+    </ModuleShell>
   );
 }
 
 export function OutputFlowNode(props: NodeProps) {
   const update = usePatchStore((s) => s.updateNodeParams);
-  const params = (props.data as PatchNodeData).params;
+  const data = props.data as PatchNodeData;
+  const params = data.params;
 
   return (
-    <AudioNodeShell
-      {...props}
+    <ModuleShell
+      id={props.id}
+      kind="output"
+      label={moduleLabel(data)}
+      selected={props.selected}
       inputs={[{ id: "audio-in", signal: "audio", label: "in" }]}
     >
-      <label className="flex flex-col gap-1">
-        <span className="text-secondary">
-          master {(Number(params.gain ?? 0.8) * 100).toFixed(0)}%
-        </span>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={Number(params.gain ?? 0.8)}
-          onChange={(e) => update(props.id, { gain: Number(e.target.value) })}
-          className="nodrag nopan accent-cold"
-        />
-      </label>
-    </AudioNodeShell>
+      <p className="module-hint mb-2">master bus</p>
+      <ModuleControlGrid
+        kind="output"
+        layout="output"
+        controls={OUTPUT_CONTROLS}
+        params={params}
+        onParamChange={(param, value) => update(props.id, { [param]: value })}
+      />
+    </ModuleShell>
   );
 }
 
 export function AnalyserFlowNode(props: NodeProps) {
+  const data = props.data as PatchNodeData;
+
   return (
-    <AudioNodeShell
-      {...props}
+    <ModuleShell
+      id={props.id}
+      kind="analyser"
+      label={moduleLabel(data)}
+      selected={props.selected}
       inputs={[{ id: "audio-in", signal: "audio", label: "in" }]}
-      outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
+      outputs={[{ id: "audio-out", signal: "audio", label: "thru" }]}
     >
-      <p className="text-secondary">scope tap</p>
-    </AudioNodeShell>
+      <ModuleDisplay>
+        <div className="flex h-10 items-center justify-center gap-1">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span
+              key={i}
+              className="module-scope-bar w-1 bg-[var(--module-accent)]"
+              style={{ height: `${30 + i * 12}%`, opacity: 0.4 + i * 0.12 }}
+            />
+          ))}
+        </div>
+      </ModuleDisplay>
+      <p className="module-hint mt-2">tap · pass-through</p>
+    </ModuleShell>
   );
 }
 
 export const patchNodeTypes = {
   oscillator: OscillatorFlowNode,
+  detune: DetuneFlowNode,
+  unison: DetuneFlowNode,
+  envelope: EnvelopeFlowNode,
   output: OutputFlowNode,
   analyser: AnalyserFlowNode,
 };
