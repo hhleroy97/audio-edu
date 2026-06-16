@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
   Panel,
+  type Edge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { usePatchStore } from "@/lib/patch/store";
@@ -17,6 +18,7 @@ import { PatchPianoKeyboard } from "@/lib/patch/PatchPianoKeyboard";
 import { PatchFitView } from "@/lib/patch/PatchFitView";
 import { PatchLayoutSync } from "@/lib/patch/PatchLayoutSync";
 import { PatchConnectionLine } from "@/lib/patch/PatchConnectionLine";
+import { PatchRewireSession } from "@/lib/patch/PatchRewireSession";
 import { ModulePalette } from "@/lib/patch/ModulePalette";
 import { isDoStepSatisfied } from "@/lib/patch/tour-utils";
 import { Oscilloscope } from "@/lib/viz/Oscilloscope";
@@ -44,6 +46,7 @@ export function PatchLab() {
   const onEdgesChange = usePatchStore((s) => s.onEdgesChange);
   const onNodeDragStart = usePatchStore((s) => s.onNodeDragStart);
   const onConnect = usePatchStore((s) => s.onConnect);
+  const onReconnect = usePatchStore((s) => s.onReconnect);
   const isValidConnection = usePatchStore((s) => s.isValidConnection);
   const addNode = usePatchStore((s) => s.addNode);
   const run = usePatchStore((s) => s.run);
@@ -60,7 +63,26 @@ export function PatchLab() {
     (s) => s.updateGeneratorNodesLive
   );
   const setGeneratorKeyGate = usePatchStore((s) => s.setGeneratorKeyGate);
+  const cancelRewire = usePatchStore((s) => s.cancelRewire);
+  const isRewiring = usePatchStore((s) => s.rewireDraft !== null);
+
   const isLayoutAnimating = usePatchStore((s) => s.isLayoutAnimating);
+
+  const edgeDoubleClickRef = useRef<
+    (event: React.MouseEvent, edge: Edge) => void
+  >(() => {});
+  const registerEdgeDoubleClick = useCallback(
+    (handler: (event: React.MouseEvent, edge: Edge) => void) => {
+      edgeDoubleClickRef.current = handler;
+    },
+    []
+  );
+  const handleEdgeDoubleClick = useCallback(
+    (event: React.MouseEvent, edge: Edge) => {
+      edgeDoubleClickRef.current(event, edge);
+    },
+    []
+  );
 
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
 
@@ -214,22 +236,28 @@ export function PatchLab() {
             onEdgesChange={onEdgesChange}
             onNodeDragStart={onNodeDragStart}
             onConnect={onConnect}
+            onReconnect={onReconnect}
+            onEdgeDoubleClick={handleEdgeDoubleClick}
             isValidConnection={isValidConnection}
+            edgesReconnectable
             nodeTypes={patchNodeTypes}
             edgeTypes={patchEdgeTypes}
             connectionLineComponent={PatchConnectionLine}
             deleteKeyCode={null}
             elementsSelectable
+            zoomOnDoubleClick={false}
             minZoom={0.35}
             maxZoom={1.5}
             snapToGrid
             snapGrid={[16, 16]}
-            className={`patch-lab-canvas${isLayoutAnimating ? " is-layout-animating" : ""}`}
+            className={`patch-lab-canvas${isLayoutAnimating ? " is-layout-animating" : ""}${isRewiring ? " is-rewiring" : ""}`}
+            onPaneClick={() => cancelRewire()}
           >
             <PatchFitView
               nodeCount={nodes.length}
               lessonSlug={activeLesson.slug}
             />
+            <PatchRewireSession onReady={registerEdgeDoubleClick} />
             <PatchLayoutSync />
             <PatchKeyboardHandler />
             <PatchPianoKeyboard />

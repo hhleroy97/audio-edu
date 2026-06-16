@@ -3,6 +3,7 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   addEdge,
+  reconnectEdge,
   type Node,
   type Edge,
   type Connection,
@@ -17,6 +18,11 @@ import { DEFAULT_UNLOCKED } from "./ports";
 import type { Lesson, Patch } from "@/lib/schemas/patch";
 import { lesson01Oscillator } from "./lessons/lesson-01-oscillator";
 import { getNextLesson } from "./lessons/index";
+import type { RewireAnchor, RewireDraft, HandleHit } from "./edge-rewire";
+import {
+  buildRewireConnection,
+  parseEdgeSignal,
+} from "./edge-rewire";
 import {
   cloneGraph,
   isUndoableEdgeChange,
@@ -124,6 +130,8 @@ export type PatchStore = {
   enginePhase: "idle" | "working" | "settled";
   isLayoutAnimating: boolean;
   nodeMeasuredSizes: NodeDimensionMap;
+  rewireDraft: RewireDraft | null;
+  rewireCursor: { x: number; y: number } | null;
   registerNodeSize: (id: string, kind: NodeKind, height: number) => void;
   relayoutFromMeasurements: () => void;
   pushHistory: () => void;
@@ -134,6 +142,16 @@ export type PatchStore = {
   onEdgesChange: (changes: EdgeChange[]) => void;
   onNodeDragStart: () => void;
   onConnect: (connection: Connection) => void;
+  onReconnect: (oldEdge: Edge, connection: Connection) => void;
+  beginRewire: (
+    edge: Edge,
+    anchor: RewireAnchor,
+    freeEnd: RewireDraft["freeEnd"],
+    cursor: { x: number; y: number }
+  ) => void;
+  updateRewireCursor: (cursor: { x: number; y: number }) => void;
+  completeRewire: (hit: HandleHit) => void;
+  cancelRewire: () => void;
   isValidConnection: (connection: Connection | Edge) => boolean;
   addNode: (kind: NodeKind, position?: { x: number; y: number }) => void;
   updateNodeParams: (
@@ -234,6 +252,8 @@ export const usePatchStore = create<PatchStore>((set, get) => {
   enginePhase: "idle",
   isLayoutAnimating: false,
   nodeMeasuredSizes: new Map(),
+  rewireDraft: null,
+  rewireCursor: null,
 
   registerNodeSize: (id, kind, height) => {
     const parsed = normalizeMeasuredLayout(kind, { width: 0, height });
@@ -405,6 +425,74 @@ export const usePatchStore = create<PatchStore>((set, get) => {
       ),
     });
     get().syncEngine();
+  },
+
+  onReconnect: (oldEdge, connection) => {
+    if (!get().isValidConnection(connection)) return;
+    get().pushHistory();
+    set({
+      edges: reconnectEdge(oldEdge, connection, get().edges),
+    });
+    get().syncEngine();
+  },
+
+  beginRewire: (edge, anchor, freeEnd, cursor) => {
+    if (!get().edges.some((e) => e.id === edge.id)) return;
+    get().pushHistory();
+    set({
+      edges: get().edges.filter((e) => e.id !== edge.id),
+      rewireDraft: {
+        ...anchor,
+        freeEnd,
+        signal: parseEdgeSignal(edge),
+      },
+      rewireCursor: cursor,
+    });
+    get().syncEngine();
+  },
+
+  updateRewireCursor: (cursor) => {
+    if (!get().rewireDraft) return;
+    set({ rewireCursor: cursor });
+  },
+
+  completeRewire: (hit) => {
+    const draft = get().rewireDraft;
+    if (!draft) return;
+
+    if (
+      hit.nodeId === draft.nodeId &&
+      (hit.handleId ?? "") === (draft.handleId ?? "")
+    ) {
+      set({ rewireDraft: null, rewireCursor: null });
+      return;
+    }
+
+    const connection = buildRewireConnection(draft, hit);
+    if (!connection || !get().isValidConnection(connection)) {
+      set({ rewireDraft: null, rewireCursor: null });
+      return;
+    }
+
+    set({
+      edges: addEdge(
+        {
+          ...connection,
+          id: nanoid(),
+          type: "patchCable",
+          data: { signal: draft.signal },
+        },
+        get().edges
+      ),
+      rewireDraft: null,
+      rewireCursor: null,
+    });
+    get().syncEngine();
+  },
+
+  cancelRewire: () => {
+    if (!get().rewireDraft) return;
+    set({ rewireDraft: null, rewireCursor: null });
   },
 
   isValidConnection: (connection) => {

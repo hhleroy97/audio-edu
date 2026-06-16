@@ -245,8 +245,38 @@
   z-index: 5;
 }
 
+.patch-lab-canvas.is-rewiring,
+.patch-lab-canvas.is-rewiring .react-flow__pane {
+  cursor: crosshair;
+}
+
 .patch-lab-canvas.is-layout-animating .react-flow__edge-path {
   transition: d 80ms linear;
+}
+
+/* Cables above modules — edges layer sits over node stacking (incl. selected z=1000). */
+.patch-lab-canvas .react-flow__nodes {
+  z-index: 1;
+  overflow: visible;
+}
+
+.patch-lab-canvas .react-flow__edges {
+  z-index: 1001;
+  pointer-events: none;
+}
+
+.patch-lab-canvas .react-flow__edge {
+  pointer-events: visibleStroke;
+  cursor: grab;
+}
+
+.patch-lab-canvas .react-flow__edge:active {
+  cursor: grabbing;
+}
+
+.patch-lab-canvas svg.react-flow__connectionline {
+  z-index: 1002;
+  pointer-events: none;
 }
 
 .patch-lab-canvas.is-layout-animating .react-flow__node {
@@ -256,10 +286,6 @@
 /* Tour beacons */
 
 /* Eurorack module panels ───────────────────────────────────────── */
-.patch-lab-canvas .react-flow__nodes {
-  overflow: visible;
-}
-
 .patch-lab-canvas .react-flow__node {
   font-family: var(--font-module);
   overflow: visible !important;
