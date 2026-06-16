@@ -11,6 +11,7 @@ type ParamSliderProps = {
   unit?: string;
   onChange: (value: number) => void;
   className?: string;
+  variant?: "default" | "module";
 };
 
 export function ParamSlider({
@@ -22,12 +23,28 @@ export function ParamSlider({
   unit = "",
   onChange,
   className,
+  variant = "default",
 }: ParamSliderProps) {
+  const isModule = variant === "module";
+
   return (
-    <label className={cn("flex flex-col gap-2", className)}>
-      <span className="flex justify-between font-mono text-xs uppercase tracking-wider text-secondary">
+    <label
+      className={cn(
+        "flex flex-col gap-2",
+        isModule && "module-param gap-1.5",
+        className
+      )}
+    >
+      <span
+        className={cn(
+          "flex justify-between font-mono text-xs uppercase tracking-wider",
+          isModule
+            ? "module-label text-[9px] text-secondary/80"
+            : "text-secondary"
+        )}
+      >
         <span>{label}</span>
-        <span className="text-cold">
+        <span className={isModule ? "text-[var(--module-accent)]" : "text-cold"}>
           {value.toFixed(step < 1 ? 2 : 0)}
           {unit}
         </span>
@@ -39,7 +56,12 @@ export function ParamSlider({
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="h-1 w-full cursor-pointer appearance-none bg-border accent-cold"
+        className={cn(
+          "w-full cursor-pointer appearance-none",
+          isModule
+            ? "module-fader h-2 bg-[#1a1428]"
+            : "h-1 bg-border accent-cold"
+        )}
       />
     </label>
   );
