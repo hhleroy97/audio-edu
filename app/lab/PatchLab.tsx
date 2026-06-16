@@ -13,13 +13,19 @@ import { usePatchStore } from "@/lib/patch/store";
 import { patchNodeTypes } from "@/lib/patch/nodes";
 import { patchEdgeTypes } from "@/lib/patch/edges";
 import { PatchKeyboardHandler } from "@/lib/patch/PatchKeyboardHandler";
+import { PatchPianoKeyboard } from "@/lib/patch/PatchPianoKeyboard";
+import { PatchFitView } from "@/lib/patch/PatchFitView";
+import { PatchLayoutSync } from "@/lib/patch/PatchLayoutSync";
+import { PatchConnectionLine } from "@/lib/patch/PatchConnectionLine";
+import { ModulePalette } from "@/lib/patch/ModulePalette";
 import { isDoStepSatisfied } from "@/lib/patch/tour-utils";
 import { Oscilloscope } from "@/lib/viz/Oscilloscope";
 import { SpectrumDisplay } from "@/lib/viz/SpectrumDisplay";
 import { SpectrogramDisplay } from "@/lib/viz/SpectrogramDisplay";
 import { AgentStateIndicator } from "@/lib/ui/AgentStateIndicator";
-import { LessonPanel } from "@/lib/ui/LessonPanel";
-import type { NodeKind } from "@/lib/patch/ports";
+import { LessonPanel, LessonPanelCollapsed } from "@/lib/ui/LessonPanel";
+import { getNextLesson } from "@/lib/patch/lessons/index";
+import type { LessonPanelView } from "@/lib/ui/LessonPanel";
 
 const SAMPLE_RATE = 48000;
 
@@ -31,6 +37,8 @@ export function PatchLab() {
   const activeLesson = usePatchStore((s) => s.activeLesson);
   const unlockedNodes = usePatchStore((s) => s.unlockedNodes);
   const tourStepIndex = usePatchStore((s) => s.tourStepIndex);
+  const lessonPanelOpen = usePatchStore((s) => s.lessonPanelOpen);
+  const showCompletionChoice = usePatchStore((s) => s.showCompletionChoice);
   const enginePhase = usePatchStore((s) => s.enginePhase);
   const onNodesChange = usePatchStore((s) => s.onNodesChange);
   const onEdgesChange = usePatchStore((s) => s.onEdgesChange);
@@ -41,9 +49,18 @@ export function PatchLab() {
   const run = usePatchStore((s) => s.run);
   const stop = usePatchStore((s) => s.stop);
   const advanceTour = usePatchStore((s) => s.advanceTour);
+  const finishGuidedSteps = usePatchStore((s) => s.finishGuidedSteps);
+  const choosePlayground = usePatchStore((s) => s.choosePlayground);
+  const chooseNextLesson = usePatchStore((s) => s.chooseNextLesson);
+  const setLessonPanelOpen = usePatchStore((s) => s.setLessonPanelOpen);
   const dismissTour = usePatchStore((s) => s.dismissTour);
   const getAnalyser = usePatchStore((s) => s.getAnalyser);
   const syncEngine = usePatchStore((s) => s.syncEngine);
+  const updateGeneratorNodesLive = usePatchStore(
+    (s) => s.updateGeneratorNodesLive
+  );
+  const setGeneratorKeyGate = usePatchStore((s) => s.setGeneratorKeyGate);
+  const isLayoutAnimating = usePatchStore((s) => s.isLayoutAnimating);
 
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
 
@@ -52,9 +69,21 @@ export function PatchLab() {
     [activeLesson]
   );
 
-  const isGuided = mode === "guided" && tourStepIndex < steps.length;
+  const isGuided =
+    mode === "guided" &&
+    !showCompletionChoice &&
+    tourStepIndex < steps.length;
   const currentStep = isGuided ? steps[tourStepIndex] : null;
   const isLastStep = isGuided && tourStepIndex === steps.length - 1;
+
+  const nextLesson = getNextLesson(activeLesson.slug);
+  const nextLessonTitle = nextLesson?.title ?? null;
+
+  const panelView: LessonPanelView = showCompletionChoice
+    ? "completion-choice"
+    : mode === "guided"
+      ? "step"
+      : "playground-recap";
 
   useEffect(() => {
     syncEngine();
@@ -91,20 +120,22 @@ export function PatchLab() {
 
   const handleContinue = useCallback(() => {
     if (isLastStep) {
-      dismissTour();
+      finishGuidedSteps();
     } else {
       advanceTour();
     }
-  }, [isLastStep, dismissTour, advanceTour]);
+  }, [isLastStep, finishGuidedSteps, advanceTour]);
 
   return (
     <div className="flex h-screen flex-col bg-base">
-      <header className="flex items-center justify-between border-b border-border px-4 py-3">
+      <header className="patch-lab-header flex items-center justify-between px-4 py-3">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-secondary">
-            Patch Lab
+          <p className="patch-lab-header__tag inline-block bg-[#ff2d9522] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.35em] text-[#ff2d95]">
+            Rack / 01
           </p>
-          <h1 className="text-sm font-medium">{activeLesson.title}</h1>
+          <h1 className="mt-1 text-sm font-medium tracking-wide text-primary">
+            {activeLesson.title}
+          </h1>
         </div>
         <div className="flex items-center gap-3">
           <AgentStateIndicator
@@ -147,23 +178,36 @@ export function PatchLab() {
       </header>
 
       <div className="flex min-h-0 flex-1">
-        {isGuided && currentStep && (
+        {!lessonPanelOpen ? (
+          <LessonPanelCollapsed onExpand={() => setLessonPanelOpen(true)} />
+        ) : (
           <LessonPanel
             lesson={activeLesson}
             steps={steps}
             stepIndex={tourStepIndex}
+            view={panelView}
+            nextLessonTitle={nextLessonTitle}
             isLastStep={isLastStep}
             onContinue={handleContinue}
             onDismiss={dismissTour}
             onDemo={() => {
-              void run();
-              handleContinue();
+              void (async () => {
+                await run();
+                updateGeneratorNodesLive({ frequency: 261.63 });
+                setGeneratorKeyGate(true);
+                handleContinue();
+              })();
             }}
+            onChoosePlayground={choosePlayground}
+            onChooseNextLesson={chooseNextLesson}
+            onCollapse={() => setLessonPanelOpen(false)}
+            onStartNextFromRecap={chooseNextLesson}
           />
         )}
 
         <div className="relative min-w-0 flex-1">
           <ReactFlow
+            key={activeLesson.slug}
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
@@ -173,31 +217,43 @@ export function PatchLab() {
             isValidConnection={isValidConnection}
             nodeTypes={patchNodeTypes}
             edgeTypes={patchEdgeTypes}
+            connectionLineComponent={PatchConnectionLine}
             deleteKeyCode={null}
             elementsSelectable
-            fitView
+            minZoom={0.35}
+            maxZoom={1.5}
             snapToGrid
             snapGrid={[16, 16]}
-            className="patch-lab-canvas bg-base"
+            className={`patch-lab-canvas${isLayoutAnimating ? " is-layout-animating" : ""}`}
           >
-            <PatchKeyboardHandler />
-            <Background gap={16} color="#2a1f3d" />
-            <Controls className="!border-border !bg-surface" />
-            <MiniMap
-              className="!border-border !bg-surface"
-              nodeColor={(n) => (n.type === "output" ? "#8a7fa0" : "#5ec8e8")}
+            <PatchFitView
+              nodeCount={nodes.length}
+              lessonSlug={activeLesson.slug}
             />
-            <Panel position="top-left" className="flex flex-wrap gap-2">
-              {unlockedNodes.map((kind) => (
-                <button
-                  key={kind}
-                  type="button"
-                  onClick={() => addNode(kind as NodeKind)}
-                  className="border border-border bg-surface px-3 py-1 font-mono text-[10px] uppercase text-secondary hover:border-cold hover:text-cold"
-                >
-                  + {kind}
-                </button>
-              ))}
+            <PatchLayoutSync />
+            <PatchKeyboardHandler />
+            <PatchPianoKeyboard />
+            <Background gap={32} size={1} color="#1e1830" />
+            <Controls className="!border-[#2a2038] !bg-[#0c0a12] !shadow-none [&>button]:!border-[#2a2038] [&>button]:!bg-[#120d1a]" />
+            <MiniMap
+              className="!border-[#2a2038] !bg-[#0c0a12]"
+              nodeColor={(n) => {
+                const kind = n.type as string;
+                if (kind === "output") return "#e8e4dc";
+                if (kind === "envelope") return "#ff3b2f";
+                if (kind === "analyser") return "#39ff14";
+                return "#00e8ff";
+              }}
+              maskColor="rgba(6, 4, 10, 0.85)"
+            />
+            <Panel position="top-left" className="!m-2 overflow-hidden border border-[#2a2038] bg-[#0a0810]/90 backdrop-blur-sm">
+              <p className="border-b border-[#2a2038] px-2 py-1 font-mono text-[8px] uppercase tracking-[0.3em] text-secondary/70">
+                modules
+              </p>
+              <ModulePalette
+                kinds={unlockedNodes}
+                onAdd={(kind) => addNode(kind)}
+              />
             </Panel>
           </ReactFlow>
         </div>
