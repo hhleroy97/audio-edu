@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ARRANGEMENT_RULE_PACK_LIST,
+  ArrangementRulePack,
   MultibusAudioScheduler,
   SongLayerEngine,
   SongScheduler,
+  getRulePack,
   isMultibusSong,
   lintSong,
   manifestToJson,
@@ -14,6 +16,7 @@ import {
   renderSongOffline,
   runArrangement,
   runMixPass,
+  songToMidiBlob,
   songTotalBeats,
   validateSong,
 } from "@/lib/song";
@@ -27,11 +30,27 @@ const ALL_TEMPLATES = [...MULTIBUS_SONG_TEMPLATES, ...SONG_TEMPLATES];
 
 const AGENT_LABELS: Record<string, string> = {
   section: "sections",
+  harmony: "harmony",
   pattern: "patterns",
+  transition: "trans",
+  groove: "groove",
   drum: "drums",
-  automation: "automation",
+  automation: "auto",
+  evaluation: "eval",
   mix: "lint",
 };
+
+const AGENT_ORDER = [
+  "section",
+  "harmony",
+  "pattern",
+  "transition",
+  "groove",
+  "drum",
+  "automation",
+  "evaluation",
+  "mix",
+] as const;
 
 type SongSource = "template" | "generated";
 
@@ -55,6 +74,7 @@ export function PatchSongPanel() {
   const [agentEvents, setAgentEvents] = useState<ArrangementAgentEventType[]>([]);
   const [generateBusy, setGenerateBusy] = useState(false);
   const [regenSectionId, setRegenSectionId] = useState("");
+  const [showRulePackJson, setShowRulePackJson] = useState(false);
 
   const [progressBeat, setProgressBeat] = useState(0);
   const [totalBeats, setTotalBeats] = useState(32);
@@ -66,6 +86,16 @@ export function PatchSongPanel() {
   const layerEngineRef = useRef<SongLayerEngine | null>(null);
   const multibusSchedulerRef = useRef<MultibusAudioScheduler | null>(null);
   const legacySchedulerRef = useRef<SongScheduler | null>(null);
+
+  const rulePackJson = useMemo(() => {
+    const pack = getRulePack(rulePackId);
+    if (!pack) return "";
+    try {
+      return JSON.stringify(ArrangementRulePack.parse(pack), null, 2);
+    } catch {
+      return "";
+    }
+  }, [rulePackId]);
 
   const templateSong = useMemo((): SongDefType | null => {
     const template = ALL_TEMPLATES.find((t) => t.id === selectedId);
@@ -216,6 +246,18 @@ export function PatchSongPanel() {
     }
   }, [generatedSong, regenSectionId, rulePackId, seed, stopSong]);
 
+  const exportMidi = useCallback(() => {
+    if (!song) return;
+    const blob = songToMidiBlob(song);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${song.meta.id}.mid`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatus("midi exported");
+  }, [song]);
+
   const exportSongDef = useCallback(() => {
     if (!song) return;
     const json = JSON.stringify(song, null, 2);
@@ -349,6 +391,18 @@ export function PatchSongPanel() {
         </label>
         <button
           type="button"
+          onClick={() => setShowRulePackJson((v) => !v)}
+          className="nodrag nopan mt-2 w-full border border-module-border bg-module-header px-2 py-1 font-mono text-[8px] uppercase text-secondary hover:text-cold"
+        >
+          {showRulePackJson ? "hide rule pack" : "view rule pack JSON"}
+        </button>
+        {showRulePackJson && rulePackJson && (
+          <pre className="nodrag nopan mt-1 max-h-32 overflow-auto border border-module-border bg-module-header p-1 font-mono text-[7px] text-secondary/90">
+            {rulePackJson}
+          </pre>
+        )}
+        <button
+          type="button"
           onClick={handleGenerate}
           disabled={generateBusy || playing}
           className="nodrag nopan mt-2 w-full border-2 border-hot bg-module-header px-2 py-1 font-mono text-[9px] uppercase text-hot hover:bg-hot/10 disabled:opacity-40"
@@ -357,8 +411,7 @@ export function PatchSongPanel() {
         </button>
         {latestAgentPhase.size > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
-            {(["section", "pattern", "drum", "automation", "mix"] as const).map(
-              (id) => {
+            {AGENT_ORDER.map((id) => {
                 const ev = latestAgentPhase.get(id);
                 if (!ev) return null;
                 const working =
@@ -378,8 +431,7 @@ export function PatchSongPanel() {
                     {AGENT_LABELS[id] ?? id}
                   </span>
                 );
-              }
-            )}
+              })}
           </div>
         )}
         {generatedSong && (
@@ -523,14 +575,24 @@ export function PatchSongPanel() {
         </button>
       </div>
 
-      <button
-        type="button"
-        onClick={exportSongDef}
-        disabled={!song}
-        className="nodrag nopan mt-2 w-full border border-module-border bg-module-header px-2 py-1 font-mono text-[9px] uppercase text-secondary hover:border-cold hover:text-cold disabled:opacity-40"
-      >
-        export song def
-      </button>
+      <div className="mt-2 flex gap-2">
+        <button
+          type="button"
+          onClick={exportSongDef}
+          disabled={!song}
+          className="nodrag nopan flex-1 border border-module-border bg-module-header px-2 py-1 font-mono text-[9px] uppercase text-secondary hover:border-cold hover:text-cold disabled:opacity-40"
+        >
+          export song def
+        </button>
+        <button
+          type="button"
+          onClick={exportMidi}
+          disabled={!song}
+          className="nodrag nopan flex-1 border border-module-border bg-module-header px-2 py-1 font-mono text-[9px] uppercase text-secondary hover:border-cold hover:text-cold disabled:opacity-40"
+        >
+          export midi
+        </button>
+      </div>
 
       <button
         type="button"

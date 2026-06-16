@@ -8,7 +8,11 @@ import {
   runArrangement,
   regenerateSection,
   RIDDIM_STANDARD_16,
+  runHarmonyAgent,
+  verifyGoldenSnapshot,
+  GOLDEN_ARRANGEMENT_SNAPSHOTS,
 } from "@/lib/song/agents";
+import { songToMidiBuffer } from "@/lib/song/export/midi-export";
 import { hashSongInputs } from "@/lib/song/render-offline";
 import { lintSong } from "@/lib/song/lint-song";
 
@@ -84,9 +88,23 @@ describe("arrangement agent", () => {
       (ev) => events.push(`${ev.agent}:${ev.phase}`)
     );
     expect(events).toContain("section:done");
+    expect(events).toContain("harmony:done");
     expect(events).toContain("pattern:done");
+    expect(events).toContain("transition:done");
+    expect(events).toContain("groove:done");
     expect(events).toContain("drum:done");
     expect(events).toContain("automation:done");
+    expect(events).toContain("evaluation:done");
+  });
+
+  it("exports midi buffer from generated song", () => {
+    const run = runArrangement({
+      rulePackId: RIDDIM_STANDARD_16.id,
+      seed: "midi-export",
+    });
+    const buf = songToMidiBuffer(run.song);
+    expect(buf.length).toBeGreaterThan(14);
+    expect(buf[0]).toBe(0x4d);
   });
 
   it("regenerates a single section", () => {
@@ -102,5 +120,23 @@ describe("arrangement agent", () => {
     const drop = regen.sections.find((s) => s.id === "drop-a");
     expect(drop?.events.length).toBeGreaterThan(0);
     expect(lintSong(regen).ok).toBe(true);
+  });
+});
+
+describe("golden snapshots", () => {
+  it("passes quality gates for all golden specs", () => {
+    for (const spec of GOLDEN_ARRANGEMENT_SNAPSHOTS) {
+      const result = verifyGoldenSnapshot(spec);
+      expect(result.ok, result.errors.join("; ")).toBe(true);
+      expect(result.inputsHash).toMatch(/^[0-9a-f]{8}$/);
+    }
+  });
+});
+
+describe("harmony agent", () => {
+  it("maps roman progression to section plans", () => {
+    const result = runHarmonyAgent(RIDDIM_STANDARD_16, "harmony-test");
+    expect(result.plans.length).toBe(RIDDIM_STANDARD_16.sections.length);
+    expect(result.rootMidi).toBeGreaterThan(20);
   });
 });

@@ -69,7 +69,7 @@
 
 ---
 
-## Active — Arrangement agents & song UI (87–93)
+## Active — Arrangement agents & song UI (87–93) ✅
 
 | Phase | Name | Goal | Commit tag |
 |-------|------|------|------------|
@@ -81,6 +81,17 @@
 | **92** | Rule packs | Regenerate-section, optional @tonejs/midi export | `feat(song): arrangement rule packs` |
 | **93** | Lesson + graph | Lesson 10, integration tests, graph nodes | `feat(lab): lesson 10 arrangement agents` |
 
+## Active — Robust song generation (94–99) ✅
+
+| Phase | Name | Goal | Commit tag |
+|-------|------|------|------------|
+| **94** | HarmonyAgent | Roman progression → section degree pools | `feat(song): HarmonyAgent + harmony schema` |
+| **95** | GrooveAgent | Ghost snares, euclidean hats, cat phrases | `feat(song): GrooveAgent` |
+| **96** | TransitionAgent | Pre-drop body dip, build filter sweep | `feat(song): TransitionAgent` |
+| **97** | EvaluationAgent | Quality gates + auto-regen retries | `feat(song): EvaluationAgent + pipeline retries` |
+| **98** | MIDI + samples | @tonejs/midi export, sample drum registry | `feat(song): MIDI export + sample drum registry` |
+| **99** | Golden + UI | Snapshot suite, rule-pack JSON viewer | `feat(lab): golden snapshots + rule pack viewer` |
+
 ### Shipped after 81–86 (unnumbered)
 
 | Work | Status |
@@ -88,22 +99,34 @@
 | Mix agent phase 2 (MixDef pass) | ✅ |
 | Drums + sidechain phase 3 | ✅ |
 
-## Dependency graph (87–93)
+## Dependency graph (87–99)
 
 ```
 81–86 + mix(2) + drums(3) (shipped)
   └── 87 (research + agent schemas)
         └── 88 ──► 89 ──► 90 ──► 91 ──► 92 ──► 93
                     │
+                    └── 94 Harmony ──► 95 Groove ──► 96 Transition
+                              └── 97 Evaluation ──► 98 MIDI/samples ──► 99 Golden/UI
+                    │
                     └── AutomationAgent subordinate to ArrangementAgent
                     └── MixAgent optional post-step (existing runMixPass)
 ```
 
-## Definition of done (milestone 87–93)
+## Definition of done (milestone 87–93) ✅
 
-- [ ] Generate full SongDef from rule pack + seed (deterministic hash)
-- [ ] Sub-agents emit Zod-valid fragments; supervisor merges + lintSong
-- [ ] AutomationAgent runs only after pattern/section merge
-- [ ] UI shows sub-agent progress and plays generated song
-- [ ] ≥2 rule packs; optional MIDI export
-- [ ] Lesson 10; docs + graph; `npm test` green
+- [x] Generate full SongDef from rule pack + seed (deterministic hash)
+- [x] Sub-agents emit Zod-valid fragments; supervisor merges + lintSong
+- [x] AutomationAgent runs only after pattern/section merge
+- [x] UI shows sub-agent progress and plays generated song
+- [x] ≥2 rule packs; optional MIDI export
+- [x] Lesson 10; docs + graph; `npm test` green
+
+## Definition of done (milestone 94–99) ✅
+
+- [x] HarmonyAgent maps roman progression to per-section degree pools
+- [x] GrooveAgent adds ghost snares / euclidean hats without breaking determinism
+- [x] TransitionAgent applies pre-drop dips and build filter sweeps
+- [x] EvaluationAgent gates output; supervisor retries on failure
+- [x] MIDI export + optional sample drum registry
+- [x] Golden snapshot suite; rule-pack JSON viewer in Patch Lab
