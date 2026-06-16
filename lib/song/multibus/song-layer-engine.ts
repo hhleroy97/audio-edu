@@ -61,6 +61,7 @@ export class SongLayerEngine {
       }
       this.layers.set(def.id, layer);
     }
+    this.masterBus.applyDefaultSynthSends();
   }
 
   loadFromSong(song: SongDefType): void {

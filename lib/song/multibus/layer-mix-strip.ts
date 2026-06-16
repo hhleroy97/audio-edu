@@ -21,6 +21,20 @@ export class LayerMixStrip {
     this.input.gain.value = 1;
     let tail: AudioNode = this.input;
 
+    if (config.saturate) {
+      const shaper = ctx.createWaveShaper();
+      const curve = new Float32Array(256);
+      for (let i = 0; i < 256; i++) {
+        const x = (i / 128 - 1) * 2.5;
+        curve[i] = Math.tanh(x * 0.85) * 0.92;
+      }
+      shaper.curve = curve;
+      shaper.oversample = "2x";
+      tail.connect(shaper);
+      tail = shaper;
+      this.disposables.push(shaper);
+    }
+
     if (config.hpfHz !== undefined && config.hpfHz > 0) {
       this.hpf = ctx.createBiquadFilter();
       this.hpf.type = "highpass";

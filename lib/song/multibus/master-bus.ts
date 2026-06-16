@@ -3,9 +3,11 @@ import type { MixProfileType } from "./mix-profiles";
 import {
   inferMixProfile,
   stripConfigForProfile,
+  SYNTH_SEND_DEFAULTS,
 } from "./mix-profiles";
 import { LayerMixStrip } from "./layer-mix-strip";
 import { MasterChain } from "./master-chain";
+import { SynthSendBus } from "./synth-send-bus";
 
 /** N-layer mix strips → faders → master chain → analyser → destination. */
 
@@ -16,6 +18,7 @@ export type LayerBusSlot = {
   fader: GainNode;
   /** Sidechain multiplier — 1 = full level, ducked on kick hits. */
   duckGain: GainNode;
+  sendGain: GainNode;
 };
 
 export type MasterBusOptions = {
@@ -26,6 +29,7 @@ export type MasterBusOptions = {
 export class MasterBus {
   readonly masterChain: MasterChain;
   readonly analyser: AnalyserNode;
+  readonly synthSend: SynthSendBus;
   private readonly slots = new Map<string, LayerBusSlot>();
   private readonly preMaster: GainNode;
 
@@ -39,6 +43,8 @@ export class MasterBus {
     this.masterChain = new MasterChain(ctx);
     this.preMaster = ctx.createGain();
     this.preMaster.gain.value = 1;
+
+    this.synthSend = new SynthSendBus(ctx, this.preMaster);
 
     this.analyser = ctx.createAnalyser();
     this.analyser.fftSize = 2048;
@@ -75,12 +81,24 @@ export class MasterBus {
     fader.gain.value = busGain;
     const duckGain = this.ctx.createGain();
     duckGain.gain.value = 1;
+    const sendDefaults = SYNTH_SEND_DEFAULTS[profile];
+    const sendGain = this.ctx.createGain();
+    sendGain.gain.value = sendDefaults.sendLevel;
     strip.output.connect(fader);
     fader.connect(duckGain);
     duckGain.connect(this.preMaster);
+    duckGain.connect(sendGain);
+    sendGain.connect(this.synthSend.input);
 
-    this.slots.set(layerId, { layerId, mixProfile: profile, strip, fader, duckGain });
+    this.slots.set(layerId, { layerId, mixProfile: profile, strip, fader, duckGain, sendGain });
     return strip.input;
+  }
+
+  applyDefaultSynthSends(atTime?: number): void {
+    this.synthSend.setMix(
+      { reverbMix: 0.22, delayMix: 0.14, chorusMix: 0.06 },
+      atTime
+    );
   }
 
   setLayerGain(layerId: string, gain: number, atTime?: number): void {
@@ -149,8 +167,10 @@ export class MasterBus {
       slot.strip.dispose();
       slot.fader.disconnect();
       slot.duckGain.disconnect();
+      slot.sendGain.disconnect();
     }
     this.slots.clear();
+    this.synthSend.dispose();
     this.preMaster.disconnect();
     this.masterChain.dispose();
     this.analyser.disconnect();

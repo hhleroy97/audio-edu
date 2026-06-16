@@ -46,6 +46,34 @@ function mockCtx() {
       connect: () => {},
       disconnect: () => {},
     }),
+    createConvolver: () => ({
+      buffer: null,
+      connect: () => {},
+      disconnect: () => {},
+    }),
+    createDelay: () => ({
+      delayTime: { value: 0.1 },
+      connect: () => {},
+      disconnect: () => {},
+    }),
+    createOscillator: () => ({
+      frequency: { value: 1 },
+      start: () => {},
+      connect: () => {},
+      disconnect: () => {},
+    }),
+    createWaveShaper: () => ({
+      curve: null,
+      oversample: "none",
+      connect: () => {},
+      disconnect: () => {},
+    }),
+    sampleRate: 44100,
+    createBuffer: (channels: number, length: number) => ({
+      numberOfChannels: channels,
+      length,
+      getChannelData: () => new Float32Array(length),
+    }),
   } as unknown as AudioContext;
 }
 

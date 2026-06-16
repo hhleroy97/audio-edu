@@ -73,6 +73,22 @@ function mockCtx() {
       connect: () => {},
       disconnect: () => {},
     }),
+    createConvolver: () => ({
+      buffer: null,
+      connect: () => {},
+      disconnect: () => {},
+    }),
+    createDelay: () => ({
+      delayTime: { value: 0.1 },
+      connect: () => {},
+      disconnect: () => {},
+    }),
+    createWaveShaper: () => ({
+      curve: null,
+      oversample: "none",
+      connect: () => {},
+      disconnect: () => {},
+    }),
     __scheduled: scheduled,
   } as unknown as AudioContext & {
     __scheduled: Array<{ layerId: string; atTime: number; depth: number }>;
