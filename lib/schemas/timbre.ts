@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RulePackSectionKind } from "./rule-pack";
+import { RulePackSectionKind } from "./section-kind";
 
 const LayerPreset = z.object({
   sub: z.string().default("clean-sub"),

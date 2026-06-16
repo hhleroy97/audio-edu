@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RulePackSectionKind } from "./rule-pack";
+import { RulePackSectionKind } from "./section-kind";
 
 export const SectionModFxSpec = z.object({
   bodyModProfileId: z.string().optional(),

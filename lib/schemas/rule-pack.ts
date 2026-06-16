@@ -3,18 +3,12 @@ import { AgentGate } from "./agents";
 import { EvaluationDef, GrooveDef, HarmonyDef, TransitionDef } from "./harmony";
 import { ModFxDef } from "./mod-fx";
 import { RiddimPocketDef } from "./rhythm";
+import { RulePackSectionKind } from "./section-kind";
 import { TimbreDef } from "./timbre";
 import { SongLayerDef } from "./song";
 
-export const RulePackSectionKind = z.enum([
-  "intro",
-  "build",
-  "drop",
-  "break",
-  "outro",
-]);
-
-export type RulePackSectionKindType = z.infer<typeof RulePackSectionKind>;
+export { RulePackSectionKind } from "./section-kind";
+export type { RulePackSectionKindType } from "./section-kind";
 
 export const RulePackSectionSpec = z.object({
   id: z.string(),
