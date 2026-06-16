@@ -476,3 +476,15 @@
 
 144. **Phase 109 — sample playback + drum sends** — `prepareMultibusEngine`, `DrumSendBus`, `drumSendFx` section events  
     `lib/song/multibus/prepare-engine.ts` · `lib/song/drums/drum-send-bus.ts` · see #107, #132–133
+
+145. **Chords & polyphony milestone research** — voice pool, chord IR, timbre scoring, beat automation (phases 116–121)  
+    `docs/research/chords-polyphony-milestone-116-121.md`
+
+146. **Layer energy model** — sub/body/top spectral slots and mix energy tradeoffs  
+    `docs/theory/layer-energy-model.md` · cites #2, #7, #47, #64, #135, #136
+
+147. **@tonaljs/voicing** — bass-register chord spelling for ChordVoicingAgent v3 (phase 117)  
+    `node_modules/@tonaljs/voicing/README.md` · see phase 106 research
+
+148. **Audio fidelity milestone 112–115** — pitch tracking, synth sends, harmony-locked sub  
+    `docs/research/audio-fidelity-milestone-112-115.md`

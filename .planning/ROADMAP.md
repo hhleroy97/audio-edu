@@ -183,3 +183,65 @@
 - [x] ≥3 rule packs exercise ≥6 archetype presets (phase 110 — yoi/tearout/infekt)
 - [x] 4-bar drum phrase variation in drops (phase 111)
 - [ ] Golden snapshots + `npm test` green per phase
+
+---
+
+## Planned — Audio fidelity & FX depth (112–115)
+
+> Research: `docs/research/audio-fidelity-milestone-112-115.md`
+
+| Phase | Name | Goal | Commit tag |
+|-------|------|------|------------|
+| **112** | Pitch tracking | MIDI → oscillator/FM frequency on scheduled notes | `fix(audio): generator pitch tracking (phase 112)` |
+| **113** | Synth FX stack | Send reverb/delay/chorus + bus saturation | `feat(song): synth send FX stack (phase 113)` |
+| **114** | Sub harmony lock | Sub uses `barSlots.rootMidi` per bar | `fix(song): harmony-locked sub pitch (phase 114)` |
+| **115** | Variety stretch | Preset morph + detune spread (future) | TBD |
+
+**Recommended order:** 112 → 114 → 113 → 115
+
+### Definition of done (milestone 112–115)
+
+- [x] Bass/sub pitch follows chord roots in drops (112, 114)
+- [x] Body/top audible send space in Patch Lab (113)
+- [x] `npm test` green (222 tests)
+
+---
+
+## Planned — Chords, polyphony & timbre intelligence (116–121)
+
+> Research: `docs/research/chords-polyphony-milestone-116-121.md`  
+> Theory: `docs/theory/layer-energy-model.md`  
+> **Motivation:** Harmony plans exist but output is monophonic; preset variety is static;
+> phrase slots don't drive synth automation.
+
+| Phase | Name | Goal | Commit tag |
+|-------|------|------|------------|
+| **116** | Poly voice pool | 2–4 voices per layer; `scheduleChord()` | `feat(song): polyphonic layer voice pool (phase 116)` |
+| **117** | Chord pattern IR | `bodyMidis[]` + multi-note pattern emission | `feat(song): chord voicing v3 pattern IR (phase 117)` |
+| **118** | Timbre scoring | Archetype metadata + deterministic preset scoring | `feat(song): TimbreScoringAgent (phase 118)` |
+| **119** | Layer energy docs | Theory + graph nodes for spectral slotting | `docs(theory): layer energy model (phase 119)` |
+| **120** | Beat automation | Phrase-slot macro/filter curves | `feat(song): beat-aware automation (phase 120)` |
+| **121** | Chord eval gates | Simultaneous-note + timbre diversity metrics | `feat(song): chord density eval gates (phase 121)` |
+
+**Recommended order:** 116 → 117 → 118 → 120 → 119 → 121
+
+### Dependency graph (116–121)
+
+```
+112–115 (pitch + FX)
+  └── 116 (voice pool)
+        └── 117 (chord IR)
+              ├── 118 (timbre scoring)
+              ├── 120 (beat automation)
+              └── 121 (eval gates)
+                    └── 119 (docs — parallel)
+```
+
+### Definition of done (milestone 116–121)
+
+- [ ] Body plays ≥2 simultaneous notes in drops (audible dyad)
+- [ ] ≥4 archetype presets used per generated song (scored, not random)
+- [ ] Phrase slots A/B/C/D drive distinct automation keyframes
+- [ ] Layer energy model documented with cited sources
+- [ ] Eval fails monophonic output when pack expects dyads
+- [ ] `npm test` green per phase

@@ -139,6 +139,23 @@ Techniques that apply across presets after phases 71–75:
 
 ---
 
+## §9 Song agents — timbre scoring & chords (116–121)
+
+Archetypes are tagged with `techniqueTags` for **deterministic** agent selection (not random):
+
+| Agent need | Filter archetypes by | Example presets |
+|------------|---------------------|-----------------|
+| Static intro sub | `technique:sub-layer`, low motion | `clean-sub` |
+| Drop body dyads | `technique:wobble-lfo-cutoff`, harmonic richness | `reese-riddim-body`, `harsh-square-fm` |
+| Yoi pack | `technique:formant-filter` | `yoi-talk-wobble` |
+| Metallic top | `technique:comb-metallic` | `dsf-allpass-comb`, `pro-metallic-comb` |
+
+**Chords:** Body layer must play **multiple simultaneous notes** (phase 116 voice pool).
+Harmony agent supplies `bodyMidis[]`; sub stays monophonic root. See
+`docs/research/chords-polyphony-milestone-116-121.md` and `docs/theory/layer-energy-model.md`.
+
+---
+
 ## Homework (A/B in browser)
 
 1. Load `dsf-allpass-comb` vs `metallic-phaser` — compare comb vs phaser centroid on scope overlay.

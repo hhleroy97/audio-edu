@@ -5,19 +5,25 @@
 Web-based sound-synthesis learning lab with Patch Lab node-graph canvas, grounded in
 RIDDIM/dubstep pedagogy and Zod-validated contracts (`AGENTS.md`, `HANDOFF.md`).
 
-## Current milestone: Arrangement agents & song UI (87–93)
+## Current milestone: Chords, polyphony & timbre intelligence (116–121)
 
-**Goal:** Procedural song generation from **rule packs** via a **supervisor arrangement agent** with specialist sub-agents (pattern, drum, automation, mix). Full arrangement UI in Patch Lab — generate, preview, further modulate via automation agent.
+**Goal:** Polyphonic layer voices so body can play dyads/triads; synthesis-grounded timbre
+scoring across the archetype catalog; beat-aware automation per phrase slot; eval gates for
+chord density.
 
-**Previous milestone (shipped):** Multibus riddim songs (81–86) + mix agent phase 2 + drums/sidechain phase 3.
+**Previous milestone (112–115, local):** Pitch tracking, harmony-locked sub, synth send FX.
 
-**Baseline:** SongDef v2, multibus engine, riddim templates, mix pass, procedural drums, PatchSongPanel.
+**Previous milestone (shipped):** Song depth & musical richness (106–111).
+
+**Baseline:** Multibus engine, ChordVoicingAgent bar slots, synth sends, 5+ rule packs.
 
 **Gap (this milestone):**
-- Templates are hand-authored — no rule-pack generation UI
-- No pluggable MIDI/pattern generator (`tonal` integration pending)
-- Automation is embedded in arrangement builder — not a separable sub-agent contract
-- No supervisor orchestration or sub-agent progress in UI
+- `LayerEngine` is monophonic — chord plans never audible
+- `PatternAgent` picks one degree per hit despite `bodyDegrees[]`
+- `TimbreAgent` uses static preset map — 18 archetypes underused
+- Automation is section-global — phrase slots don't tune synth macros
+
+## Previous milestone: Arrangement agents & song UI (87–93)
 
 ## Constraints
 
@@ -30,7 +36,10 @@ RIDDIM/dubstep pedagogy and Zod-validated contracts (`AGENTS.md`, `HANDOFF.md`).
 
 ## Canonical refs
 
-- `docs/research/arrangement-agent-landscape.md` — **new** GitHits + agent hierarchy
+- `docs/research/chords-polyphony-milestone-116-121.md` — **active** polyphony + timbre plan
+- `docs/theory/layer-energy-model.md` — layer spectrum / energy model
+- `docs/research/audio-fidelity-milestone-112-115.md` — pitch + FX (112–114)
+- `docs/research/arrangement-agent-landscape.md` — GitHits + agent hierarchy
 - `docs/research/multibus-song-engine-landscape.md`
 - `docs/research/procedural-music-landscape.md`
 - `docs/research/riddim-sound-catalog.md`
