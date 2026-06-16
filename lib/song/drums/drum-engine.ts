@@ -6,6 +6,8 @@ export class DrumEngine {
   readonly output: GainNode;
   private readonly ctx: AudioContext | OfflineAudioContext;
 
+  private readonly sampleBuffers: Partial<Record<DrumSampleId, AudioBuffer>> = {};
+
   constructor(ctx: AudioContext | OfflineAudioContext, destination: AudioNode) {
     this.ctx = ctx;
     this.output = ctx.createGain();
@@ -16,6 +18,11 @@ export class DrumEngine {
   scheduleHit(sampleId: string, atTime: number, velocity = 0.8): void {
     if (!isDrumSampleId(sampleId)) return;
     const v = Math.max(0, Math.min(1, velocity));
+    const buffer = this.sampleBuffers[sampleId];
+    if (buffer) {
+      this.scheduleBuffer(buffer, atTime, v);
+      return;
+    }
     switch (sampleId) {
       case "kick":
         this.scheduleKick(atTime, v);
@@ -27,6 +34,21 @@ export class DrumEngine {
         this.scheduleHat(atTime, v * 0.45);
         break;
     }
+  }
+
+  /** Attach decoded WAV — falls back to procedural when unset. */
+  setSampleBuffer(sampleId: DrumSampleId, buffer: AudioBuffer): void {
+    this.sampleBuffers[sampleId] = buffer;
+  }
+
+  private scheduleBuffer(buffer: AudioBuffer, atTime: number, velocity: number): void {
+    const src = this.ctx.createBufferSource();
+    src.buffer = buffer;
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(velocity, atTime);
+    src.connect(gain);
+    gain.connect(this.output);
+    src.start(atTime);
   }
 
   private scheduleKick(atTime: number, velocity: number): void {
