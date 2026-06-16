@@ -1,40 +1,48 @@
-# ROADMAP — Pro Modulation Milestone
+# ROADMAP — Procedural Song Generation Milestone
 
-> Milestone closes the gap between "tutorial bass" and producer-grade riddim patches.
-> Execute with `/gsd-execute-phase` or manually phase-by-phase.
+> Previous milestone (phases 71–75): **shipped** — pro modulation, resample, transport grid.  
+> Execute with `/gsd-plan-phase` / `/gsd-execute-phase` or Agent mode.
+
+## Completed — Pro modulation (71–75)
+
+| Phase | Name | Status |
+|-------|------|--------|
+| 71 | Bipolar CV & attenuation | ✅ |
+| 72 | Live mod preview | ✅ |
+| 73 | Advanced LFO & macro | ✅ |
+| 74 | Pro presets & lesson 07 | ✅ |
+| 75 | Workflow P3 | ✅ |
+
+---
+
+## Active — Procedural songs (76–80)
 
 | Phase | Name | Goal | Commit tag |
 |-------|------|------|------------|
-| **71** | Bipolar CV & attenuation | Signed mod depth + offset on CV edges; schema + engine | `feat(patch): bipolar CV routing` |
-| **72** | Live mod preview | Effective param readout when CV connected | `feat(patch): live mod preview on params` |
-| **73** | Advanced LFO & macro | S&H, key-track rate, macro node, richer PeriodicWave | `feat(patch): macro node and advanced LFO` |
-| **74** | Pro presets & verification | Dual-LFO growl presets, lesson 07, graph + UAT | `feat(patch): pro riddim presets and lesson 07` |
-| **75** | Workflow P3 (stretch) | Resample node, scope descriptors, transport grid | `feat(patch): resample and analysis workflow` |
+| **76** | Research & architecture | Landscape doc, RESEARCH.md, path decision | `docs(research): procedural music landscape` |
+| **77** | Song schema (Zod) | `SongDef`, `PatternIR`, example JSON | `feat(song): Zod song definition schema` |
+| **78** | Pattern scheduler | Beat clock → Patch Lab preset/note triggers | `feat(song): pattern scheduler for Patch Lab` |
+| **79** | Offline render | WAV + manifest export | `feat(song): offline song render pipeline` |
+| **80** | Song mode & templates | Lab UI, 2 riddim songs, lesson 08 | `feat(song): riddim song templates and lab mode` |
 
 ## Dependency graph
 
 ```
-71 ──► 72 ──► 74
- │      │
- └─► 73 ──┘
-              └──► 75 (optional)
+76 (research) ──► 77 ──► 78 ──► 79 ──► 80
+                      │
+                      └── uses presets from riddim-archetypes + pro pack
 ```
 
-## Definition of done (milestone)
+## Definition of done (milestone 76–80)
 
-- [ ] CV edge supports **bipolar depth** (−1…+1) and **offset** (attenuverter)
-- [ ] Mod matrix UI shows depth, offset, bipolar toggle per route
-- [ ] Knobs show **live effective value** when modulated (audio-nodes pattern)
-- [ ] LFO: sample-hold shape + optional **key-tracked rate**
-- [ ] **Macro** node fans one knob to N CV targets with per-target depth
-- [ ] ≥3 new **pro presets** (dual-LFO growl, stutter wobble, macro demo) pass preset tests
-- [ ] **Lesson 07** teaches mod matrix + dual LFO in guided flow
-- [ ] `docs/research/riddim-feature-roadmap.md` Phase D marked shipped
-- [ ] Knowledge graph supplement updated; `npm run graph:extract -- --force` clean
-- [ ] `npm test` green
+- [ ] `SongDef` validates in Zod; example 8-bar riddim drop JSON
+- [ ] Scheduler fires preset assignments at 140 BPM halftime
+- [ ] Offline render produces WAV + manifest (reproducible)
+- [ ] Lab “song mode” loads template and plays end-to-end
+- [ ] Docs + graph updated; `npm test` green
 
-## Out of scope (later milestone)
+## Out of scope
 
-- Chaos LFO (Serum Lorenz/Rossler)
-- M/S matrix, spectral ducking node
-- Full halftime arrangement grid with drum lanes
+- Full Strudel REPL / AGPL embed without legal review
+- SuperCollider install path
+- Auto-mastering / streaming distribution

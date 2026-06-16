@@ -29,6 +29,12 @@
 - Sources **#63–78** (DSF, PresetShare, CONMOD, NAS-FM, forums)
 - Preset panel grouped by `RIDDIM_ARCHETYPE_SECTIONS`
 
+### Procedural song generation (phase 76 research)
+
+- **`docs/research/procedural-music-landscape.md`** — Strudel/Tidal/Sonic Pi/Alda repo survey
+- GSD phases **76–80** in `.planning/ROADMAP.md`
+- Recommendation: pattern IR + Patch Lab scheduler + offline WAV
+
 ## 0.4.0 — 2026-06-15
 
 Patch Lab: React Flow node-graph canvas with live Web Audio routing and guided lesson 01.

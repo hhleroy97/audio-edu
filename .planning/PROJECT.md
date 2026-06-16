@@ -5,17 +5,15 @@
 Web-based sound-synthesis learning lab with Patch Lab node-graph canvas, grounded in
 RIDDIM/dubstep pedagogy and Zod-validated contracts (`AGENTS.md`, `HANDOFF.md`).
 
-## Current milestone: Pro modulation parity
+## Current milestone: Procedural song generation
 
-**Goal:** Patch Lab modulation infrastructure matches what Serum/Vital producers expect for
-riddim bass design — bipolar routing, live feedback, multi-LFO density, macro control, and
-reference presets that sound "finished" on headphones.
+**Goal:** Pre-generate full riddim songs — arrangement (pattern/time) + timbre (Patch Lab presets) → reproducible WAV + manifest.
 
-**Baseline (shipped):** Waves A–C in `docs/research/riddim-feature-roadmap.md` — FM, distortion,
-tempo LFO, layer stack, formants, mod matrix (unipolar depth only), custom LFO curves, etc.
+**Previous milestone (shipped):** Pro modulation parity (phases 71–75) + riddim archetype catalog (cycle 4).
 
-**Gap (this milestone):** Mod matrix lacks bipolar/attenuverter semantics, no live mod preview,
-no macro fan-out, LFO shapes missing S&H/key-track, P3 workflow (resample, grid, descriptors).
+**Baseline:** 35 Patch Lab presets, transport grid, resample→sampler, Zod contracts, knowledge graph.
+
+**Gap (this milestone):** No song-level schema, no pattern scheduler, no offline render pipeline, no Strudel/Tidal-inspired arrangement layer.
 
 ## Constraints
 
@@ -30,4 +28,5 @@ no macro fan-out, LFO shapes missing S&H/key-track, P3 workflow (resample, grid,
 - `docs/research/riddim-synthesis.md`
 - `docs/research/pro-modulation-plan.md`
 - `UI_OVERHAUL_HANDOFF.md`
-- arXiv:2510.06204 (mod discovery), synflow mod-matrix pattern, audio-nodes live mod preview
+- `docs/research/procedural-music-landscape.md`
+- `docs/research/riddim-sound-catalog.md`

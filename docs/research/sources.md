@@ -267,3 +267,35 @@
 
 78. **Polarity — Bitwig Phase-4 dubstep bass** — additive partials + FM + EQ split ~300 Hz  
     https://polarity.me/posts/polarity-music/2022-03-01-dubstep-bass-sounds-without-vital-or-serum-bitwig-phase-4/
+
+### Procedural / algorithmic composition (phase 76 research)
+
+79. **TidalCycles** — Haskell pattern language; cyclic mini-notation; SuperDirt backend  
+    https://tidalcycles.org/ · https://github.com/tidalcycles/Tidal
+
+80. **Strudel** — JavaScript Tidal port; browser Web Audio; `@strudel/web`  
+    https://strudel.cc/ · https://github.com/tidalcycles/strudel · https://codeberg.org/uzu/strudel
+
+81. **Alda** — score DSL; programmatic composition via external languages  
+    https://github.com/alda-lang/alda · doc/writing-music-programmatically.md
+
+82. **Sonic Pi** — Ruby live-coding; SC backend; built-in WAV record  
+    https://sonic-pi.net/ · https://github.com/sonic-pi-net/sonic-pi
+
+83. **SuperCollider** — real-time synthesis server (Tidal/Sonic Pi backend)  
+    https://github.com/supercollider/supercollider
+
+84. **FoxDot** — Python live-coding on SuperCollider  
+    https://github.com/Qirky/FoxDot
+
+85. **toplap/awesome-livecoding** — curated live-coding tools list  
+    https://github.com/toplap/awesome-livecoding
+
+86. **Strudel vs Tidal comparison (Soniare)** — browser vs Haskell; pattern algebra  
+    https://www.soniare.net/blog/live-coding-systems-comparison
+
+87. **IllMuzik — live coding export workflows** — Sonic Pi WAV; Tidal MIDI routing  
+    https://www.illmuzik.com/threads/daws-are-nice-but-have-you-ever-tried-live-coding-music.45405/
+
+88. **Barn Lab — Strudel programming music** — pattern-as-data; export limitations  
+    https://warped3.substack.com/p/programming-music
