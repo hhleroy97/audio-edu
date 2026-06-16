@@ -3,6 +3,7 @@ import { buildSongManifest, encodeWavPcm16, type SongManifest } from "./render-o
 import { songDurationSec } from "./timeline";
 import { compileMultibusSchedule } from "./multibus/compile-schedule";
 import { dispatchMultibusAction } from "./multibus/audio-scheduler";
+import { prepareMultibusEngine } from "./multibus/prepare-engine";
 import { SongLayerEngine } from "./multibus/song-layer-engine";
 
 export type StemManifestEntry = {
@@ -57,8 +58,7 @@ export async function renderMultibusStems(
   const engine = new SongLayerEngine({ ctx, destination: ctx.destination });
 
   try {
-    engine.loadFromSong(song);
-    engine.setTransportBpm(song.meta.bpm);
+    await prepareMultibusEngine(engine, song);
     const epoch = 0.05;
     const actions = compileMultibusSchedule(song, epoch, song.meta.bpm);
 

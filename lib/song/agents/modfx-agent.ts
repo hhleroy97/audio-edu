@@ -61,6 +61,17 @@ export function runModFxAgent(input: ModFxAgentInput): ModFxAgentResult {
       extraEvents.push(...expandModProfile(topProfile, "top"));
     }
 
+    const reverbMix =
+      fxSpec.drumSendReverb ?? modFx.defaultDrumSendReverb;
+    const delayMix = fxSpec.drumSendDelay ?? 0;
+
+    extraEvents.push({
+      kind: "drumSendFx" as const,
+      beat: 0,
+      reverbMix,
+      delayMix,
+    });
+
     if (fxSpec.drumSendReverb !== undefined) {
       maxReverb = Math.max(maxReverb, fxSpec.drumSendReverb);
     }

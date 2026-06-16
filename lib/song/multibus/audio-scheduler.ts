@@ -5,6 +5,7 @@ import {
   scheduleEndTime,
   type CompiledAction,
 } from "./compile-schedule";
+import { prepareMultibusEngine } from "./prepare-engine";
 import type { SongLayerEngine } from "./song-layer-engine";
 
 export type MultibusSchedulerProgress = {
@@ -48,6 +49,12 @@ export function dispatchMultibusAction(
     }
     case "drumHit":
       engine.playDrumHit(action.sampleId, action.atTime, action.velocity);
+      break;
+    case "drumSendFx":
+      engine.setDrumSendFx(
+        { reverbMix: action.reverbMix, delayMix: action.delayMix },
+        action.atTime
+      );
       break;
     case "gate": {
       if (!action.layerId || action.layerId === "drums") return;
@@ -106,8 +113,7 @@ export class MultibusAudioScheduler {
     this.stop();
     const { engine, onProgress, onComplete } = this.options;
 
-    engine.loadFromSong(song);
-    engine.setTransportBpm(song.meta.bpm);
+    await prepareMultibusEngine(engine, song);
     await engine.startAll();
 
     this.epoch = engine.ctx.currentTime + 0.08;

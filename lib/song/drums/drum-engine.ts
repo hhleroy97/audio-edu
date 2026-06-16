@@ -1,10 +1,15 @@
 import type { DrumSampleId } from "@/lib/schemas/drums";
+import type { DrumSendFxType } from "@/lib/schemas/song";
 import { isDrumSampleId } from "@/lib/schemas/drums";
+import { DrumSendBus } from "./drum-send-bus";
 
-/** Procedural kick/snare/hat — no external samples (GitHits #108 Web Audio scheduling). */
+const SEND_SAMPLE_IDS = new Set<DrumSampleId>(["snare", "clap"]);
+
+/** Procedural kick/snare/hat — optional WAV + snare send FX (#109). */
 export class DrumEngine {
   readonly output: GainNode;
   private readonly ctx: AudioContext | OfflineAudioContext;
+  private readonly sendBus: DrumSendBus;
 
   private readonly sampleBuffers: Partial<Record<DrumSampleId, AudioBuffer>> = {};
 
@@ -13,6 +18,15 @@ export class DrumEngine {
     this.output = ctx.createGain();
     this.output.gain.value = 0.85;
     this.output.connect(destination);
+    this.sendBus = new DrumSendBus(ctx, destination);
+  }
+
+  get loadedSampleCount(): number {
+    return Object.keys(this.sampleBuffers).length;
+  }
+
+  usesSampleBuffer(sampleId: DrumSampleId): boolean {
+    return this.sampleBuffers[sampleId] !== undefined;
   }
 
   scheduleHit(sampleId: string, atTime: number, velocity = 0.8): void {
@@ -20,7 +34,10 @@ export class DrumEngine {
     const v = Math.max(0, Math.min(1, velocity));
     const buffer = this.sampleBuffers[sampleId];
     if (buffer) {
-      this.scheduleBuffer(buffer, atTime, v);
+      this.scheduleBuffer(buffer, atTime, v, this.output);
+      if (SEND_SAMPLE_IDS.has(sampleId)) {
+        this.scheduleBuffer(buffer, atTime, v * 0.72, this.sendBus.input);
+      }
       return;
     }
     switch (sampleId) {
@@ -44,14 +61,46 @@ export class DrumEngine {
     this.sampleBuffers[sampleId] = buffer;
   }
 
-  private scheduleBuffer(buffer: AudioBuffer, atTime: number, velocity: number): void {
+  setSendFx(sendFx: DrumSendFxType, atTime?: number): void {
+    this.sendBus.setMix(sendFx, atTime ?? this.ctx.currentTime);
+  }
+
+  private scheduleBuffer(
+    buffer: AudioBuffer,
+    atTime: number,
+    velocity: number,
+    destination: AudioNode
+  ): void {
     const src = this.ctx.createBufferSource();
     src.buffer = buffer;
     const gain = this.ctx.createGain();
     gain.gain.setValueAtTime(velocity, atTime);
     src.connect(gain);
-    gain.connect(this.output);
+    gain.connect(destination);
     src.start(atTime);
+  }
+
+  private scheduleSnareToSend(atTime: number, velocity: number): void {
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.12));
+    }
+    this.scheduleBuffer(buffer, atTime, velocity, this.output);
+    this.scheduleBuffer(buffer, atTime, velocity * 0.65, this.sendBus.input);
+  }
+
+  private scheduleClapToSend(atTime: number, velocity: number): void {
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.08);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / bufferSize;
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-t * 18) * (1 - t);
+    }
+    this.scheduleBuffer(buffer, atTime, velocity, this.output);
+    this.scheduleBuffer(buffer, atTime, velocity * 0.55, this.sendBus.input);
   }
 
   private scheduleKick(atTime: number, velocity: number): void {
@@ -70,49 +119,11 @@ export class DrumEngine {
   }
 
   private scheduleSnare(atTime: number, velocity: number): void {
-    const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.12));
-    }
-    const src = this.ctx.createBufferSource();
-    src.buffer = buffer;
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.value = 1800;
-    filter.Q.value = 0.8;
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(velocity, atTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, atTime + 0.16);
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.output);
-    src.start(atTime);
-    src.stop(atTime + 0.2);
+    this.scheduleSnareToSend(atTime, velocity);
   }
 
   private scheduleClap(atTime: number, velocity: number): void {
-    const bufferSize = Math.floor(this.ctx.sampleRate * 0.08);
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      const t = i / bufferSize;
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-t * 18) * (1 - t);
-    }
-    const src = this.ctx.createBufferSource();
-    src.buffer = buffer;
-    const hp = this.ctx.createBiquadFilter();
-    hp.type = "highpass";
-    hp.frequency.value = 900;
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(velocity, atTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, atTime + 0.07);
-    src.connect(hp);
-    hp.connect(gain);
-    gain.connect(this.output);
-    src.start(atTime);
-    src.stop(atTime + 0.08);
+    this.scheduleClapToSend(atTime, velocity);
   }
 
   private scheduleHat(atTime: number, velocity: number): void {
@@ -138,6 +149,7 @@ export class DrumEngine {
   }
 
   dispose(): void {
+    this.sendBus.dispose();
     this.output.disconnect();
   }
 }

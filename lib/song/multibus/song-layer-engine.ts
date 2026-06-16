@@ -1,5 +1,5 @@
-import type { SongDefType, SongLayerDefType } from "@/lib/schemas/song";
 import type { SidechainDefType } from "@/lib/schemas/drums";
+import type { DrumSendFxType, SongDefType, SongLayerDefType } from "@/lib/schemas/song";
 import { DrumEngine, SidechainDucker } from "../drums";
 import { applyMixDefaultsToLayer } from "./mix-profiles";
 import { MasterBus } from "./master-bus";
@@ -79,6 +79,10 @@ export class SongLayerEngine {
 
   configureSidechain(config: SidechainDefType | null): void {
     this.sidechain.setConfig(config);
+  }
+
+  setDrumSendFx(sendFx: DrumSendFxType, atTime?: number): void {
+    this.drumEngine.setSendFx(sendFx, atTime);
   }
 
   /** Schedule procedural drum + optional kick sidechain duck. */

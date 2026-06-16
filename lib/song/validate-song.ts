@@ -82,6 +82,7 @@ function inferEventKind(event: Record<string, unknown>): PatternEventType["kind"
     return event.layer !== undefined ? "layerPreset" : "preset";
   }
   if (typeof event.gain === "number") return "layerGain";
+  if (typeof event.reverbMix === "number") return "drumSendFx";
   if (typeof event.open === "boolean") return "gate";
   if (typeof event.param === "string") return "automation";
   if (event.midi !== undefined || typeof event.note === "string") return "note";

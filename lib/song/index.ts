@@ -107,6 +107,8 @@ export type {
 export { applySongGainToFlow } from "./multibus/layer-engine";
 export { LayerEngine } from "./multibus/layer-engine";
 export { SongLayerEngine } from "./multibus/song-layer-engine";
+export { prepareMultibusEngine } from "./multibus/prepare-engine";
+export type { PrepareMultibusResult } from "./multibus/prepare-engine";
 export {
   compileMultibusSchedule,
   scheduleEndTime,

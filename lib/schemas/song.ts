@@ -111,6 +111,13 @@ export const LayerPresetPatternEvent = PatternEventBase.extend({
   presetId: z.string(),
 });
 
+/** Per-section drum send levels — snare/clap reverb + delay (#109). */
+export const DrumSendFxPatternEvent = PatternEventBase.extend({
+  kind: z.literal("drumSendFx"),
+  reverbMix: z.number().min(0).max(1),
+  delayMix: z.number().min(0).max(1).optional(),
+});
+
 /** Pattern IR event — when something happens on the beat grid. */
 export const PatternEvent = z.discriminatedUnion("kind", [
   NotePatternEvent,
@@ -119,6 +126,7 @@ export const PatternEvent = z.discriminatedUnion("kind", [
   AutomationPatternEvent,
   LayerGainPatternEvent,
   LayerPresetPatternEvent,
+  DrumSendFxPatternEvent,
 ]);
 
 export const SectionDef = z.object({

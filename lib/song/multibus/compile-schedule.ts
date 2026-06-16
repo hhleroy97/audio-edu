@@ -1,4 +1,4 @@
-import type { ModAutomationType, PatternEventType, SongDefType } from "@/lib/schemas/song";
+import type { DrumSendFxType, ModAutomationType, PatternEventType, SongDefType } from "@/lib/schemas/song";
 import { beatToSeconds, flattenSongEvents, songDurationSec } from "../timeline";
 
 export type CompiledAction =
@@ -37,6 +37,13 @@ export type CompiledAction =
       type: "drumHit";
       sampleId: string;
       velocity: number;
+      absoluteBeat: number;
+    }
+  | {
+      atTime: number;
+      type: "drumSendFx";
+      reverbMix: number;
+      delayMix: number;
       absoluteBeat: number;
     }
   | {
@@ -205,6 +212,15 @@ export function compileMultibusSchedule(
           type: "layerPreset",
           layerId: event.layer ?? "body",
           presetId: event.presetId,
+          absoluteBeat: event.absoluteBeat,
+          atTime,
+        });
+        break;
+      case "drumSendFx":
+        actions.push({
+          type: "drumSendFx",
+          reverbMix: event.reverbMix,
+          delayMix: event.delayMix ?? 0,
           absoluteBeat: event.absoluteBeat,
           atTime,
         });
