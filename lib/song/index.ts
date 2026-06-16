@@ -132,6 +132,35 @@ export type { RiddimDrumGridOptions } from "./drums";
 export { DEFAULT_SIDECHAIN, SidechainDef, DRUM_SAMPLE_IDS } from "@/lib/schemas/drums";
 export type { SidechainDefType, DrumSampleId } from "@/lib/schemas/drums";
 
+export {
+  runArrangement,
+  regenerateSection,
+  listRulePacks,
+  getRulePack,
+  ARRANGEMENT_RULE_PACK_LIST,
+} from "./agents";
+export type { ArrangementProgressCallback } from "./agents";
+export { euclideanRhythm, euclideanBeatHits } from "./pattern/euclidean";
+export {
+  midiFromScaleDegree,
+  scaleNotesForKey,
+  createSeededRng,
+} from "./pattern/tonal-notes";
+
+export {
+  ArrangementRequest,
+  ArrangementRun,
+  ArrangementAgentEvent,
+} from "@/lib/schemas/agents";
+export type {
+  ArrangementRequestType,
+  ArrangementRunType,
+  ArrangementAgentEventType,
+  ArrangementSubAgentIdType,
+} from "@/lib/schemas/agents";
+export { ArrangementRulePack } from "@/lib/schemas/rule-pack";
+export type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
+
 export { lintSong } from "./lint-song";
 export type { SongLintResult } from "./lint-song";
 
