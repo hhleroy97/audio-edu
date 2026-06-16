@@ -139,6 +139,7 @@ export type MixProfileType = z.infer<typeof MixProfile>;
 export type PatchAssignmentType = z.infer<typeof PatchAssignment>;
 export type SongLayerDefType = z.infer<typeof SongLayerDef>;
 export type DrumHitType = z.infer<typeof DrumHit>;
+export type DrumLaneDefType = z.infer<typeof DrumLaneDef>;
 export type PatternCombinatorType = z.infer<typeof PatternCombinator>;
 export type ModAutomationType = z.infer<typeof ModAutomation>;
 export type PatternEventType = z.infer<typeof PatternEvent>;
