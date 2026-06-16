@@ -291,10 +291,43 @@ Run: `npm run graph:extract -- --force`
 
 ---
 
-## Cycle log
+## Cycle 4 — 2026-06-16 (gnarly archetype sprint)
+
+### A. Community & forum pass (Reddit proxies)
+
+| Finding | Source |
+|---------|--------|
+| Riddim = repetitive FM/plain wobble @ **1/4**; brostep has more variation | DSF #64 |
+| Square + FM from B; LFO on volume, cutoff, FM; **second LFO half-rate on FX** | DSF #64 |
+| Cymatics FM WT → volume LFO → **allpass ~2–5% @ ~20 Hz** → comb/flanger | DSF #64 |
+| Virtual Riot riddim: macro comb tuning, FM, detune, comb feedback throws | PresetShare #72 |
+| Hyper tearout screech: detune + high FM + comb sustain | PresetShare #75 |
+| Audiotool: WT/FM + env automation + **distortion stack** + separate sine sub | #77 |
+
+### B. arXiv additions
+
+| Paper | Patch Lab mapping |
+|-------|-------------------|
+| NAS-FM (#67) | Validates FM ratio/index as primary growl knobs |
+| CONMOD (#71) | Comb/flanger LFO rate + feedback → `modFx` node params |
+| Mitcheltree DAFx (#74) | Dual-LFO teaching + mod matrix depth |
+
+### C. GitHits — Web Audio API
+
+Indexed `webaudio/web-audio-api`: `WaveShaperNode.curve` bipolar shaping; `BiquadFilterNode` cutoff/Q as `AudioParam` — confirms Patch Lab CV additive model (#9).
+
+### D. Deliverables
+
+- **`docs/research/riddim-sound-catalog.md`** — 6 subsections, 13 archetype presets
+- **`lib/patch/presets/riddim-archetypes.ts`** — grouped `RIDDIM_ARCHETYPE_SECTIONS`
+- **`PatchPresetPanel`** — subsection headers in preset UI
+- Sources **#63–78**; graph supplement extended
+
+---
 
 | Cycle | Date | New sources added | Notes |
 |-------|------|-------------------|-------|
 | 1 | 2026-06-16 | 19–43 in sources.md | Initial compile; Reddit blocked; GitHits auth missing |
 | 2 | 2026-06-16 | 44–54 in sources.md | Vital + DDX7 + phase layering + Serum2/Vital |
 | 3 | 2026-06-16 | 55–62 in sources.md | Workflow/resample; FM+comb; graph supplement merged |
+| 4 | 2026-06-16 | 63–78 in sources.md | Gnarly archetype catalog; 13 presets; DSF/arXiv/forum pass |

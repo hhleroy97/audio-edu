@@ -1,5 +1,8 @@
 import { PatchPreset } from "@/lib/schemas/patch";
 import type { LessonChainDef } from "@/lib/patch/lesson-chain";
+import { RIDDIM_ARCHETYPE_PRESETS, RIDDIM_ARCHETYPE_SECTIONS } from "./riddim-archetypes";
+
+export { RIDDIM_ARCHETYPE_SECTIONS } from "./riddim-archetypes";
 
 function preset(
   def: Omit<PatchPreset, "patch"> & { patch: LessonChainDef }
@@ -1719,7 +1722,11 @@ export const PATCH_PRESETS = [
   proStutterWobblePreset,
   proMacroWobblePreset,
   proMetallicCombPreset,
+  ...RIDDIM_ARCHETYPE_PRESETS,
 ] as const;
+
+export type RiddimArchetypeSectionId =
+  (typeof RIDDIM_ARCHETYPE_SECTIONS)[number]["id"];
 
 export function getPatchPreset(id: string): PatchPreset | undefined {
   return PATCH_PRESETS.find((p) => p.id === id);

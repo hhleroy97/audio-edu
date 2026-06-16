@@ -23,6 +23,12 @@
 - **Phase 74:** Four pro presets, lesson 07 mod matrix mastery
 - **Phase 75:** Resample → sampler, spectral centroid on FFT, transport sync grid
 
+### Research cycle 4 — gnarly archetype catalog
+
+- **`docs/research/riddim-sound-catalog.md`** — 6 subsections, 13 playable archetypes
+- Sources **#63–78** (DSF, PresetShare, CONMOD, NAS-FM, forums)
+- Preset panel grouped by `RIDDIM_ARCHETYPE_SECTIONS`
+
 ## 0.4.0 — 2026-06-15
 
 Patch Lab: React Flow node-graph canvas with live Web Audio routing and guided lesson 01.

@@ -44,8 +44,20 @@ describe("patch presets", () => {
     expect(mixEdges.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("bundles twenty-two presets", () => {
-    expect(PATCH_PRESETS.length).toBe(22);
+  it("bundles thirty-five presets", () => {
+    expect(PATCH_PRESETS.length).toBe(35);
+  });
+
+  it("loads gnarly archetype hydraulic-press-wobble", () => {
+    const patch = presetToPatch("hydraulic-press-wobble");
+    expect(patch).not.toBeNull();
+    expect(patch!.nodes.some((n) => n.type === "distortion")).toBe(true);
+  });
+
+  it("loads dsf-allpass-comb dual modFx chain", () => {
+    const patch = presetToPatch("dsf-allpass-comb");
+    expect(patch).not.toBeNull();
+    expect(patch!.nodes.filter((n) => n.type === "modFx").length).toBe(2);
   });
 
   it("fm-growl-stub wires LFO cv to FM index", () => {

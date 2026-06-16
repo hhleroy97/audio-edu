@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "generatedAt": "2026-06-16T05:21:53.450Z",
+  "generatedAt": "2026-06-16T05:46:03.449Z",
   "fingerprint": "a2841590dd68ea507f3cdb66f158bdffa4db6b2053a1575be901d3999d384e11",
   "nodes": [
     {
@@ -1450,6 +1450,40 @@
       "sources": [
         "docs/research/pro-modulation-plan.md"
       ]
+    },
+    {
+      "id": "technique:tearout-screech",
+      "label": "tearout screech",
+      "type": "technique",
+      "summary": "High FM index + comb + stacked clip — riddim-tearout hybrid sustain.",
+      "experimentIds": [],
+      "sources": [
+        "docs/research/sources.md#73",
+        "docs/research/sources.md#75"
+      ]
+    },
+    {
+      "id": "technique:dsf-allpass-comb",
+      "label": "DSF allpass-comb chain",
+      "type": "technique",
+      "summary": "Volume LFO → slow allpass wobble → comb/flanger metallic tail.",
+      "experimentIds": [],
+      "sources": [
+        "docs/research/sources.md#64"
+      ]
+    },
+    {
+      "id": "technique:hydraulic-wobble",
+      "label": "hydraulic wobble",
+      "type": "technique",
+      "summary": "Slow heavy 1/4 body wobble 80–400 Hz — riddim hydraulic press.",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "docs/research/sources.md#63",
+        "docs/research/riddim-sound-catalog.md"
+      ]
     }
   ],
   "edges": [
@@ -2810,14 +2844,42 @@
       "predicate": "implements",
       "confidence": 0.9,
       "evidence": "docs/research/sources.md#55"
+    },
+    {
+      "from": "technique:fm-growl",
+      "to": "technique:tearout-screech",
+      "predicate": "extends",
+      "confidence": 0.88,
+      "evidence": "lib/patch/presets/riddim-archetypes.ts#tearout-screech-sustain"
+    },
+    {
+      "from": "technique:wobble-lfo-cutoff",
+      "to": "technique:hydraulic-wobble",
+      "predicate": "specializes",
+      "confidence": 0.92,
+      "evidence": "docs/research/riddim-sound-catalog.md#1"
+    },
+    {
+      "from": "technique:comb-metallic",
+      "to": "technique:dsf-allpass-comb",
+      "predicate": "implements",
+      "confidence": 0.9,
+      "evidence": "docs/research/sources.md#64"
+    },
+    {
+      "from": "source:research-mod-discovery",
+      "to": "technique:hydraulic-wobble",
+      "predicate": "validates",
+      "confidence": 0.85,
+      "evidence": "arXiv:2510.06204 Bass Hard presets"
     }
   ],
   "stats": {
     "experiments": 6,
     "concepts": 19,
     "sources": 54,
-    "edges": 194,
+    "edges": 198,
     "deterministic": 171,
-    "llm": 23
+    "llm": 27
   }
 }

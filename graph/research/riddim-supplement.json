@@ -208,6 +208,30 @@
       "summary": "Bounce wobble to sample, chop and re-layer — Subtronics-style iteration.",
       "experimentIds": [],
       "sources": ["docs/research/sources.md#55", "docs/research/sources.md#5"]
+    },
+    {
+      "id": "technique:tearout-screech",
+      "label": "tearout screech",
+      "type": "technique",
+      "summary": "High FM index + comb + stacked clip — riddim-tearout hybrid sustain.",
+      "experimentIds": [],
+      "sources": ["docs/research/sources.md#73", "docs/research/sources.md#75"]
+    },
+    {
+      "id": "technique:dsf-allpass-comb",
+      "label": "DSF allpass-comb chain",
+      "type": "technique",
+      "summary": "Volume LFO → slow allpass wobble → comb/flanger metallic tail.",
+      "experimentIds": [],
+      "sources": ["docs/research/sources.md#64"]
+    },
+    {
+      "id": "technique:hydraulic-wobble",
+      "label": "hydraulic wobble",
+      "type": "technique",
+      "summary": "Slow heavy 1/4 body wobble 80–400 Hz — riddim hydraulic press.",
+      "experimentIds": ["05-filtering"],
+      "sources": ["docs/research/sources.md#63", "docs/research/riddim-sound-catalog.md"]
     }
   ],
   "edges": [
@@ -371,6 +395,34 @@
       "predicate": "implements",
       "confidence": 0.9,
       "evidence": "docs/research/sources.md#55"
+    },
+    {
+      "from": "technique:fm-growl",
+      "to": "technique:tearout-screech",
+      "predicate": "extends",
+      "confidence": 0.88,
+      "evidence": "lib/patch/presets/riddim-archetypes.ts#tearout-screech-sustain"
+    },
+    {
+      "from": "technique:wobble-lfo-cutoff",
+      "to": "technique:hydraulic-wobble",
+      "predicate": "specializes",
+      "confidence": 0.92,
+      "evidence": "docs/research/riddim-sound-catalog.md#1"
+    },
+    {
+      "from": "technique:comb-metallic",
+      "to": "technique:dsf-allpass-comb",
+      "predicate": "implements",
+      "confidence": 0.9,
+      "evidence": "docs/research/sources.md#64"
+    },
+    {
+      "from": "source:research-mod-discovery",
+      "to": "technique:hydraulic-wobble",
+      "predicate": "validates",
+      "confidence": 0.85,
+      "evidence": "arXiv:2510.06204 Bass Hard presets"
     }
   ]
 }

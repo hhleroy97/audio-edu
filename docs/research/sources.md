@@ -217,3 +217,53 @@
 
 62. **Luo & Yu — BS-RoFormer** (arXiv:2309.02612) — band-split spectral modeling; stem separation context  
     https://arxiv.org/abs/2309.02612
+
+### Sprint cycle 4 — gnarly archetypes (2026-06-16)
+
+63. **Preset Drive — Riddim wobbles § body range** — 80–400 Hz hydraulic body; HP for sub split  
+    https://www.presetdrive.com/how-to-make-riddim-wobbles-in-serum/
+
+64. **DSF Community — Riddim production thread** — square+FM, 1/4 LFO, half-rate FX LFO, allpass→comb chain  
+    https://community.dsf.ninja/t/riddim-a-type-of-dubstep-production-techniques-help-thread/12308
+
+65. **Preset Drive — Wobble bass guide** — triplet/dotted LFO divisions; FM on osc for wobble complexity  
+    https://www.presetdrive.com/how-to-create-wobble-bass-in-serum-for-dubstep/
+
+66. **Preset Drive — Neurofunk / screech guide** — pitch-mod FM, HP screech 500–800 Hz, noise grit layer  
+    https://www.presetdrive.com/how-to-make-neurofunk-in-serum/
+
+67. **Huang et al. — NAS-FM** (arXiv:2305.12868, IJCAI 2023) — neural search for FM synth architecture  
+    https://arxiv.org/abs/2305.12868
+
+68. **UKF — Infekt riddim guide** — constant pitch/filter/phaser motion; static patches fail  
+    https://ukf.com/read/infekts-guide-to-riddim/
+
+69. **Preset Drive — Riddim bass guide § formant/yoi** — French/German LP vowel sweeps; dual filter series  
+    https://www.presetdrive.com/how-to-make-riddim-bass-in-serum-complete-sound-design-guide/
+
+70. **Preset Drive — Wobble § resonance** — 30–40% Q at 200–400 Hz for vocal wobble quality  
+    https://www.presetdrive.com/how-to-create-wobble-bass-in-serum-for-dubstep/
+
+71. **Carson et al. — CONMOD** (arXiv:2406.13935) — controllable neural phaser/flanger; comb as delay-line notches  
+    https://arxiv.org/abs/2406.13935
+
+72. **PresetShare — Complex Riddim Bass** — macro comb tuning + FM + max modulation density  
+    https://presetshare.com/p11579
+
+73. **Preset Drive — Tearout presets guide** — stacked distortion, audio-rate LFO, riddim-tearout hybrid  
+    https://www.presetdrive.com/tearout-serum-presets/
+
+74. **Mitcheltree et al. — Modulation Extraction for LFO-driven FX** (DAFx 2023) — phaser/flanger LFO recovery  
+    https://www.aes.org/e-lib/browse.cfm?elib=22022
+
+75. **PresetShare — Hyper Tearout Screech** — detune + high FM + comb filter sustain bass  
+    https://presetshare.com/p11601
+
+76. **Mind Flux — Serum 2 WT as LFO curve** — wavetable shape as modulation path (conceptual parity with custom LFO)  
+    https://www.mind-flux.com/news-1/2025/11/10/using-wavetables-as-lfo-curves-in-serum-2-modulation-from-sound
+
+77. **Audiotool forum — Dubstep bass basics** — FM/WT + multistage env + distortion stack + separate sub  
+    https://www.audiotool.com/board/sound_design/basics_to_making_dubstep
+
+78. **Polarity — Bitwig Phase-4 dubstep bass** — additive partials + FM + EQ split ~300 Hz  
+    https://polarity.me/posts/polarity-music/2022-03-01-dubstep-bass-sounds-without-vital-or-serum-bitwig-phase-4/
