@@ -1,28 +1,26 @@
 import { Lesson } from "@/lib/schemas/patch";
+import { layoutLessonPatch } from "@/lib/patch/lesson-chain";
 
 export const lesson01Oscillator: Lesson = Lesson.parse({
   slug: "01-oscillator",
   title: "Oscillator Basics",
   unlocksNodes: ["oscillator", "output", "analyser"],
-  startingPatch: {
+  startingPatch: layoutLessonPatch({
     nodes: [
       {
         id: "osc-1",
         type: "oscillator",
-        position: { x: 80, y: 120 },
-        params: { waveform: "sine", frequency: 220, gain: 0.5 },
-      },
-      {
-        id: "out-1",
-        type: "output",
-        position: { x: 480, y: 120 },
-        params: { gain: 0.8 },
+        params: { waveform: "sine", frequency: 261.63, gain: 1 },
       },
       {
         id: "ana-1",
         type: "analyser",
-        position: { x: 280, y: 120 },
         params: {},
+      },
+      {
+        id: "out-1",
+        type: "output",
+        params: { gain: 0.8 },
       },
     ],
     edges: [
@@ -43,7 +41,7 @@ export const lesson01Oscillator: Lesson = Lesson.parse({
         signal: "audio",
       },
     ],
-  },
+  }),
   pages: [
     {
       title: "Signal path",
@@ -56,7 +54,7 @@ export const lesson01Oscillator: Lesson = Lesson.parse({
           content:
             "An oscillator generates periodic waveforms. This is where sound begins in subtractive synthesis.",
           detail:
-            "The oscillator outputs a steady tone at a chosen frequency. In the scope column you'll see the waveform shape; in the spectrum you'll see energy at the fundamental and harmonics depending on waveform choice.",
+            "Use your keyboard to play notes: middle row (A–K) is white keys, top row (W E T Y U) is black keys. Z and X shift octave down/up. The level fader appears as you progress — it sets volume while keys are held.",
         },
         {
           id: "explain-cable",
@@ -88,7 +86,7 @@ export const lesson01Oscillator: Lesson = Lesson.parse({
           diagram: "run-transport",
           content: "Press Run to hear your patch. Watch the scopes react on the right.",
           detail:
-            "The oscilloscope shows amplitude over time. The spectrum shows frequency content on a log Hz axis. The spectrogram scrolls so you can see how timbre evolves.",
+            "Press Run, then hold keys on the piano layout to hear your patch. The demo plays middle C for you. Watch the scopes react on the right.",
         },
         {
           id: "reflect",

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { NodeLayoutSize } from "./node-layout";
 
 export const PortType = z.enum(["audio", "cv", "trigger"]);
 
@@ -7,6 +8,7 @@ export const PatchNode = z.object({
   type: z.string(),
   position: z.object({ x: z.number(), y: z.number() }),
   params: z.record(z.union([z.number(), z.string(), z.boolean()])),
+  layout: NodeLayoutSize.optional(),
 });
 
 export const PatchEdge = z.object({
@@ -29,6 +31,10 @@ export const LessonDiagram = z.enum([
   "signal-chain",
   "run-transport",
   "lesson-complete",
+  "unison-spread",
+  "detune-pipeline",
+  "envelope-pipeline",
+  "envelope-adsr",
 ]);
 
 export const TourStep = z.object({

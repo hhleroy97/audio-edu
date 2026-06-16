@@ -1,4 +1,5 @@
 import type { PortType } from "@/lib/schemas/patch";
+import type { NodeLayoutSize } from "@/lib/schemas/node-layout";
 
 /** Handle id format: `{signal}-{role}` e.g. `audio-out`, `cv-freq` */
 export function parseHandle(handle: string | null | undefined): {
@@ -24,21 +25,22 @@ export function isTargetHandle(handle: string | null | undefined): boolean {
 }
 
 export const PORT_COLORS: Record<PortType, string> = {
-  audio: "#5ec8e8",
-  cv: "#e8343a",
-  trigger: "#c8a85e",
+  audio: "#00e8ff",
+  cv: "#ff2d95",
+  trigger: "#ffd60a",
 };
 
 export const NODE_COLORS: Record<string, string> = {
-  oscillator: "#5ec8e8",
-  output: "#8a7fa0",
-  filter: "#a78bfa",
-  envelope: "#e8343a",
-  wavetable: "#5ec8e8",
-  unison: "#5ec8e8",
-  mixer: "#c8a85e",
-  lfo: "#e8343a",
-  analyser: "#2a1f3d",
+  oscillator: "#00e8ff",
+  output: "#e8e4dc",
+  filter: "#9d4edd",
+  envelope: "#ff3b2f",
+  wavetable: "#00d4aa",
+  unison: "#c77dff",
+  detune: "#ff2d95",
+  mixer: "#ffd60a",
+  lfo: "#ff006e",
+  analyser: "#39ff14",
 };
 
 export type NodeKind =
@@ -48,6 +50,7 @@ export type NodeKind =
   | "envelope"
   | "wavetable"
   | "unison"
+  | "detune"
   | "mixer"
   | "lfo"
   | "analyser";
@@ -56,6 +59,8 @@ export type PatchNodeData = {
   label: string;
   kind: NodeKind;
   params: Record<string, number | string | boolean>;
+  /** Measured or metadata footprint for layout/collision (px). */
+  layout?: NodeLayoutSize;
 };
 
 export const DEFAULT_UNLOCKED: NodeKind[] = ["oscillator", "output"];
