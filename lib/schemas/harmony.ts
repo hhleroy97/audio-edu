@@ -68,6 +68,10 @@ export const EvaluationDef = z.object({
   minDropNotes: z.number().int().positive().default(4),
   minDrumHits: z.number().int().positive().default(8),
   minDropSections: z.number().int().positive().default(1),
+  minBounceKicks: z.number().int().min(0).default(4),
+  minVelocityStdDev: z.number().min(0).default(0.03),
+  minModKeyframesPerDrop: z.number().int().min(0).default(4),
+  minUniqueBodyPresets: z.number().int().min(1).default(1),
 });
 
 export type EvaluationDefType = z.infer<typeof EvaluationDef>;
@@ -81,6 +85,10 @@ export const EvaluationReport = z.object({
     drumHitCount: z.number(),
     dropSectionCount: z.number(),
     totalNoteCount: z.number(),
+    bounceKickCount: z.number().default(0),
+    velocityStdDev: z.number().default(0),
+    modKeyframeCount: z.number().default(0),
+    uniqueBodyPresets: z.number().default(0),
   }),
 });
 

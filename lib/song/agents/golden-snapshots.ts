@@ -16,14 +16,14 @@ export const GOLDEN_ARRANGEMENT_SNAPSHOTS: GoldenSnapshotSpec[] = [
     rulePackId: RIDDIM_STANDARD_16.id,
     seed: "golden-standard",
     minDropNotes: 4,
-    minDrumHits: 8,
+    minDrumHits: 24,
     minSections: 5,
   },
   {
     rulePackId: RIDDIM_SICK_DROP_16.id,
     seed: "golden-sick-drop",
     minDropNotes: 4,
-    minDrumHits: 8,
+    minDrumHits: 24,
     minSections: 5,
   },
 ];

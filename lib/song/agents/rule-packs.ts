@@ -1,6 +1,25 @@
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
 import { DEFAULT_RIDDIM_LAYERS } from "../riddim/patterns";
 
+const DEFAULT_RHYTHM = {
+  bounceKick: { enabled: true, velocity: 0.35 },
+  mainSnareBeat: 1,
+  phraseBars: 2,
+  barBVariant: "extra-bounce" as const,
+  swingMs: 8,
+  velocityJitter: 0.06,
+};
+
+const DEFAULT_EVAL = {
+  minDropNotes: 4,
+  minDrumHits: 24,
+  minDropSections: 1,
+  minBounceKicks: 8,
+  minVelocityStdDev: 0.03,
+  minModKeyframesPerDrop: 2,
+  minUniqueBodyPresets: 1,
+};
+
 /** Standard 16-bar riddim — intro / build / drop / break / outro. */
 export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
   id: "riddim-standard-16",
@@ -13,6 +32,7 @@ export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
   layers: DEFAULT_RIDDIM_LAYERS,
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
+  rhythm: DEFAULT_RHYTHM,
   harmony: {
     progression: ["i", "i", "iv", "i"],
     subOctave: 1,
@@ -27,7 +47,14 @@ export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
     preDropBodyDipBeats: 2,
     preDropBodyGain: 0.12,
   },
-  evaluation: { minDropNotes: 4, minDrumHits: 8, minDropSections: 1 },
+  timbre: {
+    defaultTopPresetId: "pro-metallic-comb",
+    dropBBodySwap: "harsh-square-fm",
+  },
+  modFx: {
+    defaultDrumSendReverb: 0.22,
+  },
+  evaluation: DEFAULT_EVAL,
   sections: [
     { id: "intro", label: "Intro", kind: "intro", startBar: 0, endBar: 2 },
     { id: "build", label: "Build", kind: "build", startBar: 2, endBar: 4 },
@@ -62,6 +89,7 @@ export const RIDDIM_SICK_DROP_16: ArrangementRulePackType = {
   layers: DEFAULT_RIDDIM_LAYERS,
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
+  rhythm: { ...DEFAULT_RHYTHM, barBVariant: "hat-roll" as const },
   harmony: {
     progression: ["i", "i", "iv", "i"],
     subOctave: 1,
@@ -75,8 +103,21 @@ export const RIDDIM_SICK_DROP_16: ArrangementRulePackType = {
   transition: {
     preDropBodyDipBeats: 2,
     preDropBodyGain: 0.12,
+    buildFilterSweep: {
+      nodeId: "filt-1",
+      param: "frequency",
+      startHz: 800,
+      endHz: 220,
+    },
   },
-  evaluation: { minDropNotes: 4, minDrumHits: 8, minDropSections: 1 },
+  timbre: {
+    defaultTopPresetId: "pro-metallic-comb",
+    dropBBodySwap: "harsh-square-fm",
+  },
+  modFx: {
+    defaultDrumSendReverb: 0.28,
+  },
+  evaluation: { ...DEFAULT_EVAL, minUniqueBodyPresets: 2 },
   sections: [
     { id: "intro", label: "Intro", kind: "intro", startBar: 0, endBar: 2 },
     { id: "build", label: "Build", kind: "build", startBar: 2, endBar: 4 },

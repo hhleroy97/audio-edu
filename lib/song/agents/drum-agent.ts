@@ -1,7 +1,8 @@
 import type { DrumHitType, DrumLaneDefType, SongDefType } from "@/lib/schemas/song";
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
 import { DEFAULT_SIDECHAIN } from "@/lib/schemas/drums";
-import { buildRiddimDrumGrid } from "../drums/riddim-drum-grid";
+import { buildRiddimPocketGrid } from "../drums/riddim-pocket";
+import { expandLayeredDrumHits } from "../drums/sample-layers";
 
 export type DrumAgentInput = {
   pack: ArrangementRulePackType;
@@ -15,10 +16,10 @@ export type DrumAgentResult = {
   drums: DrumLaneDefType;
 };
 
-/** Build drum lane from section layout + optional euclidean hats. */
+/** Build drum lane from riddim pocket + groove extras (#101–102). */
 export function runDrumAgent(input: DrumAgentInput): DrumAgentResult {
   const muteIds = new Set(input.pack.drumMuteSectionIds);
-  const hits: DrumLaneDefType["hits"] = [];
+  const hits: DrumHitType[] = [];
 
   for (const section of input.draft.sections) {
     if (muteIds.has(section.id)) continue;
@@ -30,10 +31,12 @@ export function runDrumAgent(input: DrumAgentInput): DrumAgentResult {
       spec?.kind === "build" ||
       section.id.includes("drop");
 
-    const sectionHits = buildRiddimDrumGrid({
+    const sectionHits = buildRiddimPocketGrid({
       bars: sectionBars,
       beatsPerBar: input.pack.beatsPerBar,
       includeSnare,
+      seed: `${input.seed}:${section.id}`,
+      pocket: input.pack.rhythm,
     });
     for (const hit of sectionHits) {
       hits.push({ ...hit, beat: sectionStartBeat + hit.beat });
@@ -45,10 +48,11 @@ export function runDrumAgent(input: DrumAgentInput): DrumAgentResult {
   }
 
   hits.sort((a, b) => a.beat - b.beat);
+  const layered = expandLayeredDrumHits(hits);
 
   return {
     drums: {
-      hits,
+      hits: layered,
       sidechain: DEFAULT_SIDECHAIN,
     },
   };
@@ -60,7 +64,7 @@ export function lintDrumAgent(result: DrumAgentResult): {
 } {
   const errors: string[] = [];
   for (const hit of result.drums.hits) {
-    if (!["kick", "snare", "hat"].includes(hit.sampleId)) {
+    if (!["kick", "snare", "clap", "hat"].includes(hit.sampleId)) {
       errors.push(`unknown drum sampleId: ${hit.sampleId}`);
     }
   }

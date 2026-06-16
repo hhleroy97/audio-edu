@@ -6,6 +6,10 @@ import {
   type EvaluationReportType,
 } from "@/lib/schemas/harmony";
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
+import {
+  countBounceKicks,
+  drumVelocityStdDev,
+} from "../drums/riddim-pocket";
 
 /** Structural quality gates — sync checks before human review (#105). */
 export function runEvaluationAgent(
@@ -22,6 +26,8 @@ export function runEvaluationAgent(
   let dropNoteCount = 0;
   let totalNoteCount = 0;
   let dropSectionCount = 0;
+  let modKeyframeCount = 0;
+  const bodyPresets = new Set<string>();
 
   for (const section of song.sections) {
     const spec = pack.sections.find((s) => s.id === section.id);
@@ -29,6 +35,12 @@ export function runEvaluationAgent(
     if (isDrop) dropSectionCount++;
 
     for (const ev of section.events) {
+      if (ev.kind === "automation" && isDrop) {
+        modKeyframeCount++;
+      }
+      if (ev.kind === "layerPreset" && ev.layer === "body") {
+        bodyPresets.add(ev.presetId);
+      }
       if (ev.kind !== "note") continue;
       totalNoteCount++;
       if (isDrop && (ev.layer === "sub" || ev.layer === "body")) {
@@ -37,7 +49,15 @@ export function runEvaluationAgent(
     }
   }
 
-  const drumHitCount = song.drums?.hits.length ?? 0;
+  for (const layer of song.layers) {
+    if (layer.id === "body") bodyPresets.add(layer.presetId);
+  }
+
+  const drumHits = song.drums?.hits ?? [];
+  const drumHitCount = drumHits.length;
+  const bounceKickCount = countBounceKicks(drumHits);
+  const velocityStdDev = drumVelocityStdDev(drumHits);
+  const uniqueBodyPresets = bodyPresets.size;
 
   if (dropSectionCount < rules.minDropSections) {
     errors.push(
@@ -54,6 +74,29 @@ export function runEvaluationAgent(
       `expected ≥${rules.minDrumHits} drum hits, got ${drumHitCount}`
     );
   }
+  if (bounceKickCount < rules.minBounceKicks) {
+    errors.push(
+      `expected ≥${rules.minBounceKicks} bounce kicks, got ${bounceKickCount}`
+    );
+  }
+  if (velocityStdDev < rules.minVelocityStdDev) {
+    errors.push(
+      `expected velocity std dev ≥${rules.minVelocityStdDev}, got ${velocityStdDev.toFixed(3)}`
+    );
+  }
+
+  const dropModKeyframes = modKeyframeCount;
+  if (dropModKeyframes < rules.minModKeyframesPerDrop && dropSectionCount > 0) {
+    errors.push(
+      `expected ≥${rules.minModKeyframesPerDrop} mod keyframes, got ${dropModKeyframes}`
+    );
+  }
+
+  if (uniqueBodyPresets < rules.minUniqueBodyPresets) {
+    errors.push(
+      `expected ≥${rules.minUniqueBodyPresets} body presets, got ${uniqueBodyPresets}`
+    );
+  }
 
   if (totalNoteCount < 8) {
     warnings.push("sparse arrangement — fewer than 8 total notes");
@@ -68,6 +111,10 @@ export function runEvaluationAgent(
       drumHitCount,
       dropSectionCount,
       totalNoteCount,
+      bounceKickCount,
+      velocityStdDev,
+      modKeyframeCount: dropModKeyframes,
+      uniqueBodyPresets,
     },
   });
 }

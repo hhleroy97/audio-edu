@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { AgentGate } from "./agents";
 import { EvaluationDef, GrooveDef, HarmonyDef, TransitionDef } from "./harmony";
+import { ModFxDef } from "./mod-fx";
+import { RiddimPocketDef } from "./rhythm";
+import { TimbreDef } from "./timbre";
 import { SongLayerDef } from "./song";
 
 export const RulePackSectionKind = z.enum([
@@ -47,6 +50,9 @@ export const ArrangementRulePack = z.object({
   groove: GrooveDef.optional(),
   transition: TransitionDef.optional(),
   evaluation: EvaluationDef.optional(),
+  rhythm: RiddimPocketDef.optional(),
+  timbre: TimbreDef.optional(),
+  modFx: ModFxDef.optional(),
 });
 
 export type ArrangementRulePackType = z.infer<typeof ArrangementRulePack>;
