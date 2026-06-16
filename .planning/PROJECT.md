@@ -5,23 +5,12 @@
 Web-based sound-synthesis learning lab with Patch Lab node-graph canvas, grounded in
 RIDDIM/dubstep pedagogy and Zod-validated contracts (`AGENTS.md`, `HANDOFF.md`).
 
-## Current milestone: Chords, polyphony & timbre intelligence (116–121)
+## Current milestone: Complete through 116–121 ✅
 
-**Goal:** Polyphonic layer voices so body can play dyads/triads; synthesis-grounded timbre
-scoring across the archetype catalog; beat-aware automation per phrase slot; eval gates for
-chord density.
+**Shipped:** Polyphonic layer voices, chord `bodyMidis[]`, TimbreScoringAgent,
+phrase-slot automation, chord/timbre eval gates.
 
-**Previous milestone (112–115, local):** Pitch tracking, harmony-locked sub, synth send FX.
-
-**Previous milestone (shipped):** Song depth & musical richness (106–111).
-
-**Baseline:** Multibus engine, ChordVoicingAgent bar slots, synth sends, 5+ rule packs.
-
-**Gap (this milestone):**
-- `LayerEngine` is monophonic — chord plans never audible
-- `PatternAgent` picks one degree per hit despite `bodyDegrees[]`
-- `TimbreAgent` uses static preset map — 18 archetypes underused
-- Automation is section-global — phrase slots don't tune synth macros
+**Next:** Patch Lab audition + optional `voicingMode: triad` on more rule packs.
 
 ## Previous milestone: Arrangement agents & song UI (87–93)
 
