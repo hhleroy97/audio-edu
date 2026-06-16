@@ -42,6 +42,7 @@ export class AudioEngine {
   private scopeTapSource: AudioNode | null = null;
   private running = false;
   private transportBpm = DEFAULT_TRANSPORT_BPM;
+  private outputDestination: AudioNode | null = null;
 
   constructor(ctx?: AudioContext) {
     this.ctx =
@@ -63,6 +64,25 @@ export class AudioEngine {
       return this.scopeAnalyser;
     }
     return this.masterAnalyser;
+  }
+
+  /** Route layer output to a bus instead of speakers (multibus song mode). */
+  setOutputDestination(dest: AudioNode | null): void {
+    this.outputDestination = dest;
+    const output = [...this.nodes.values()].find((n) => n.kind === "output");
+    if (!output) return;
+    const outGain = output.getInput("audio-in");
+    if (!outGain) return;
+    try {
+      outGain.disconnect();
+    } catch {
+      /* noop */
+    }
+    try {
+      outGain.connect(dest ?? this.ctx.destination);
+    } catch {
+      /* noop */
+    }
   }
 
   setScopeTap(nodeId: string | null): void {
@@ -349,7 +369,7 @@ export class AudioEngine {
       const outGain = output.getInput("audio-in");
       if (outGain) {
         try {
-          outGain.connect(this.ctx.destination);
+          outGain.connect(this.outputDestination ?? this.ctx.destination);
         } catch {
           /* already connected */
         }
@@ -494,10 +514,37 @@ export class AudioEngine {
 
   /** Open/close keyboard gate on tone generators; trigger envelope ADSR. */
   setGeneratorKeyGate(open: boolean): void {
-    const t = this.ctx.currentTime;
+    this.setGeneratorKeyGateAt(open, this.ctx.currentTime);
+  }
+
+  setGeneratorKeyGateAt(open: boolean, atTime: number): void {
     for (const runtime of this.nodes.values()) {
-      runtime.setKeyGate?.(open, t);
-      runtime.triggerGate?.(open, t);
+      runtime.setKeyGate?.(open, atTime);
+      runtime.triggerGate?.(open, atTime);
+    }
+  }
+
+  setActiveNoteHzAt(hz: number, atTime: number): void {
+    this.activeNoteHz = Math.max(20, Math.min(20000, hz));
+    for (const runtime of this.nodes.values()) {
+      if (runtime.kind === "lfo") {
+        runtime.setParams(
+          { noteHz: this.activeNoteHz, transportBpm: this.transportBpm },
+          atTime
+        );
+      }
+    }
+  }
+
+  /** Schedule param changes on a graph node at `atTime` (song automation). */
+  setNodeParamsAt(
+    nodeId: string,
+    params: Record<string, number | string | boolean>,
+    atTime: number
+  ): void {
+    const runtime = this.nodes.get(nodeId);
+    if (runtime) {
+      runtime.setParams(params, atTime);
     }
   }
 

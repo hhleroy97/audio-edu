@@ -32,7 +32,8 @@ import {
   MAX_HISTORY,
   type GraphSnapshot,
 } from "./history";
-import { applyLayoutToFlowNodes, layoutPatchGraph, suggestNodeSeed } from "./layout";
+import { layoutPatchGraph, suggestNodeSeed } from "./layout";
+import { patchToFlow } from "./patch-flow";
 import {
   applyCollisionPositions,
   hasAnyOverlap,
@@ -93,41 +94,6 @@ function getEngine(): AudioEngine {
   }
   if (!engine) engine = new AudioEngine();
   return engine;
-}
-
-function patchToFlow(patch: Patch): { nodes: Node<PatchNodeData>[]; edges: Edge[] } {
-  const edges = patch.edges.map((e) => ({
-    id: e.id,
-    source: e.source,
-    target: e.target,
-    sourceHandle: e.sourceHandle,
-    targetHandle: e.targetHandle,
-    type: "patchCable" as const,
-    data:
-      e.signal === "cv"
-        ? migrateEdgeData({
-            signal: e.signal,
-            ...DEFAULT_CV_EDGE_DATA,
-          })
-        : { signal: e.signal },
-  }));
-
-  const nodes = patch.nodes.map((n) => ({
-    id: n.id,
-    type: n.type,
-    position: n.position,
-    data: {
-      label: n.type.charAt(0).toUpperCase() + n.type.slice(1),
-      kind: n.type as NodeKind,
-      params: n.params,
-      layout: n.layout,
-    },
-  }));
-
-  return {
-    nodes: applyLayoutToFlowNodes(nodes, edges),
-    edges,
-  };
 }
 
 const initial = lesson01Oscillator.startingPatch
