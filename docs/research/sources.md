@@ -409,3 +409,38 @@
 
 122. **Golden arrangement snapshots + rule-pack viewer** — deterministic regression specs; Patch Lab JSON + MIDI export  
     `lib/song/agents/golden-snapshots.ts` · `docs/research/song-generation-phases-94-99.md`
+
+## Research loop — riddim mix robustness phases 100–105 (2026-06-16)
+
+123. **Riddim pocket v2 research** — bounce kicks on 2/4, 2-bar A/B, ghost snares, swing ms  
+    `docs/research/riddim-mix-robustness-phases-100-105.md` · [EDMProd riddim](https://www.edmprod.com/how-to-make-riddim/) · see #125
+
+124. **Dubstep halftime drum programming** — sparse pocket, double-time hat fills, dub delay on snare  
+    [Studio Brootle patterns](https://www.studiobrootle.com/dubstep-drum-patterns/) · [Sample Focus 140 BPM](https://blog.samplefocus.com/blog/everything-you-need-to-know-about-140-bpm/) · see #126–127
+
+125. **EDMProd riddim drum layering** — kick on 1+3 + quiet kick 2/4 “whack”; clap+snare stack; minimal hat on kick  
+    https://www.edmprod.com/how-to-make-riddim/
+
+126. **Studio Brootle dubstep patterns** — 2-bar loops, halftime kick/snare, 140bpm grid hats, snare echo send  
+    https://www.studiobrootle.com/dubstep-drum-patterns/
+
+127. **Sample Focus 140 BPM guide** — ghost snares v30–50, kick variations 2.5/3.5, velocity evolution  
+    https://blog.samplefocus.com/blog/everything-you-need-to-know-about-140-bpm/
+
+128. **arXiv:2408.15176 REMI-z** — multitrack drum arrangement; 4-bar phrase boundaries for groove  
+    https://arxiv.org/abs/2408.15176 · track-wise drum infilling task
+
+129. **arXiv:2408.01696 fine-grained rhythm discriminator** — velocity + bar timing as rhythm quality signal  
+    https://arxiv.org/html/2408.01696 · rule-based EvaluationAgent extension
+
+130. **arXiv:2402.14285 rule-guided diffusion** — non-differentiable rule gates for symbolic generation  
+    https://arxiv.org/html/2402.14285 · maps to EvaluationAgent + lint pattern
+
+131. **arXiv:2409.08155 GraphMuGen** — phrase → structure hierarchy for long-form coherence  
+    https://arxiv.org/pdf/2409.08155 · 4-bar phrase combinator in RhythmAgent
+
+132. **Tone.js Player + Sampler** — GitHits `Tone/source/buffer/Player.ts` `load()`; layered drum sample playback  
+    https://github.com/Tonejs/Tone.js · `lib/song/drums/sample-registry.ts`
+
+133. **Tone.js Convolver** — impulse reverb for snare send; dub delay pattern (#126)  
+    GitHits `Tone/component/filter/Convolver.ts` · multibus drum send automation

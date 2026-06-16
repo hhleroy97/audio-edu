@@ -130,3 +130,38 @@
 - [x] EvaluationAgent gates output; supervisor retries on failure
 - [x] MIDI export + optional sample drum registry
 - [x] Golden snapshot suite; rule-pack JSON viewer in Patch Lab
+
+---
+
+## Planned — Riddim mix robustness (100–105)
+
+> Research: `docs/research/riddim-mix-robustness-phases-100-105.md`  
+> **Recommended first execute:** Phase **105** (progress UI), then **101** (pocket v2).
+
+| Phase | Name | Goal | Commit tag |
+|-------|------|------|------------|
+| **100** | Research | GitHits + arXiv + producer web synthesis | `docs(research): riddim mix robustness phases 100-105` |
+| **101** | Riddim pocket v2 | Bounce kicks, 2-bar A/B, swing ms, rhythm eval gates | `feat(song): Riddim pocket v2 + swing` |
+| **102** | Sample drums | WAV pack + layered clap/snare; SampleDrumAgent | `feat(song): sample drum layers + riddim WAV pack` |
+| **103** | TimbreAgent | 3-layer presets from archetype catalog per section | `feat(song): TimbreAgent + 3-layer rule packs` |
+| **104** | Mod/FX depth | ModFxAgent, top profiles, drum reverb/delay sends | `feat(song): ModFxAgent + drum/synth sends` |
+| **105** | Progress UI | Async pipeline + ArrangementPipelineStepper | `feat(lab): arrangement pipeline stepper + async progress` |
+
+### Dependency graph (100–105)
+
+```
+100 (research)
+  └── 105 (progress UX) ──► testability for 101–104
+        ├── 101 (pocket v2) ──► 102 (samples)
+        ├── 103 (timbre / 3-layer)
+        └── 104 (mod/FX) ── after 103 top layer
+```
+
+### Definition of done (milestone 100–105)
+
+- [ ] Riddim pocket: bounce kicks + 2-bar variation + optional swing
+- [ ] Optional WAV drum layers with procedural fallback
+- [ ] ≥3 archetype presets across generated sections (sub/body/top)
+- [ ] Drop mod profiles on body and top; drum send FX
+- [ ] Live sub-agent stepper during generate; clear complete state
+- [ ] Golden snapshots + `npm test` green per phase
