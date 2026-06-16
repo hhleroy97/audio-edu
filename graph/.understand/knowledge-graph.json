@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "generatedAt": "2026-06-15T19:47:44.918Z",
+  "generatedAt": "2026-06-16T05:02:23.793Z",
   "fingerprint": "0fdfa7aa3fe977d80e22bc2b8dcbb8526132916f2f5f8f05de4dad8734499b71",
   "nodes": [
     {
@@ -1141,6 +1141,261 @@
       ],
       "sources": [
         "06-layering/docs/sources.md"
+      ]
+    },
+    {
+      "id": "concept:riddim",
+      "label": "RIDDIM",
+      "type": "concept",
+      "summary": "Dubstep subgenre: repetitive halftime grooves ~140 BPM, bass-forward minimal drums, dark spacious flow (not constant tearout).",
+      "experimentIds": [
+        "03-pitch-envelopes",
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#27",
+        "docs/research/sources.md#5"
+      ]
+    },
+    {
+      "id": "concept:resampling",
+      "label": "resampling",
+      "type": "concept",
+      "summary": "Record synth output to audio, chop/warp/re-process — core Subtronics-style bass iteration workflow.",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#55",
+        "docs/research/sources.md#5"
+      ]
+    },
+    {
+      "id": "concept:phase-cancellation",
+      "label": "phase cancellation",
+      "type": "concept",
+      "summary": "Layered bass patches out of phase thin the low end; fix with EQ boundaries and transient alignment.",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#47",
+        "docs/research/sources.md#19"
+      ]
+    },
+    {
+      "id": "technique:sub-layer",
+      "label": "sub layer",
+      "type": "technique",
+      "summary": "Mono sine fundamental ~20–100 Hz, no modulation, separate instance from body.",
+      "experimentIds": [
+        "01-oscillator",
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#19",
+        "docs/research/sources.md#48"
+      ]
+    },
+    {
+      "id": "technique:saw-body",
+      "label": "saw body",
+      "type": "technique",
+      "summary": "Harmonically rich saw/wt source for mid layer before subtractive filtering.",
+      "experimentIds": [
+        "01-oscillator",
+        "05-filtering"
+      ],
+      "sources": [
+        "docs/research/riddim-synthesis.md",
+        "docs/research/sources.md#2"
+      ]
+    },
+    {
+      "id": "technique:pitch-envelope",
+      "label": "pitch envelope bite",
+      "type": "technique",
+      "summary": "Fast pitch drop at note-on for riddim transient; bipolar CV path.",
+      "experimentIds": [
+        "03-pitch-envelopes"
+      ],
+      "sources": [
+        "docs/research/sources.md#6",
+        "docs/research/riddim-synthesis.md"
+      ]
+    },
+    {
+      "id": "technique:wobble-lfo-cutoff",
+      "label": "LFO wobble on cutoff",
+      "type": "technique",
+      "summary": "Tempo-synced LFO (1/4, 1/8, triplet) modulating lowpass cutoff on body layer 80–400 Hz.",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "docs/research/sources.md#2",
+        "docs/research/sources.md#11"
+      ]
+    },
+    {
+      "id": "technique:fm-growl",
+      "label": "FM growl",
+      "type": "technique",
+      "summary": "FM carrier/modulator with LFO on index; comb/phaser for metallic bark.",
+      "experimentIds": [
+        "04-wavetable",
+        "02-unison"
+      ],
+      "sources": [
+        "docs/research/sources.md#46",
+        "docs/research/sources.md#59",
+        "docs/research/sources.md#4"
+      ]
+    },
+    {
+      "id": "technique:sub-body-split",
+      "label": "sub/body frequency split",
+      "type": "technique",
+      "summary": "HP body ~80–120 Hz, LP sub ~100–150 Hz crossover; independent processing per layer.",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#30",
+        "docs/research/sources.md#47"
+      ]
+    },
+    {
+      "id": "technique:layer-stack-three",
+      "label": "three-layer bass stack",
+      "type": "technique",
+      "summary": "Sub + body + top fizz (>2 kHz HPF); same LFO rate on body and top for sync.",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#19",
+        "docs/research/sources.md#2"
+      ]
+    },
+    {
+      "id": "technique:formant-yoi",
+      "label": "formant yoi",
+      "type": "technique",
+      "summary": "Formant or resonant LP sweeps for vowel/yoi character 200 Hz–2 kHz.",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "docs/research/sources.md#1",
+        "docs/research/sources.md#14"
+      ]
+    },
+    {
+      "id": "technique:multiband-distortion",
+      "label": "multiband distortion",
+      "type": "technique",
+      "summary": "Heavy drive on mid band only; keep sub band clean (20–150 Hz).",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#21"
+      ]
+    },
+    {
+      "id": "technique:ott-glue",
+      "label": "OTT multiband glue",
+      "type": "technique",
+      "summary": "Multiband upward compression at ~30–40% depth after distortion — finished riddim weight.",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#1",
+        "docs/research/sources.md#47"
+      ]
+    },
+    {
+      "id": "technique:resample-workflow",
+      "label": "resample workflow",
+      "type": "technique",
+      "summary": "Bounce patch to audio, chop and re-process for drop variation (Subtronics-style).",
+      "experimentIds": [
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#55",
+        "docs/research/sources.md#5"
+      ]
+    },
+    {
+      "id": "technique:envelope-matched-sub",
+      "label": "envelope-matched sub",
+      "type": "technique",
+      "summary": "Sub level envelope follows main bass sample; LFO @ 1/4 on sub gain + ADSR tweak.",
+      "experimentIds": [
+        "03-pitch-envelopes",
+        "06-layering"
+      ],
+      "sources": [
+        "docs/research/sources.md#5"
+      ]
+    },
+    {
+      "id": "technique:comb-metallic",
+      "label": "comb/phaser metallic",
+      "type": "technique",
+      "summary": "Comb or phaser filter adds resonant peaks; LFO on comb freq for evolving metallic mids.",
+      "experimentIds": [
+        "05-filtering"
+      ],
+      "sources": [
+        "docs/research/sources.md#59",
+        "docs/research/sources.md#60"
+      ]
+    },
+    {
+      "id": "technique:halftime-groove",
+      "label": "halftime groove",
+      "type": "technique",
+      "summary": "~140 BPM with half-time feel; kick/snare pocket leaves space for bass phrases.",
+      "experimentIds": [],
+      "sources": [
+        "docs/research/sources.md#56",
+        "docs/research/sources.md#5"
+      ]
+    },
+    {
+      "id": "source:research-mod-discovery",
+      "label": "Modulation Discovery DDSP",
+      "type": "source",
+      "summary": "arXiv:2510.06204 — LFO/env as primary Serum bass language; spline LFO curves.",
+      "experimentIds": [],
+      "sources": [
+        "docs/research/sources.md#11"
+      ]
+    },
+    {
+      "id": "source:research-ddx7",
+      "label": "DDX7 Differentiable FM",
+      "type": "source",
+      "summary": "arXiv:2208.06169 — time-varying FM index envelopes from pitch/loudness.",
+      "experimentIds": [],
+      "sources": [
+        "docs/research/sources.md#46"
+      ]
+    },
+    {
+      "id": "source:research-diff-wt",
+      "label": "Differentiable Wavetable Synthesis",
+      "type": "source",
+      "summary": "arXiv:2111.10003 — 10–20 wavetable dictionary; WT crossfade teaching anchor.",
+      "experimentIds": [
+        "04-wavetable"
+      ],
+      "sources": [
+        "docs/research/sources.md#33"
       ]
     }
   ],
@@ -2341,14 +2596,140 @@
       "predicate": "references",
       "confidence": 0.9,
       "evidence": "06-layering/docs/theory.md"
+    },
+    {
+      "from": "concept:riddim",
+      "to": "technique:halftime-groove",
+      "predicate": "characterized-by",
+      "confidence": 0.95,
+      "evidence": "docs/research/riddim-research-loop.md#A"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "technique:layer-stack-three",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "app/experiments/06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:06-layering",
+      "to": "technique:sub-body-split",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "app/experiments/06-layering/docs/theory.md"
+    },
+    {
+      "from": "experiment:03-pitch-envelopes",
+      "to": "technique:pitch-envelope",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "app/experiments/03-pitch-envelopes/docs/theory.md"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "technique:wobble-lfo-cutoff",
+      "predicate": "teaches",
+      "confidence": 1,
+      "evidence": "docs/research/riddim-synthesis.md#D"
+    },
+    {
+      "from": "experiment:05-filtering",
+      "to": "technique:formant-yoi",
+      "predicate": "enables",
+      "confidence": 0.85,
+      "evidence": "docs/research/sources.md#1"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "technique:fm-growl",
+      "predicate": "prerequisite-of",
+      "confidence": 0.9,
+      "evidence": "docs/research/sources.md#59"
+    },
+    {
+      "from": "technique:layer-stack-three",
+      "to": "technique:sub-layer",
+      "predicate": "composed-of",
+      "confidence": 1,
+      "evidence": "docs/research/sources.md#19"
+    },
+    {
+      "from": "technique:layer-stack-three",
+      "to": "technique:saw-body",
+      "predicate": "composed-of",
+      "confidence": 1,
+      "evidence": "docs/research/sources.md#19"
+    },
+    {
+      "from": "technique:sub-layer",
+      "to": "concept:phase-cancellation",
+      "predicate": "mitigates",
+      "confidence": 0.9,
+      "evidence": "docs/research/sources.md#47"
+    },
+    {
+      "from": "technique:resample-workflow",
+      "to": "concept:resampling",
+      "predicate": "implements",
+      "confidence": 1,
+      "evidence": "docs/research/sources.md#55"
+    },
+    {
+      "from": "technique:envelope-matched-sub",
+      "to": "technique:sub-layer",
+      "predicate": "extends",
+      "confidence": 0.95,
+      "evidence": "docs/research/sources.md#5"
+    },
+    {
+      "from": "technique:fm-growl",
+      "to": "technique:comb-metallic",
+      "predicate": "often-uses",
+      "confidence": 0.85,
+      "evidence": "docs/research/sources.md#59"
+    },
+    {
+      "from": "technique:wobble-lfo-cutoff",
+      "to": "source:research-mod-discovery",
+      "predicate": "grounded-in",
+      "confidence": 0.9,
+      "evidence": "docs/research/sources.md#11"
+    },
+    {
+      "from": "technique:fm-growl",
+      "to": "source:research-ddx7",
+      "predicate": "grounded-in",
+      "confidence": 0.85,
+      "evidence": "docs/research/sources.md#46"
+    },
+    {
+      "from": "experiment:04-wavetable",
+      "to": "source:research-diff-wt",
+      "predicate": "cites",
+      "confidence": 0.8,
+      "evidence": "docs/research/sources.md#33"
+    },
+    {
+      "from": "concept:riddim",
+      "to": "experiment:06-layering",
+      "predicate": "culminates-in",
+      "confidence": 0.95,
+      "evidence": "graph/index.md#Phase One"
+    },
+    {
+      "from": "technique:multiband-distortion",
+      "to": "technique:ott-glue",
+      "predicate": "precedes",
+      "confidence": 0.9,
+      "evidence": "docs/research/sources.md#1"
     }
   ],
   "stats": {
     "experiments": 6,
     "concepts": 19,
     "sources": 54,
-    "edges": 171,
+    "edges": 189,
     "deterministic": 171,
-    "llm": 0
+    "llm": 18
   }
 }

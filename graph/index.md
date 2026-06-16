@@ -30,8 +30,20 @@
 - [lib/viz](../../lib/viz/index.ts) — FFT, spectrograph, waveform renderers
 - [lib/ui](../../lib/ui/index.ts) — progressive-disclosure UI shell
 
+## RIDDIM Research (Patch Lab)
+
+Techniques grounded in `docs/research/sources.md`, merged via `graph/research/riddim-supplement.json`:
+
+- [[riddim]] — genre concept (halftime ~140 BPM, bass-forward)
+- [[resampling]] — bounce/chop/re-process workflow
+- [[phase cancellation]] — layering pitfall + mono sub mitigation
+
+Techniques: `technique:sub-layer`, `technique:layer-stack-three`, `technique:wobble-lfo-cutoff`, `technique:fm-growl`, `technique:formant-yoi`, `technique:resample-workflow`, `technique:envelope-matched-sub`, `technique:comb-metallic`, `technique:multiband-distortion`, `technique:ott-glue`, `technique:halftime-groove`
+
+Research docs: [riddim-synthesis](../docs/research/riddim-synthesis.md) · [riddim-feature-roadmap](../docs/research/riddim-feature-roadmap.md) · [research loop log](../docs/research/riddim-research-loop.md)
+
 ## Automation
 
 Graph output: `graph/.understand/knowledge-graph.json`  
-Extract: `npm run graph:extract`  
+Extract: `npm run graph:extract` (deterministic + `graph/research/*.json` merge)  
 Validate metadata: `npm run validate:metadata`

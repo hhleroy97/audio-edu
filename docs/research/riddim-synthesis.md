@@ -138,18 +138,28 @@ Load via **Presets** panel in playground (`loadPreset`).
 
 ---
 
-## 6. Knowledge graph extensions (planned)
+## 6. Knowledge graph extensions
 
-Add `technique` node type entries:
+Shipped in `graph/research/riddim-supplement.json` (merged by `npm run graph:extract`):
 
-- `technique:sub-layer`
-- `technique:saw-body`
-- `technique:pitch-envelope`
-- `technique:wobble-lfo-cutoff`
-- `technique:fm-growl` (future)
-- `technique:sub-body-split` (future)
+| Node ID | Maps to Patch Lab |
+|---------|-------------------|
+| `technique:sub-layer` | `clean-sub`, layer stack sub path |
+| `technique:saw-body` | `saw-body`, `detuned-body` |
+| `technique:pitch-envelope` | `pitch-bite` |
+| `technique:wobble-lfo-cutoff` | `wobble-stub`, tempo-sync LFO |
+| `technique:fm-growl` | `fm` node + `fmGrowl` preset |
+| `technique:sub-body-split` | `layerStack` HP/LP splits |
+| `technique:layer-stack-three` | 3-layer preset archetype |
+| `technique:formant-yoi` | `formant` node |
+| `technique:comb-metallic` | `modFx` comb/phaser |
+| `technique:multiband-distortion` | `distortion` + multiband crossover |
+| `technique:ott-glue` | `multiband` node |
+| `technique:resample-workflow` | P3 #16 (not built) |
+| `technique:envelope-matched-sub` | env + sub level routing |
+| `technique:halftime-groove` | transport BPM context |
 
-Edges: `preset:*` **implements** `technique:*`, `technique:*` **uses** `component:*`.
+Edges: `experiment:*` **teaches** `technique:*`; `technique:*` **grounded-in** `source:research-*`.
 
 ---
 

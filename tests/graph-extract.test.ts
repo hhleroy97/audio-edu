@@ -6,6 +6,7 @@ import {
   scanAllExperiments,
   buildDeterministicGraph,
 } from "@/graph/extract/deterministic";
+import { mergeResearchSupplements } from "@/graph/extract/research";
 import { ExperimentMetadata } from "@/lib/schemas/metadata";
 
 const ROOT = join(__dirname, "..");
@@ -46,6 +47,24 @@ describe("deterministic graph extractor", () => {
     expect(graph.nodes.some((n) => n.id === "experiment:01-oscillator")).toBe(
       true
     );
+  });
+
+  it("merges research supplements into the graph", () => {
+    const scans = scanAllExperiments(ROOT);
+    const graph = mergeResearchSupplements(
+      buildDeterministicGraph(scans, ROOT),
+      ROOT
+    );
+    expect(graph.nodes.some((n) => n.id === "technique:sub-layer")).toBe(true);
+    expect(graph.nodes.some((n) => n.id === "concept:riddim")).toBe(true);
+    expect(graph.stats.llm).toBeGreaterThan(0);
+    expect(
+      graph.edges.some(
+        (e) =>
+          e.from === "experiment:06-layering" &&
+          e.to === "technique:layer-stack-three"
+      )
+    ).toBe(true);
   });
 
   it("extracts YAML frontmatter keys", () => {

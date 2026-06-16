@@ -157,6 +157,10 @@ See `docs/research/sources.md` § Academic & DSP for full citations.
 | A5 | McCormack et al., DAFx 2017 | FFT multiband compression / ducking |
 | A6 | Turian et al., arXiv:2302.13542 | Descriptor-based timbre control (brightness, etc.) |
 | A7 | Flores-García et al., ICASSP 2025 (Sketch2Sound) | Time-varying loudness/brightness/pitch control |
+| A8 | Caspe et al., arXiv:2208.06169 (DDX7, ISMIR 2022) | Differentiable FM index envelopes |
+| A9 | Shan et al., arXiv:2111.10003 (ICASSP 2022) | Differentiable wavetable dictionary (10–20 tables) |
+
+**Knowledge graph:** techniques merged via `graph/research/riddim-supplement.json` → `npm run graph:extract`.
 
 ---
 

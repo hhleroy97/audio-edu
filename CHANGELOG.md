@@ -8,7 +8,12 @@
 
 ## [Unreleased]
 
-_Nothing yet._
+### Research & knowledge graph
+
+- RIDDIM research sprint (cycles 1–3): `docs/research/riddim-research-loop.md`, sources #19–62
+- Knowledge graph research pass: `graph/research/riddim-supplement.json` (14 techniques, 3 concepts, 18 edges)
+- `mergeResearchSupplements()` in `graph/extract/research.ts`; extract script merges research JSON
+- Updated `graph/index.md`, `riddim-synthesis.md` §6, `riddim-feature-roadmap.md` academic refs
 
 ## 0.4.0 — 2026-06-15
 

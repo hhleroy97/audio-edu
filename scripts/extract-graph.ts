@@ -5,6 +5,7 @@ import {
   fingerprintExperiments,
   scanAllExperiments,
 } from "../graph/extract/deterministic";
+import { mergeResearchSupplements } from "../graph/extract/research";
 import { KnowledgeGraph } from "../lib/schemas/graph";
 
 const ROOT = join(__dirname, "..");
@@ -31,7 +32,10 @@ function main() {
     process.exit(1);
   }
 
-  const graph = buildDeterministicGraph(scans, ROOT);
+  const graph = mergeResearchSupplements(
+    buildDeterministicGraph(scans, ROOT),
+    ROOT
+  );
 
   mkdirSync(join(OUT_DIR, "intermediate"), { recursive: true });
   writeFileSync(GRAPH_PATH, JSON.stringify(graph, null, 2));
@@ -64,7 +68,8 @@ function main() {
   console.log(
     `[graph] Extracted ${validated.stats.experiments} experiments, ` +
       `${validated.stats.concepts} concepts, ${validated.stats.edges} edges ` +
-      `(deterministic). Output: ${GRAPH_PATH}`
+      `(deterministic ${validated.stats.deterministic}, research ${validated.stats.llm}). ` +
+      `Output: ${GRAPH_PATH}`
   );
 }
 

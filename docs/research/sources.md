@@ -65,3 +65,155 @@
 
 18. **CCRMA — Formant Filtering Example** — 2–3 biquad formants for vowel synthesis  
     https://ccrma.stanford.edu/~jos/fp3/Formant_Filtering_Example.html
+
+---
+
+## Research loop — cycle 1 additions (2026-06-16)
+
+### Producer tutorials & layering
+
+19. **Preset Drive — How to Layer Basses in Serum** — three-layer sub/mid/top frequency zones; separate Serum instances; EQ boundaries  
+    https://www.presetdrive.com/how-to-layer-basses-in-serum-for-massive-sound/
+
+20. **Preset Drive — Professional Serum Presets** — 20–100 Hz sub, 100–2 kHz mid character, 2 kHz+ top; HP mid at 80–100 Hz  
+    https://www.presetdrive.com/how-to-make-serum-presets-sound-professional/
+
+21. **Preset Drive — Multiband Distortion in Bass Music** — 20–150 Hz clean sub band; heavy mids; riddim hard-clip character  
+    https://www.presetdrive.com/how-to-use-multiband-distortion-in-bass-music-production/
+
+22. **Preset Drive — Serum Wavetables Guide** — WT choice for wobble vs sub; unison on mid not sub  
+    https://www.presetdrive.com/serum-wavetables-guide/
+
+23. **ADSR — Skrillex Growl in Serum** — FM + WT LFO + bandpass formant + OTT stack  
+    https://www.adsrsounds.com/serum-tutorials/making-a-skrillex-growl-in-serum/
+
+24. **Beatportal — Five Serum Production Techniques** — filter LFO wobble, FM from B, stacked FM + noise  
+    https://www.beatportal.com/articles/613509-this-months-five-production-techniques-for-serum
+
+25. **Sound On Sound — Dubstep Secrets** — ES2 FM + tempo-sync LFO filter; classic wobble architecture  
+    https://www.soundonsound.com/techniques/dubstep-secrets
+
+26. **SoundCy — Dubstep Wobble FM Techniques** — carrier/modulator FM wobble; LFO → index; distortion post-FM  
+    https://soundcy.com/article/how-to-make-dubstep-sounds
+
+### Genre context & artist workflow
+
+27. **UKF — Infekt’s Guide to Riddim** — flow vs tearout energy; Subfiltronik 2012–2013 blueprint; ~140 BPM  
+    https://ukf.com/read/infekts-guide-to-riddim/
+
+28. **INFEKT — Riddim Sound Design & Vital (YouTube)** — pitch bend movement; Vital workflow; non-static bass  
+    https://www.youtube.com/watch?v=D-n9zU730Sc
+
+29. **Soundteams — INFEKT Vital masterclass listing** — minimal aggressive bass; custom effect racks  
+    https://www.soundteams.com/masterclass/riddim-sound-design-tips-introduction-to-vital
+
+### Community forums (Reddit proxies)
+
+30. **Dubstepforum — Isolating sub vs layering sub** — always separate sine sub; HP mid ~150–200 Hz  
+    https://www.dubstepforum.com/forum/viewtopic.php?t=197237
+
+31. **Dubstepforum — Making drop basses flow together** — volume match, bus compression, shared reverb  
+    https://www.dubstepforum.com/forum/viewtopic.php?t=277299
+
+32. **Beat Kitchen — Bass Design and the Low End** — sub tuning; kick–bass sidechain; frequency separation  
+    https://beatkitchen.io/guides/electronic-music/04-bass-design/
+
+### Academic (additional)
+
+33. **Shan et al. — Differentiable Wavetable Synthesis** (arXiv:2111.10003, ICASSP 2022) — 10–20 WT dictionary; 12× faster than additive DDSP  
+    https://arxiv.org/abs/2111.10003
+
+34. **Frontiers review — Differentiable DSP for music/speech** (2023) — surveys WT, FM, waveshaping in DDSP  
+    https://www.frontiersin.org/journals/signal-processing/articles/10.3389/frsip.2023.1284100/full
+
+35. **Hansen et al. — Bass Accompaniment via Latent Diffusion** (arXiv:2402.01412) — style-conditioned bass stems; timbre grounding  
+    https://arxiv.org/abs/2402.01412
+
+36. **BassNet — VAE bass generation with 2D control** (MDPI Appl. Sci. 2020) — interactive latent for bass patterns  
+    https://www.mdpi.com/2076-3417/10/18/6627
+
+37. **CVAE RAVE polyphonic improvement** (arXiv:2211.08715) — pitch-conditioned low-frequency fix (“missing bass”)  
+    https://arxiv.org/abs/2211.08715
+
+38. **Mitcheltree — Modulation Discovery project page + code** — VST plugins; Serum Bass (Hard) eval  
+    https://christhetr.ee/mod_discovery/  
+    https://github.com/christhetree/mod_discovery
+
+### OSS reference implementations
+
+39. **synflow** — @xyflow/react + Web Audio + AudioWorklet hybrid graph  
+    https://github.com/k1ln/synflow
+
+40. **audio-nodes** — Rust/WASM AudioWorklet; React Flow param modulation  
+    https://github.com/jonothanhunt/audio-nodes
+
+41. **Modulr** — React Flow modular synth; macro instruments  
+    https://github.com/shoegazerstella/Modulr
+
+42. **aumlet** — single AudioWorklet modular graph  
+    https://github.com/katspaugh/aumlet
+
+43. **flow-synth** — minimal Flow-based modular synth  
+    https://github.com/katspaugh/flow-synth
+
+### Sprint cycle 2 (2026-06-16)
+
+44. **Vital forum — Future Riddim Bass tutorial** — warp modes, extra osc/filters  
+    https://forum.vital.audio/t/tutorial-making-a-future-riddim-bass-in-vital/7296
+
+45. **Ultrasamples — Vital short tutorial** — LFO 1/8–1/16, sub osc, LP ~100 Hz  
+    https://www.ultrasamples.com/post/how-to-use-vital-synth-short-vital-tutorial
+
+46. **Caspe et al. — DDX7 Differentiable FM** (arXiv:2208.06169, ISMIR 2022) — FM index envelopes from audio  
+    https://arxiv.org/abs/2208.06169  
+    https://fcaspe.github.io/ddx7/
+
+47. **EDM Templates — Sound layering / phase cancellation** — riddim/tearout mono sub rules; OTT 30–40%  
+    https://edmtemplates.net/blogs/edm-templates-blog/sound-layering-techniques
+
+48. **Preset Drive — DnB sub in Serum** — mono sine discipline; 80–120 Hz crossover with mid  
+    https://www.presetdrive.com/dnb-sub-bass-serum/
+
+49. **Transmission Samples — Reese bass design** — unison body, key-tracked LFO filter, resampling  
+    https://www.transmissionsamples.com/tutorials/sound-design/reese-bass-create
+
+50. **Xfer — Serum 2 What's New** — 10 LFOs, matrix reorder/bypass, dual FX bus, mono-bass utility  
+    https://static.xferrecords.com/Serum%202%20What%27s%20New.pdf
+
+51. **DAW Zone — Serum 2 vs Vital 2026** — mod depth comparison for bass workflows  
+    https://dawzone.com/serum-2-vs-pigments-6-vs-vital-which-soft-synth-is-the-best
+
+52. **PluginDrop — Serum vs Vital 2026** — spectral morph, audio-rate FM, bass design notes  
+    https://plugindrop.net/posts/serum-vs-vital-comparison/
+
+53. **Pluginoise — Serum vs Vital review** — matrix UX; real-time mod visualization  
+    https://pluginoise.com/serum-vs-vital-synth-review/
+
+54. **YouTube — Modern riddim/trench from scratch** — square warp, comb filter, hyper unison layer  
+    https://www.youtube.com/watch?v=SqVVQ77u-Fg
+
+### Sprint cycle 3 (2026-06-16)
+
+55. **Preset Drive — Dubstep project template (Ableton)** — 140 BPM groups; resampling workflow  
+    https://www.presetdrive.com/how-to-set-up-a-dubstep-project-template-in-ableton-live/
+
+56. **Soundtrap — UK halfstep guide** — 140 BPM kick/snare pocket; resample mid-bass; 16–32 bar phrases  
+    https://blog.soundtrap.com/uk-halfstep-edm-guide/
+
+57. **Melodigging — Tearout/Riddim genre note** — loop-driven drops, formant/comb growls, double-drop DJ culture  
+    https://www.melodigging.com/genre/tearout
+
+58. **Preset Drive — Serum FM synthesis guide** — harsh riddim FM recipe; comb/phaser on FM harmonics  
+    https://www.presetdrive.com/serum-fm-synthesis/
+
+59. **Preset Drive — Neurofunk bass (adjacent)** — multi-filter routing, comb LFO, custom LFO shapes  
+    https://www.presetdrive.com/neurofunk-bass-design-serum/
+
+60. **Rocket Powered Sound — Serum bass secrets** — phaser for vocal/grit; misc comb filters  
+    https://rocketpoweredsound.com/blogs/production/5-secret-ways-to-make-basses-in-serum
+
+61. **sonible — Spectral sidechain ducking** — frequency-selective kick/bass pocket (McCormack-adjacent)  
+    https://www.sonible.com/blog/spectral-ducking-smartcomp/
+
+62. **Luo & Yu — BS-RoFormer** (arXiv:2309.02612) — band-split spectral modeling; stem separation context  
+    https://arxiv.org/abs/2309.02612
