@@ -41,6 +41,11 @@ export const NODE_COLORS: Record<string, string> = {
   mixer: "#ffd60a",
   lfo: "#ff006e",
   analyser: "#39ff14",
+  fm: "#ff5c00",
+  distortion: "#ff2d55",
+  layerStack: "#ffe600",
+  formant: "#b388ff",
+  noise: "#a8a8a8",
 };
 
 export type NodeKind =
@@ -53,7 +58,12 @@ export type NodeKind =
   | "detune"
   | "mixer"
   | "lfo"
-  | "analyser";
+  | "analyser"
+  | "fm"
+  | "distortion"
+  | "layerStack"
+  | "formant"
+  | "noise";
 
 export type PatchNodeData = {
   label: string;

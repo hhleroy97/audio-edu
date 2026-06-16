@@ -6,12 +6,14 @@ import {
   type RuntimeNode,
 } from "./runtime-nodes";
 import type { PatchNodeData } from "./ports";
+import { DEFAULT_TRANSPORT_BPM } from "./transport";
 
 type Wire = {
   sourceId: string;
   sourceHandle: string;
   targetId: string;
   targetHandle: string;
+  modDepth: number;
 };
 
 export class AudioEngine {
@@ -19,8 +21,13 @@ export class AudioEngine {
   private nodes = new Map<string, RuntimeNode>();
   private registry = new ConnectionRegistry();
   private wires: Wire[] = [];
+  private cvWireGains: GainNode[] = [];
   private masterAnalyser: AnalyserNode | null = null;
+  private readonly scopeAnalyser: AnalyserNode;
+  private scopeTapNodeId: string | null = null;
+  private scopeTapSource: AudioNode | null = null;
   private running = false;
+  private transportBpm = DEFAULT_TRANSPORT_BPM;
 
   constructor(ctx?: AudioContext) {
     this.ctx =
@@ -28,6 +35,9 @@ export class AudioEngine {
       new (window.AudioContext ||
         (window as unknown as { webkitAudioContext: typeof AudioContext })
           .webkitAudioContext)();
+    this.scopeAnalyser = this.ctx.createAnalyser();
+    this.scopeAnalyser.fftSize = 2048;
+    this.scopeAnalyser.smoothingTimeConstant = 0.8;
   }
 
   get isRunning(): boolean {
@@ -35,7 +45,29 @@ export class AudioEngine {
   }
 
   get analyser(): AnalyserNode | null {
+    if (this.scopeTapNodeId && this.scopeTapSource) {
+      return this.scopeAnalyser;
+    }
     return this.masterAnalyser;
+  }
+
+  setScopeTap(nodeId: string | null): void {
+    this.scopeTapNodeId = nodeId;
+    this.refreshScopeTap();
+  }
+
+  getTransportBpm(): number {
+    return this.transportBpm;
+  }
+
+  setTransportBpm(bpm: number): void {
+    this.transportBpm = Math.max(60, Math.min(200, bpm));
+    const t = this.ctx.currentTime;
+    for (const runtime of this.nodes.values()) {
+      if (runtime.kind === "lfo") {
+        runtime.setParams({ transportBpm: this.transportBpm }, t);
+      }
+    }
   }
 
   async resume(): Promise<void> {
@@ -62,15 +94,19 @@ export class AudioEngine {
 
     for (const uiNode of uiNodes) {
       const existing = this.nodes.get(uiNode.id);
+      const params =
+        uiNode.data.kind === "lfo"
+          ? { ...uiNode.data.params, transportBpm: this.transportBpm }
+          : uiNode.data.params;
       if (existing) {
-        existing.setParams(uiNode.data.params, this.ctx.currentTime);
+        existing.setParams(params, this.ctx.currentTime);
       } else {
         structureChanged = true;
         const runtime = createRuntimeNode(
           this.ctx,
           uiNode.data.kind,
           uiNode.id,
-          uiNode.data.params
+          params
         );
         if (runtime) {
           this.nodes.set(uiNode.id, runtime);
@@ -84,6 +120,8 @@ export class AudioEngine {
       sourceHandle: e.sourceHandle ?? "audio-out",
       targetId: e.target,
       targetHandle: e.targetHandle ?? "audio-in",
+      modDepth:
+        typeof e.data?.modDepth === "number" ? e.data.modDepth : 1,
     }));
 
     this.registry.rebuild(
@@ -105,7 +143,33 @@ export class AudioEngine {
         ? (analyserNode as RuntimeNode & { analyser: AnalyserNode }).analyser
         : this.findOutputTap();
 
+    this.refreshScopeTap();
+
     return structureChanged;
+  }
+
+  private refreshScopeTap(): void {
+    if (this.scopeTapSource) {
+      try {
+        this.scopeTapSource.disconnect(this.scopeAnalyser);
+      } catch {
+        /* noop */
+      }
+      this.scopeTapSource = null;
+    }
+
+    if (!this.scopeTapNodeId) return;
+
+    const runtime = this.nodes.get(this.scopeTapNodeId);
+    const tap = runtime?.getTap();
+    if (!tap) return;
+
+    try {
+      tap.connect(this.scopeAnalyser);
+      this.scopeTapSource = tap;
+    } catch {
+      /* duplicate connection */
+    }
   }
 
   /** Start generators added during a live topology change; leave running sources alone. */
@@ -113,7 +177,16 @@ export class AudioEngine {
     const t = this.ctx.currentTime;
     for (const runtime of this.nodes.values()) {
       if (!newlyCreated.has(runtime.id)) continue;
-      if (runtime.kind === "oscillator" || runtime.kind === "detune") {
+      if (
+        runtime.kind === "oscillator" ||
+        runtime.kind === "detune" ||
+        runtime.kind === "wavetable" ||
+        runtime.kind === "fm" ||
+        runtime.kind === "noise"
+      ) {
+        runtime.start(t);
+      }
+      if (runtime.kind === "lfo") {
         runtime.start(t);
       }
     }
@@ -156,6 +229,15 @@ export class AudioEngine {
   }
 
   private reconnectAll(): void {
+    for (const gain of this.cvWireGains) {
+      try {
+        gain.disconnect();
+      } catch {
+        /* noop */
+      }
+    }
+    this.cvWireGains = [];
+
     for (const runtime of this.nodes.values()) {
       try {
         const out = runtime.getOutput("audio-out") ?? runtime.getTap();
@@ -233,8 +315,12 @@ export class AudioEngine {
       const out = source.getOutput(wire.sourceHandle) ?? source.getTap();
       const param = target.getParam(wire.targetHandle);
       if (out && param) {
+        const depthGain = this.ctx.createGain();
+        depthGain.gain.value = wire.modDepth;
         try {
-          out.connect(param);
+          out.connect(depthGain);
+          depthGain.connect(param);
+          this.cvWireGains.push(depthGain);
         } catch {
           /* duplicate */
         }
@@ -245,7 +331,14 @@ export class AudioEngine {
   start(): void {
     const t = this.ctx.currentTime;
     for (const runtime of this.nodes.values()) {
-      if (runtime.kind === "oscillator" || runtime.kind === "detune") {
+      if (
+        runtime.kind === "oscillator" ||
+        runtime.kind === "detune" ||
+        runtime.kind === "wavetable" ||
+        runtime.kind === "fm" ||
+        runtime.kind === "noise" ||
+        runtime.kind === "lfo"
+      ) {
         runtime.start(t);
       }
     }
@@ -257,7 +350,14 @@ export class AudioEngine {
     const t = this.ctx.currentTime;
     this.setGeneratorKeyGate(false);
     for (const runtime of this.nodes.values()) {
-      if (runtime.kind === "oscillator" || runtime.kind === "detune") {
+      if (
+        runtime.kind === "oscillator" ||
+        runtime.kind === "detune" ||
+        runtime.kind === "wavetable" ||
+        runtime.kind === "fm" ||
+        runtime.kind === "noise" ||
+        runtime.kind === "lfo"
+      ) {
         runtime.stop(t + 0.05);
       }
       if (runtime.kind === "envelope") {
@@ -287,5 +387,6 @@ export class AudioEngine {
     this.nodes.clear();
     this.registry.clear();
     this.wires = [];
+    this.cvWireGains = [];
   }
 }

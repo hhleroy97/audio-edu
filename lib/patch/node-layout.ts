@@ -15,7 +15,12 @@ const NODE_LAYOUT_RAW = {
   output: { width: 216, height: 132 },
   analyser: { width: 216, height: 128 },
   mixer: { width: 216, height: 236 },
-  lfo: { width: 216, height: 196 },
+  lfo: { width: 216, height: 320 },
+  fm: { width: 256, height: 420 },
+  distortion: { width: 216, height: 220 },
+  layerStack: { width: 256, height: 380 },
+  formant: { width: 216, height: 300 },
+  noise: { width: 216, height: 280 },
 } as const satisfies Record<NodeKind, NodeLayoutSize>;
 
 export const NODE_LAYOUT_METADATA: Record<NodeKind, NodeLayoutSize> =

@@ -386,10 +386,11 @@
 .module-control-grid--envelope {
   display: grid;
   grid-template-columns: 1fr 1fr 36px;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   grid-template-areas:
     "attack decay fader"
-    "sustain release fader";
+    "sustain release fader"
+    "cvDepth cvDepth fader";
 }
 
 .module-control-grid--output {
@@ -397,6 +398,69 @@
   grid-template-columns: 1fr;
   justify-items: center;
   grid-template-areas: "fader";
+}
+
+.module-control-grid--lfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  grid-template-areas: "rate depth";
+}
+
+.module-control-grid--filter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  grid-template-areas: "cutoff resonance";
+}
+
+.module-control-grid--mixer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-areas: "gainA gainB fader";
+}
+
+.module-control-grid--wavetable {
+  display: grid;
+  grid-template-columns: 1fr 36px;
+  grid-template-areas: "position fader";
+}
+
+.module-control-grid--fm {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "frequency ratio fader"
+    "index index fader";
+}
+
+.module-control-grid--distortion {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-areas: "drive mix fader";
+}
+
+.module-control-grid--layerStack {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "subGain bodyGain fader"
+    "topGain subLpf fader"
+    "bodyHpf bodyHpf fader";
+}
+
+.module-control-grid--formant {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-areas: "formantShift q fader";
+}
+
+.module-control-grid--noise {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-areas: "cutoff resonance fader";
 }
 
 .module-control-grid__cell {

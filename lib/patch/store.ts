@@ -14,10 +14,12 @@ import {
 import { nanoid } from "nanoid";
 import { AudioEngine } from "./audio-engine";
 import type { PatchNodeData, NodeKind } from "./ports";
-import { DEFAULT_UNLOCKED } from "./ports";
+import { DEFAULT_UNLOCKED, parseHandle } from "./ports";
 import type { Lesson, Patch } from "@/lib/schemas/patch";
 import { lesson01Oscillator } from "./lessons/lesson-01-oscillator";
 import { getNextLesson } from "./lessons/index";
+import { presetToPatch } from "./presets/load";
+import { getPatchPreset } from "./presets/index";
 import type { RewireAnchor, RewireDraft, HandleHit } from "./edge-rewire";
 import {
   buildRewireConnection,
@@ -39,6 +41,24 @@ import {
 } from "./collision-layout";
 import { animateRepulsion, hasMovableOverlap } from "./position-animation";
 import { mergeMeasuredDimensions, normalizeMeasuredLayout, type NodeDimensionMap } from "./node-layout";
+import {
+  isScopeTappable,
+  resolveDefaultScopeTapId,
+} from "./scope-tap";
+import {
+  getSubProtectedSourceIds,
+  isSubCvConnectionBlocked,
+} from "./sub-protection";
+import { DEFAULT_TRANSPORT_BPM } from "./transport";
+import { DEFAULT_LFO_CURVE } from "./lfo-curve";
+
+function edgeDataFromConnection(connection: Connection) {
+  const signal = parseHandle(connection.sourceHandle)?.signal ?? "audio";
+  if (signal === "cv") {
+    return { signal, modDepth: 1 };
+  }
+  return { signal };
+}
 
 let engine: AudioEngine | null = null;
 
@@ -127,6 +147,8 @@ export type PatchStore = {
   showCompletionChoice: boolean;
   pianoOctaveOffset: number;
   selectedNodeId: string | null;
+  scopeTapNodeId: string | null;
+  transportBpm: number;
   enginePhase: "idle" | "working" | "settled";
   isLayoutAnimating: boolean;
   nodeMeasuredSizes: NodeDimensionMap;
@@ -166,6 +188,7 @@ export type PatchStore = {
   run: () => Promise<void>;
   stop: () => void;
   loadLesson: (lesson: Lesson) => void;
+  loadPreset: (presetId: string) => void;
   completeLesson: () => void;
   finishGuidedSteps: () => void;
   choosePlayground: () => void;
@@ -175,6 +198,9 @@ export type PatchStore = {
   advanceTour: () => void;
   dismissTour: () => void;
   setSelectedNode: (id: string | null) => void;
+  setScopeTapNodeId: (id: string | null) => void;
+  setTransportBpm: (bpm: number) => void;
+  updateModDepth: (edgeId: string, depth: number) => void;
   syncEngine: () => void;
   toPatch: () => Patch;
   getAnalyser: () => AnalyserNode | null;
@@ -249,6 +275,8 @@ export const usePatchStore = create<PatchStore>((set, get) => {
   showCompletionChoice: false,
   pianoOctaveOffset: 0,
   selectedNodeId: null,
+  scopeTapNodeId: null,
+  transportBpm: DEFAULT_TRANSPORT_BPM,
   enginePhase: "idle",
   isLayoutAnimating: false,
   nodeMeasuredSizes: new Map(),
@@ -420,7 +448,12 @@ export const usePatchStore = create<PatchStore>((set, get) => {
     get().pushHistory();
     set({
       edges: addEdge(
-        { ...connection, id: nanoid(), type: "patchCable" },
+        {
+          ...connection,
+          id: nanoid(),
+          type: "patchCable",
+          data: edgeDataFromConnection(connection),
+        },
         get().edges
       ),
     });
@@ -502,7 +535,15 @@ export const usePatchStore = create<PatchStore>((set, get) => {
       sourceHandle: connection.sourceHandle ?? null,
       targetHandle: connection.targetHandle ?? null,
     };
-    return getEngine().isValidConnection(c);
+    if (!getEngine().isValidConnection(c)) return false;
+    const protectedIds = getSubProtectedSourceIds(get().nodes, get().edges);
+    if (
+      c.target &&
+      isSubCvConnectionBlocked(c.target, c.targetHandle, protectedIds)
+    ) {
+      return false;
+    }
+    return true;
   },
 
   addNode: (kind, position) => {
@@ -520,12 +561,57 @@ export const usePatchStore = create<PatchStore>((set, get) => {
         sustain: 0.65,
         release: 0.25,
         gain: 1,
+        cvDepth: 400,
+        cvSign: 1,
       },
-      wavetable: { position: 0, frequency: 220, gain: 0.5 },
+      wavetable: {
+        waveformA: "sine",
+        waveformB: "sawtooth",
+        frequency: 110,
+        position: 0,
+        gain: 0.5,
+      },
       detune: { voices: 3, detune: 15, spread: 0.8, gain: 1 },
       unison: { voices: 3, detune: 15, spread: 0.8, gain: 1 },
-      mixer: { gain: 0.8 },
-      lfo: { rate: 2, depth: 1 },
+      mixer: { gainA: 0.55, gainB: 0.45, gain: 0.8 },
+      lfo: {
+        rate: 2,
+        depth: 350,
+        shape: "sine",
+        sync: "free",
+        curvePoints: DEFAULT_LFO_CURVE,
+      },
+      fm: {
+        carrierWave: "sine",
+        modWave: "sawtooth",
+        frequency: 110,
+        ratio: 1,
+        index: 400,
+        gain: 0.5,
+      },
+      distortion: { type: "hard", drive: 5, mix: 0.9, gain: 0.7 },
+      layerStack: {
+        subGain: 0.75,
+        bodyGain: 0.55,
+        topGain: 0.3,
+        subLpf: 200,
+        bodyHpf: 80,
+        bodyLpf: 6000,
+        topHpf: 2000,
+        gain: 0.8,
+      },
+      formant: {
+        vowel: "a",
+        formantShift: 0.35,
+        q: 9,
+        gain: 0.65,
+      },
+      noise: {
+        noiseType: "white",
+        cutoff: 3200,
+        resonance: 2.5,
+        gain: 0.35,
+      },
     };
 
     const layoutNodes = get().nodes.map((n) => ({
@@ -644,6 +730,40 @@ export const usePatchStore = create<PatchStore>((set, get) => {
     get().syncEngine();
   },
 
+  loadPreset: (presetId) => {
+    const preset = getPatchPreset(presetId);
+    const patch = presetToPatch(presetId);
+    if (!preset || !patch) return;
+
+    cancelActiveLayoutAnimation();
+    if (relayoutTimer) {
+      clearTimeout(relayoutTimer);
+      relayoutTimer = null;
+    }
+
+    get().pushHistory();
+    const flow = patchToFlow(patch);
+    set({
+      nodes: flow.nodes,
+      edges: flow.edges,
+      nodeMeasuredSizes: new Map(),
+      scopeTapNodeId: null,
+      mode: "playground",
+      showCompletionChoice: false,
+      lessonPanelOpen: false,
+      tourStepIndex: 0,
+      unlockedNodes: [
+        ...new Set([
+          ...get().unlockedNodes,
+          ...DEFAULT_UNLOCKED,
+          "analyser",
+          ...(preset.requiredNodes as NodeKind[]),
+        ]),
+      ] as NodeKind[],
+    });
+    get().syncEngine();
+  },
+
   completeLesson: () => {
     const lesson = get().activeLesson;
     const stepCount = lesson.pages.flatMap((p) => p.steps).length;
@@ -716,10 +836,47 @@ export const usePatchStore = create<PatchStore>((set, get) => {
 
   setSelectedNode: (id) => set({ selectedNodeId: id }),
 
+  setScopeTapNodeId: (id) => {
+    const nodes = get().nodes;
+    if (id && !nodes.some((n) => n.id === id && isScopeTappable(n.data.kind))) {
+      return;
+    }
+    set({ scopeTapNodeId: id });
+    getEngine().setScopeTap(id);
+  },
+
+  setTransportBpm: (bpm) => {
+    const clamped = Math.max(60, Math.min(200, Math.round(bpm)));
+    set({ transportBpm: clamped });
+    getEngine().setTransportBpm(clamped);
+  },
+
+  updateModDepth: (edgeId, depth) => {
+    const clamped = Math.max(0, Math.min(2, depth));
+    set({
+      edges: get().edges.map((e) =>
+        e.id === edgeId
+          ? { ...e, data: { ...e.data, modDepth: clamped } }
+          : e
+      ),
+    });
+    get().syncEngine();
+  },
+
   syncEngine: () => {
     const eng = getEngine();
+    eng.setTransportBpm(get().transportBpm);
     const shouldRun = get().isRunning;
-    eng.syncUiGraph(get().nodes, get().edges);
+    const { nodes, edges, scopeTapNodeId } = get();
+
+    let tapId = scopeTapNodeId;
+    if (tapId && !nodes.some((n) => n.id === tapId)) {
+      tapId = resolveDefaultScopeTapId(nodes);
+      set({ scopeTapNodeId: tapId });
+    }
+
+    eng.syncUiGraph(nodes, edges);
+    eng.setScopeTap(tapId);
     if (shouldRun && !eng.isRunning) {
       eng.start();
       set({ isRunning: true, enginePhase: "settled" });

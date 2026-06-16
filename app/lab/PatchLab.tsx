@@ -20,6 +20,12 @@ import { PatchLayoutSync } from "@/lib/patch/PatchLayoutSync";
 import { PatchConnectionLine } from "@/lib/patch/PatchConnectionLine";
 import { PatchRewireSession } from "@/lib/patch/PatchRewireSession";
 import { ModulePalette } from "@/lib/patch/ModulePalette";
+import { PatchPresetPanel } from "@/lib/patch/PatchPresetPanel";
+import { PatchSignalTapPanel } from "@/lib/patch/PatchSignalTapPanel";
+import { PatchTransportPanel } from "@/lib/patch/PatchTransportPanel";
+import { PatchModMatrix } from "@/lib/patch/PatchModMatrix";
+import { isScopeTappable } from "@/lib/patch/scope-tap";
+import type { NodeKind } from "@/lib/patch/ports";
 import { isDoStepSatisfied } from "@/lib/patch/tour-utils";
 import { Oscilloscope } from "@/lib/viz/Oscilloscope";
 import { SpectrumDisplay } from "@/lib/viz/SpectrumDisplay";
@@ -58,12 +64,14 @@ export function PatchLab() {
   const setLessonPanelOpen = usePatchStore((s) => s.setLessonPanelOpen);
   const dismissTour = usePatchStore((s) => s.dismissTour);
   const getAnalyser = usePatchStore((s) => s.getAnalyser);
+  const scopeTapNodeId = usePatchStore((s) => s.scopeTapNodeId);
   const syncEngine = usePatchStore((s) => s.syncEngine);
   const updateGeneratorNodesLive = usePatchStore(
     (s) => s.updateGeneratorNodesLive
   );
   const setGeneratorKeyGate = usePatchStore((s) => s.setGeneratorKeyGate);
   const cancelRewire = usePatchStore((s) => s.cancelRewire);
+  const setScopeTapNodeId = usePatchStore((s) => s.setScopeTapNodeId);
   const isRewiring = usePatchStore((s) => s.rewireDraft !== null);
 
   const isLayoutAnimating = usePatchStore((s) => s.isLayoutAnimating);
@@ -113,7 +121,16 @@ export function PatchLab() {
 
   useEffect(() => {
     if (isRunning) setAnalyser(getAnalyser());
-  }, [isRunning, getAnalyser, edges, nodes]);
+  }, [isRunning, getAnalyser, edges, nodes, scopeTapNodeId]);
+
+  const handleNodeClick = useCallback(
+    (_event: React.MouseEvent, node: { id: string; data: { kind: string } }) => {
+      if (isScopeTappable(node.data.kind as NodeKind)) {
+        setScopeTapNodeId(node.id);
+      }
+    },
+    [setScopeTapNodeId]
+  );
 
   /** Highlight current tour target without a blocking joyride overlay. */
   useEffect(() => {
@@ -252,6 +269,7 @@ export function PatchLab() {
             snapGrid={[16, 16]}
             className={`patch-lab-canvas${isLayoutAnimating ? " is-layout-animating" : ""}${isRewiring ? " is-rewiring" : ""}`}
             onPaneClick={() => cancelRewire()}
+            onNodeClick={handleNodeClick}
           >
             <PatchFitView
               nodeCount={nodes.length}
@@ -268,6 +286,14 @@ export function PatchLab() {
               nodeColor={() => "#5ec8e8"}
               maskColor="rgba(6, 4, 10, 0.85)"
             />
+            <Panel position="top-right" className="patch-lab-palette !m-2 max-h-[70vh] max-w-52 overflow-hidden">
+              <p className="border-b-2 border-module-border px-2 py-1 font-mono text-[8px] uppercase tracking-[0.3em] text-secondary">
+                presets
+              </p>
+              <div className="max-h-[60vh] overflow-y-auto">
+                <PatchPresetPanel />
+              </div>
+            </Panel>
             <Panel position="top-left" className="patch-lab-palette !m-2 overflow-hidden">
               <p className="border-b-2 border-module-border px-2 py-1 font-mono text-[8px] uppercase tracking-[0.3em] text-secondary">
                 modules
@@ -281,6 +307,9 @@ export function PatchLab() {
         </div>
 
         <aside className="patch-lab-aside flex w-80 shrink-0 flex-col overflow-y-auto p-3">
+          <PatchTransportPanel />
+          <PatchModMatrix />
+          <PatchSignalTapPanel />
           <Oscilloscope
             analyser={analyser}
             isActive={isRunning}

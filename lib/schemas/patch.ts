@@ -25,6 +25,23 @@ export const Patch = z.object({
   edges: z.array(PatchEdge),
 });
 
+/** Serializable example patch for playground loading. */
+export const PatchPreset = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  techniqueTags: z.array(z.string()),
+  requiredNodes: z.array(z.string()),
+  patch: z.object({
+    nodes: z.array(
+      PatchNode.omit({ position: true }).extend({
+        position: z.object({ x: z.number(), y: z.number() }).optional(),
+      })
+    ),
+    edges: z.array(PatchEdge),
+  }),
+});
+
 export const LessonDiagram = z.enum([
   "oscillator-intro",
   "audio-ports",
@@ -72,6 +89,7 @@ export type PortType = z.infer<typeof PortType>;
 export type PatchNode = z.infer<typeof PatchNode>;
 export type PatchEdge = z.infer<typeof PatchEdge>;
 export type Patch = z.infer<typeof Patch>;
+export type PatchPreset = z.infer<typeof PatchPreset>;
 export type LessonDiagram = z.infer<typeof LessonDiagram>;
 export type TourStep = z.infer<typeof TourStep>;
 export type Lesson = z.infer<typeof Lesson>;

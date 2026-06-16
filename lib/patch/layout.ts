@@ -39,7 +39,13 @@ export { getNodeDimensions, type NodeDimensionMap } from "./node-layout";
 
 const snap = snapGrid;
 
-const SOURCE_KINDS = new Set<NodeKind>(["oscillator", "wavetable", "lfo"]);
+const SOURCE_KINDS = new Set<NodeKind>([
+  "oscillator",
+  "wavetable",
+  "lfo",
+  "fm",
+  "noise",
+]);
 
 function isAudioEdge(edge: LayoutEdge): boolean {
   const handle = edge.sourceHandle ?? "audio-out";
