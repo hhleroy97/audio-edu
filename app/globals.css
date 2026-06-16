@@ -8,6 +8,7 @@
   --color-secondary: #8a7fa0;
   --color-hot: #e8343a;
   --color-cold: #5ec8e8;
+  --font-module: "Share Tech Mono", ui-monospace, monospace;
 }
 
 @layer base {
@@ -31,14 +32,196 @@
   }
 }
 
-/* Patch lab — port handles & tour beacons: ambient glow on dark canvas */
-.patch-lab-canvas .react-flow__handle {
-  pointer-events: all;
+/* Patch lab — jacks & cables */
+.patch-lab-canvas .react-flow__handle.module-jack__handle {
+  position: absolute !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  opacity: 0;
+  z-index: 2;
   cursor: crosshair;
+  pointer-events: all;
 }
 
-.patch-lab-canvas .react-flow__handle:hover {
-  filter: brightness(1.15);
+.patch-lab-canvas .react-flow__handle.module-jack__handle:hover {
+  opacity: 0.15;
+  background: var(--jack-color, #00e8ff) !important;
+  filter: none;
+}
+
+.patch-lab-canvas .react-flow__handle.connectionindicator {
+  animation: port-pulse 1.6s ease-in-out infinite;
+  opacity: 0.25 !important;
+  background: var(--jack-color, #00e8ff) !important;
+}
+
+.module-panel--has-io {
+  --module-io-height: 72px;
+  --jack-size: 36px;
+}
+
+.module-panel--has-io .module-panel__body {
+  padding-bottom: 0.25rem;
+}
+
+.module-panel__io {
+  position: relative;
+  height: var(--module-io-height);
+  overflow: visible;
+  border-top: 1px solid #1e1830;
+  background: linear-gradient(180deg, #0e0a16 0%, #08060e 100%);
+  z-index: 25;
+}
+
+.module-jack-mount {
+  position: absolute;
+  left: var(--jack-slot, 50%);
+  top: 50%;
+  width: var(--jack-size);
+  height: var(--jack-size);
+  transform: translate(-50%, -50%);
+  z-index: 30;
+}
+
+.module-jack__socket {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Brushed metal bezel — full circular panel insert */
+.module-jack__bezel {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 28%,
+    #9a94a8 0%,
+    #6c6678 22%,
+    #4a4558 50%,
+    #2a2538 100%
+  );
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.55);
+}
+
+/* Inner collar ring */
+.module-jack__collar {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px solid #1a1624;
+  background: radial-gradient(circle at 40% 35%, #5a5568 0%, #1e1a28 70%);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Signal-colored insulator washer */
+.module-jack__insulator {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--jack-color, #00e8ff);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--jack-color) 50%, transparent);
+}
+
+/* Recessed bore — dark cavity you stare into */
+.module-jack__well {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 45% 40%,
+    #2a2438 0%,
+    #120e18 35%,
+    #060408 65%,
+    #000000 100%
+  );
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 1),
+    inset 0 0 3px rgba(0, 0, 0, 1);
+  overflow: hidden;
+}
+
+/* TRS sleeve ring inside bore */
+.module-jack__sleeve {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  border: 1px solid #3a3548;
+  opacity: 0.85;
+}
+
+/* Center contact tip */
+.module-jack__contact {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f0e8d0 0%, #b8a878 50%, #7a6e50 100%);
+  box-shadow:
+    0 0 3px rgba(240, 232, 208, 0.7),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.45);
+}
+
+/* Specular highlight — reinforces head-on circular read */
+.module-jack__glint {
+  position: absolute;
+  left: 22%;
+  top: 18%;
+  width: 28%;
+  height: 18%;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(-25deg);
+  pointer-events: none;
+}
+
+.module-jack__label {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 7px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #6a6080;
+  white-space: nowrap;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.patch-cable {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.patch-cable-plugs {
+  pointer-events: none;
 }
 
 @keyframes port-pulse {
@@ -62,6 +245,354 @@
   z-index: 5;
 }
 
-.patch-lab-canvas .react-flow__handle.connectionindicator {
-  animation: port-pulse 1.6s ease-in-out infinite;
+.patch-lab-canvas.is-layout-animating .react-flow__edge-path {
+  transition: d 80ms linear;
+}
+
+.patch-lab-canvas.is-layout-animating .react-flow__node {
+  will-change: transform;
+}
+
+/* Tour beacons */
+
+/* Eurorack module panels ───────────────────────────────────────── */
+.patch-lab-canvas .react-flow__nodes {
+  overflow: visible;
+}
+
+.patch-lab-canvas .react-flow__node {
+  font-family: var(--font-module);
+  overflow: visible !important;
+}
+
+/* RF reserves type "output" — strips default white box / padding */
+.patch-lab-canvas .react-flow__node-output {
+  padding: 0 !important;
+  width: auto !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: inherit;
+  text-align: left;
+}
+
+.module-panel {
+  background: transparent;
+  overflow: visible;
+}
+
+.module-panel__face {
+  position: relative;
+  background: var(--module-panel);
+  box-shadow:
+    0 0 0 1px #2a2038,
+    0 4px 24px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+}
+
+.module-panel__face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.module-panel--selected .module-panel__face {
+  box-shadow:
+    0 0 0 1px var(--module-accent),
+    0 0 20px var(--module-accent-dim),
+    0 4px 24px rgba(0, 0, 0, 0.65);
+}
+
+.module-panel__header {
+  background: linear-gradient(
+    135deg,
+    var(--module-accent-dim) 0%,
+    transparent 55%
+  );
+  border-bottom: 2px solid var(--module-accent);
+}
+
+.module-panel__header--slash-r::after,
+.module-panel__header--slash-l::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  width: 40%;
+  height: 2px;
+  background: var(--module-accent);
+  opacity: 0.5;
+}
+
+.module-panel__header--slash-r::after {
+  right: 0;
+  clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.module-panel__header--slash-l::after {
+  left: 0;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+
+.module-panel__code {
+  border: 1px solid;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.module-panel__led {
+  background: #1a1624;
+  border: 1px solid #3a3548;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.module-panel__led--on {
+  background: var(--module-led);
+  border-color: var(--module-led);
+  box-shadow: 0 0 8px var(--module-led);
+  animation: led-pulse 2s ease-in-out infinite;
+}
+
+@keyframes led-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.module-display {
+  position: relative;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.module-display::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0, 255, 80, 0.03) 1px,
+    rgba(0, 255, 80, 0.03) 2px
+  );
+  pointer-events: none;
+}
+
+.module-label {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #6a6080;
+}
+
+.module-hint {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6a6080;
+}
+
+.module-readout {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+/* ── Rotary knobs & level faders ─────────────────────────────────── */
+.module-knob__body {
+  cursor: ns-resize;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.module-knob__body:active {
+  cursor: grabbing;
+}
+
+.module-fader-v__track {
+  width: 22px;
+  height: 72px;
+  border: 1px solid #2a2038;
+  background: linear-gradient(180deg, #14101c 0%, #0a0810 100%);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.module-fader-v--tall .module-fader-v__track {
+  height: 96px;
+}
+
+.module-fader-v__input {
+  appearance: none;
+  width: 72px;
+  height: 22px;
+  transform: rotate(-90deg);
+  background: transparent;
+  cursor: ns-resize;
+}
+
+.module-fader-v__input::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #1e1830;
+  border: 1px solid #2a2038;
+}
+
+.module-fader-v__input::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 10px;
+  margin-top: -4px;
+  background: linear-gradient(180deg, #5a5568 0%, #2a2538 100%);
+  border: 1px solid var(--module-accent);
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+}
+
+.module-fader-v__input::-moz-range-track {
+  height: 4px;
+  background: #1e1830;
+  border: 1px solid #2a2038;
+}
+
+.module-fader-v__input::-moz-range-thumb {
+  width: 14px;
+  height: 10px;
+  background: linear-gradient(180deg, #5a5568 0%, #2a2538 100%);
+  border: 1px solid var(--module-accent);
+  border-radius: 0;
+}
+
+/* Per-module control grids */
+.module-control-grid {
+  gap: 6px 8px;
+  align-items: end;
+}
+
+.module-control-grid--oscillator {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.module-control-grid--detune {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "voices detune fader"
+    "spread . fader";
+}
+
+.module-control-grid--envelope {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "attack decay fader"
+    "sustain release fader";
+}
+
+.module-control-grid--output {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  grid-template-areas: "fader";
+}
+
+.module-control-grid__cell {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+}
+
+.module-control-grid__cell--reveal {
+  animation: param-reveal 0.35s ease-out both;
+}
+
+@keyframes param-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Rack fader (legacy horizontal — experiments) */
+.module-fader {
+  border: 1px solid #2a2038;
+  border-radius: 0;
+}
+
+.module-fader::-webkit-slider-thumb {
+  appearance: none;
+  width: 10px;
+  height: 14px;
+  background: linear-gradient(180deg, #4a4560 0%, #2a2538 100%);
+  border: 1px solid var(--module-accent);
+  cursor: grab;
+  clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 85%);
+}
+
+.module-fader::-moz-range-thumb {
+  width: 10px;
+  height: 14px;
+  background: linear-gradient(180deg, #4a4560 0%, #2a2538 100%);
+  border: 1px solid var(--module-accent);
+  cursor: grab;
+  border-radius: 0;
+}
+
+/* Rack rails background */
+.patch-lab-canvas {
+  background-color: #06040a !important;
+  background-image:
+    linear-gradient(90deg, transparent 15px, rgba(255, 255, 255, 0.02) 15px, rgba(255, 255, 255, 0.02) 16px),
+    linear-gradient(90deg, transparent 31px, rgba(255, 60, 60, 0.04) 31px, rgba(255, 60, 60, 0.04) 32px),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, transparent 40%);
+  background-size: 32px 100%, 32px 100%, 100% 100%;
+}
+
+.patch-lab-canvas .react-flow__background pattern circle {
+  fill: #1a1428 !important;
+}
+
+/* Module palette tiles */
+.module-palette-tile {
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  font-family: var(--font-module);
+  letter-spacing: 0.15em;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.module-palette-tile:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px var(--tile-accent, #00e8ff44);
+}
+
+/* Patch cables — see jack section above */
+
+/* Lab header */
+.patch-lab-header {
+  font-family: var(--font-module);
+  background: linear-gradient(180deg, #0e0a16 0%, #0a0612 100%);
+  border-bottom: 2px solid #ff2d9544;
+}
+
+.patch-lab-header__tag {
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
 }
