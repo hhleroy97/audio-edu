@@ -355,3 +355,14 @@
     `docs/research/song-mix-agent-phase2.md`
 
 106. **Web Audio analysis** — windowed DFT centroid for offline stem metrics (#96); AnalyserNode metering pattern
+
+## Research loop — drums + sidechain phase 3 (2026-06-16)
+
+107. **Web Audio `AudioBufferSourceNode.start(when)`** — sample-accurate drum scheduling on audio clock  
+    https://webaudio.github.io/web-audio-api/#AudioBufferSourceNode · GitHub: `WebAudio/web-audio-api`
+
+108. **Tone.js Param / Gain automation** — GitHits `Tone/core/context/Param.ts`; sidechain duck via gain ramps  
+    https://github.com/Tonejs/Tone.js · see also #96
+
+109. **Procedural drum lane + sidechain duck** — `lib/song/drums/`, `SidechainDef`, `duckGain` per layer  
+    `docs/research/song-drums-sidechain-phase3.md` · riddim grid (#56, #91) · duck depth (#61, #118)
