@@ -281,9 +281,21 @@ Inspired by arXiv:2408.01696 (#129) — rule-based, not ML:
 
 ## Suggested first `/gsd-plan-phase`
 
-**Phase 105 (progress UI)** — smallest schema change, immediate UX win, unblocks validating 101–104 in the lab.
+Phases **100–105 shipped** (2026-06-16). Next research loop: resample node (P3 #16), M/S matrix, spectral ducking — see `riddim-feature-roadmap.md` P3.
 
-Then **Phase 101 (pocket v2)** — biggest perceptual groove jump for deterministic code.
+---
+
+## Implementation notes (shipped)
+
+| Phase | Key paths |
+|-------|-----------|
+| **101** | `lib/schemas/rhythm.ts`, `lib/song/drums/riddim-pocket.ts` |
+| **102** | `clap` sample id, `public/samples/riddim/*.wav`, `scripts/generate-riddim-samples.mjs` |
+| **103** | `lib/song/agents/timbre-agent.ts`, 3-layer rule packs |
+| **104** | `lib/song/agents/modfx-agent.ts`, `DrumLaneDef.sendFx` |
+| **105** | `runArrangementAsync`, `ArrangementPipelineStepper`, extended `ArrangementAgentEvent` |
+
+Pipeline order: `section → harmony → timbre → pattern → transition → groove → drum → automation → modfx → evaluation → mix`
 
 ---
 
