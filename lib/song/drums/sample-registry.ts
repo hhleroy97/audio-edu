@@ -4,6 +4,7 @@ import type { DrumSampleId } from "@/lib/schemas/drums";
 export const DRUM_SAMPLE_PATHS: Partial<Record<DrumSampleId, string>> = {
   kick: "/samples/riddim/kick.wav",
   snare: "/samples/riddim/snare.wav",
+  clap: "/samples/riddim/clap.wav",
   hat: "/samples/riddim/hat.wav",
 };
 
@@ -34,4 +35,20 @@ export async function loadDrumSampleBuffer(
 
 export function clearDrumSampleCache(): void {
   bufferCache.clear();
+}
+
+/** Preload all registered riddim samples into DrumEngine when available. */
+export async function loadAllDrumSamples(
+  ctx: BaseAudioContext,
+  engine: { setSampleBuffer: (id: DrumSampleId, buffer: AudioBuffer) => void }
+): Promise<number> {
+  let loaded = 0;
+  for (const id of ["kick", "snare", "clap", "hat"] as DrumSampleId[]) {
+    const buffer = await loadDrumSampleBuffer(ctx, id);
+    if (buffer) {
+      engine.setSampleBuffer(id, buffer);
+      loaded++;
+    }
+  }
+  return loaded;
 }

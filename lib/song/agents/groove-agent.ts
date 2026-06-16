@@ -89,7 +89,7 @@ export function lintGrooveAgent(result: GrooveAgentResult): {
   errors: string[];
 } {
   for (const hit of result.drumExtras) {
-    if (!["kick", "snare", "hat"].includes(hit.sampleId)) {
+    if (!["kick", "snare", "clap", "hat"].includes(hit.sampleId)) {
       return { ok: false, errors: [`unknown groove drum: ${hit.sampleId}`] };
     }
   }

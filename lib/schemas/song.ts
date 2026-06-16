@@ -40,11 +40,21 @@ export const DrumHit = z.object({
   beat: z.number().min(0),
   sampleId: z.string(),
   velocity: z.number().min(0).max(1).default(0.8).optional(),
+  /** Micro-timing offset in seconds (swing / humanize). */
+  microShiftSec: z.number().min(-0.05).max(0.05).optional(),
 });
+
+export const DrumSendFx = z.object({
+  reverbMix: z.number().min(0).max(1).default(0),
+  delayMix: z.number().min(0).max(1).default(0),
+});
+
+export type DrumSendFxType = z.infer<typeof DrumSendFx>;
 
 export const DrumLaneDef = z.object({
   hits: z.array(DrumHit).default([]),
   sidechain: SidechainDef.optional(),
+  sendFx: DrumSendFx.optional(),
 });
 
 export const PatternCombinator = z.enum(["stack", "cat", "slow"]);

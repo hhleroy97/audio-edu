@@ -30,6 +30,9 @@ export class DrumEngine {
       case "snare":
         this.scheduleSnare(atTime, v * 0.75);
         break;
+      case "clap":
+        this.scheduleClap(atTime, v * 0.7);
+        break;
       case "hat":
         this.scheduleHat(atTime, v * 0.45);
         break;
@@ -87,6 +90,29 @@ export class DrumEngine {
     gain.connect(this.output);
     src.start(atTime);
     src.stop(atTime + 0.2);
+  }
+
+  private scheduleClap(atTime: number, velocity: number): void {
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.08);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / bufferSize;
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-t * 18) * (1 - t);
+    }
+    const src = this.ctx.createBufferSource();
+    src.buffer = buffer;
+    const hp = this.ctx.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.value = 900;
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(velocity, atTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, atTime + 0.07);
+    src.connect(hp);
+    hp.connect(gain);
+    gain.connect(this.output);
+    src.start(atTime);
+    src.stop(atTime + 0.08);
   }
 
   private scheduleHat(atTime: number, velocity: number): void {

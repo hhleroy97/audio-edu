@@ -13,8 +13,8 @@ export type SidechainDefType = z.infer<typeof SidechainDef>;
 
 export const DEFAULT_SIDECHAIN: SidechainDefType = SidechainDef.parse({});
 
-/** Known procedural drum sample ids (phase 3 — no external WAV required). */
-export const DRUM_SAMPLE_IDS = ["kick", "snare", "hat"] as const;
+/** Known procedural drum sample ids (phase 3 — optional WAV in /public/samples/riddim/). */
+export const DRUM_SAMPLE_IDS = ["kick", "snare", "clap", "hat"] as const;
 export type DrumSampleId = (typeof DRUM_SAMPLE_IDS)[number];
 
 export function isDrumSampleId(id: string): id is DrumSampleId {

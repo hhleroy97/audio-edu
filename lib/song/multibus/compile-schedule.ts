@@ -132,7 +132,7 @@ export function compileMultibusSchedule(
         sampleId: hit.sampleId,
         velocity: hit.velocity ?? 0.8,
         absoluteBeat: hit.beat,
-        atTime: epochTime + beatToSeconds(hit.beat, bpm),
+        atTime: epochTime + beatToSeconds(hit.beat, bpm) + (hit.microShiftSec ?? 0),
       });
     }
   }
