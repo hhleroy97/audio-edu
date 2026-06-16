@@ -4,6 +4,8 @@ import { patchToFlow } from "@/lib/patch/patch-flow";
 import type { PatchNodeData } from "@/lib/patch/ports";
 import { presetToPatch } from "@/lib/patch/presets/load";
 import { midiToFrequency } from "@/lib/patch/piano-keyboard";
+import type { MixProfileType } from "@/lib/schemas/song";
+import { inferMixProfile } from "./mix-profiles";
 
 const SONG_GAIN_NODE_KINDS = new Set([
   "output",
@@ -13,6 +15,20 @@ const SONG_GAIN_NODE_KINDS = new Set([
   "wavetable",
   "noise",
 ]);
+
+/** Parallel voices per mix profile (#116). */
+export const VOICE_POOL_SIZE: Record<MixProfileType, number> = {
+  sub: 1,
+  body: 4,
+  top: 2,
+  fx: 2,
+};
+
+type LayerVoice = {
+  engine: AudioEngine;
+  trim: GainNode;
+  busyUntil: number;
+};
 
 /** Scale hot preset params for multibus song context. */
 export function applySongGainToFlow(
@@ -38,31 +54,67 @@ export function applySongGainToFlow(
 
 /** One frozen preset graph routed through trim → master-bus mix strip. */
 export class LayerEngine {
-  readonly engine: AudioEngine;
-  private readonly trim: GainNode;
+  private readonly voices: LayerVoice[] = [];
+  private readonly mixProfile: MixProfileType;
   private flowNodes: Node<PatchNodeData>[] = [];
   private flowEdges: Edge[] = [];
   private songGain = 1;
 
   constructor(
-    ctx: AudioContext | OfflineAudioContext,
+    private readonly ctx: AudioContext | OfflineAudioContext,
     readonly layerId: string,
-    mixStripInput: GainNode
+    mixStripInput: GainNode,
+    mixProfile?: MixProfileType
   ) {
-    this.engine = new AudioEngine(ctx as unknown as AudioContext);
-    this.trim = ctx.createGain();
-    this.trim.gain.value = 1;
-    this.engine.setOutputDestination(this.trim);
-    this.trim.connect(mixStripInput);
+    this.mixProfile = mixProfile ?? inferMixProfile(layerId);
+    const voiceCount = VOICE_POOL_SIZE[this.mixProfile];
+    const perVoiceGain = 1 / Math.max(1, voiceCount);
+    const ctxAudio = ctx as unknown as AudioContext;
+
+    for (let i = 0; i < voiceCount; i++) {
+      const trim = ctx.createGain();
+      trim.gain.value = perVoiceGain;
+      const engine = new AudioEngine(ctxAudio);
+      engine.setOutputDestination(trim);
+      trim.connect(mixStripInput);
+      this.voices.push({ engine, trim, busyUntil: 0 });
+    }
+  }
+
+  /** Primary voice — backward compat for diagnostics. */
+  get engine(): AudioEngine {
+    return this.voices[0]!.engine;
+  }
+
+  get voiceCount(): number {
+    return this.voices.length;
+  }
+
+  private forEachVoice(fn: (voice: LayerVoice) => void): void {
+    for (const voice of this.voices) fn(voice);
+  }
+
+  private acquireVoice(atTime: number): LayerVoice {
+    const free = this.voices.find((v) => v.busyUntil <= atTime + 0.001);
+    if (free) return free;
+    return this.voices.reduce((a, b) => (a.busyUntil <= b.busyUntil ? a : b));
+  }
+
+  private syncAllVoices(): void {
+    this.forEachVoice((voice) => {
+      voice.engine.syncUiGraph(this.flowNodes, this.flowEdges);
+    });
   }
 
   setSongGain(gain: number): void {
     this.songGain = Math.max(0, Math.min(1, gain));
-    this.trim.gain.value = this.songGain;
+    const perVoiceGain = this.songGain / Math.max(1, this.voices.length);
+    this.forEachVoice((voice) => {
+      voice.trim.gain.value = perVoiceGain;
+    });
     if (this.flowNodes.length > 0) {
-      const scaled = applySongGainToFlow(this.flowNodes, this.songGain);
-      this.flowNodes = scaled;
-      this.engine.syncUiGraph(this.flowNodes, this.flowEdges);
+      this.flowNodes = applySongGainToFlow(this.flowNodes, this.songGain);
+      this.syncAllVoices();
     }
   }
 
@@ -72,23 +124,27 @@ export class LayerEngine {
     if (songGain !== undefined) {
       this.songGain = Math.max(0, Math.min(1, songGain));
     }
-    this.trim.gain.value = this.songGain;
+    const perVoiceGain = this.songGain / Math.max(1, this.voices.length);
+    this.forEachVoice((voice) => {
+      voice.trim.gain.value = perVoiceGain;
+    });
     const flow = patchToFlow(patch);
     this.flowNodes = applySongGainToFlow(flow.nodes, this.songGain);
     this.flowEdges = flow.edges;
-    this.engine.syncUiGraph(this.flowNodes, this.flowEdges);
+    this.syncAllVoices();
     return true;
   }
 
   setTransportBpm(bpm: number): void {
-    this.engine.setTransportBpm(bpm);
+    this.forEachVoice((voice) => voice.engine.setTransportBpm(bpm));
   }
 
   setNoteHz(hz: number, atTime?: number): void {
+    const voice = this.acquireVoice(atTime ?? 0);
     if (atTime !== undefined) {
-      this.engine.setActiveNoteHzAt(hz, atTime);
+      voice.engine.setActiveNoteHzAt(hz, atTime);
     } else {
-      this.engine.setActiveNoteHz(hz);
+      voice.engine.setActiveNoteHz(hz);
     }
   }
 
@@ -97,17 +153,29 @@ export class LayerEngine {
   }
 
   setGate(open: boolean, atTime?: number): void {
-    if (atTime !== undefined) {
-      this.engine.setGeneratorKeyGateAt(open, atTime);
-    } else {
-      this.engine.setGeneratorKeyGate(open);
-    }
+    this.forEachVoice((voice) => {
+      if (atTime !== undefined) {
+        voice.engine.setGeneratorKeyGateAt(open, atTime);
+      } else {
+        voice.engine.setGeneratorKeyGate(open);
+      }
+    });
   }
 
   scheduleNote(midi: number, startTime: number, durationSec: number): void {
-    this.setNoteMidi(midi, startTime);
-    this.setGate(true, startTime);
-    this.setGate(false, startTime + durationSec);
+    const voice = this.acquireVoice(startTime);
+    voice.busyUntil = startTime + durationSec;
+    voice.engine.setActiveNoteHzAt(midiToFrequency(midi), startTime);
+    voice.engine.setGeneratorKeyGateAt(true, startTime);
+    voice.engine.setGeneratorKeyGateAt(false, startTime + durationSec);
+  }
+
+  /** Stack chord tones on separate voices (#116). */
+  scheduleChord(midis: number[], startTime: number, durationSec: number): void {
+    const unique = [...new Set(midis)];
+    for (const midi of unique) {
+      this.scheduleNote(midi, startTime, durationSec);
+    }
   }
 
   setNodeParamsAt(
@@ -115,23 +183,29 @@ export class LayerEngine {
     params: Record<string, number | string | boolean>,
     atTime: number
   ): void {
-    this.engine.setNodeParamsAt(nodeId, params, atTime);
+    this.forEachVoice((voice) => {
+      voice.engine.setNodeParamsAt(nodeId, params, atTime);
+    });
   }
 
   async start(): Promise<void> {
-    if ("resume" in this.engine.ctx && typeof this.engine.ctx.resume === "function") {
-      await this.engine.resume();
+    if ("resume" in this.ctx && typeof this.ctx.resume === "function") {
+      await this.ctx.resume();
     }
-    this.engine.syncUiGraph(this.flowNodes, this.flowEdges);
-    this.engine.start();
+    this.syncAllVoices();
+    for (const voice of this.voices) {
+      voice.engine.start();
+    }
   }
 
   stop(): void {
-    this.engine.stop();
+    this.forEachVoice((voice) => voice.engine.stop());
   }
 
   dispose(): void {
-    this.engine.dispose();
-    this.trim.disconnect();
+    this.forEachVoice((voice) => {
+      voice.engine.dispose();
+      voice.trim.disconnect();
+    });
   }
 }

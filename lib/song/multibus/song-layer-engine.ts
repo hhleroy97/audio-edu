@@ -55,7 +55,12 @@ export class SongLayerEngine {
         def.busGain,
         def.mixProfile
       );
-      const layer = new LayerEngine(this.ctx, def.id, stripInput);
+      const layer = new LayerEngine(
+        this.ctx,
+        def.id,
+        stripInput,
+        def.mixProfile
+      );
       if (!layer.loadPreset(def.presetId, def.songGain)) {
         throw new Error(`unknown preset for layer ${def.id}: ${def.presetId}`);
       }
