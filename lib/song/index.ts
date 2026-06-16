@@ -138,8 +138,25 @@ export {
   listRulePacks,
   getRulePack,
   ARRANGEMENT_RULE_PACK_LIST,
+  runHarmonyAgent,
+  runEvaluationAgent,
+  verifyGoldenSnapshot,
+  GOLDEN_ARRANGEMENT_SNAPSHOTS,
 } from "./agents";
 export type { ArrangementProgressCallback } from "./agents";
+export { songToMidiBuffer, songToMidiBlob } from "./export/midi-export";
+export {
+  HarmonyDef,
+  GrooveDef,
+  TransitionDef,
+  EvaluationDef,
+  EvaluationReport,
+} from "@/lib/schemas/harmony";
+export type {
+  HarmonyDefType,
+  SectionHarmonyPlanType,
+  EvaluationReportType,
+} from "@/lib/schemas/harmony";
 export { euclideanRhythm, euclideanBeatHits } from "./pattern/euclidean";
 export {
   midiFromScaleDegree,
