@@ -11,6 +11,10 @@ import { lintSong } from "../lint-song";
 import { hashSongInputs } from "../render-offline";
 import { DEFAULT_RIDDIM_LAYERS } from "../riddim/patterns";
 import { runAutomationAgent, lintAutomationAgent } from "./automation-agent";
+import {
+  runBeatAutomationAgent,
+  lintBeatAutomationAgent,
+} from "./beat-automation-agent";
 import { runDrumAgent, lintDrumAgent } from "./drum-agent";
 import { runEvaluationAgent } from "./evaluation-agent";
 import { runGrooveAgent, lintGrooveAgent } from "./groove-agent";
@@ -134,7 +138,7 @@ function runPipelineSync(
   const harmonyPlans = voicingResult.plans;
 
   start("timbre", "archetype preset stacks");
-  const timbreResult = runTimbreAgent(pack);
+  const timbreResult = runTimbreAgent(pack, req.seed);
   const timbreLint = lintTimbreAgent(timbreResult);
   if (!timbreLint.ok) {
     failAgent("timbre", `timbre agent lint: ${timbreLint.errors.join("; ")}`);
@@ -245,7 +249,7 @@ function runPipelineSync(
     drums: drumResult.drums,
   });
 
-  start("automation", "mod profile expansion");
+  start("automation", "mod profiles + phrase-slot curves");
   const autoResult = runAutomationAgent({
     pack,
     sections: merged.sections,
@@ -259,7 +263,20 @@ function runPipelineSync(
       `automation agent lint: ${autoLint.errors.join("; ")}`
     );
   }
-  merged = SongDef.parse({ ...merged, sections: autoResult.sections });
+  const beatAutoResult = runBeatAutomationAgent({
+    pack,
+    sections: autoResult.sections,
+    layerIds,
+    seed: req.seed,
+  });
+  const beatAutoLint = lintBeatAutomationAgent(beatAutoResult);
+  if (!beatAutoLint.ok) {
+    failAgent(
+      "automation",
+      `beat automation lint: ${beatAutoLint.errors.join("; ")}`
+    );
+  }
+  merged = SongDef.parse({ ...merged, sections: beatAutoResult.sections });
   done("automation");
 
   start("modfx", "top mod + drum sends");
@@ -513,7 +530,7 @@ export function regenerateSection(
     seed: `${request.seed}:${sectionId}`,
     layerIds,
   });
-  const timbreResult = runTimbreAgent(pack);
+  const timbreResult = runTimbreAgent(pack, `${request.seed}:${sectionId}`);
   const timbreRuntimeResult = runTimbreRuntimeAgent({
     sections: grooveResult.sections,
     plans: timbreResult.plans,
@@ -529,9 +546,15 @@ export function regenerateSection(
     layerIds,
     seed: `${request.seed}:${sectionId}`,
   });
+  const beatAutoResult = runBeatAutomationAgent({
+    pack,
+    sections: autoResult.sections,
+    layerIds,
+    seed: `${request.seed}:${sectionId}`,
+  });
   emit(onProgress, "automation", "done", undefined, "running");
 
-  const updated = autoResult.sections[0];
+  const updated = beatAutoResult.sections[0];
   if (!updated) throw new Error("regenerate produced no section");
 
   const sections = baseSong.sections.map((s) =>
