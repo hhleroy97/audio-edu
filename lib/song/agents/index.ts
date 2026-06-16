@@ -26,6 +26,16 @@ export { runEvaluationAgent, lintEvaluationAgent } from "./evaluation-agent";
 export { runTimbreAgent, lintTimbreAgent, DEFAULT_TIMBRE } from "./timbre-agent";
 export type { TimbreAgentResult } from "./timbre-agent";
 
+export {
+  runTimbreRuntimeAgent,
+  lintTimbreRuntimeAgent,
+  countSectionPresetEvents,
+} from "./timbre-runtime-agent";
+export type {
+  TimbreRuntimeAgentInput,
+  TimbreRuntimeAgentResult,
+} from "./timbre-runtime-agent";
+
 export { runModFxAgent, lintModFxAgent, DEFAULT_MOD_FX } from "./modfx-agent";
 export type { ModFxAgentInput, ModFxAgentResult } from "./modfx-agent";
 

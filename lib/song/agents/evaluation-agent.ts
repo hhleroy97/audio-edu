@@ -98,6 +98,18 @@ export function runEvaluationAgent(
     );
   }
 
+  let sectionPresetSwaps = 0;
+  for (const section of song.sections) {
+    for (const ev of section.events) {
+      if (ev.kind === "layerPreset") sectionPresetSwaps++;
+    }
+  }
+  if (sectionPresetSwaps < rules.minSectionPresetSwaps) {
+    errors.push(
+      `expected ≥${rules.minSectionPresetSwaps} section preset swaps, got ${sectionPresetSwaps}`
+    );
+  }
+
   if (totalNoteCount < 8) {
     warnings.push("sparse arrangement — fewer than 8 total notes");
   }
@@ -115,6 +127,7 @@ export function runEvaluationAgent(
       velocityStdDev,
       modKeyframeCount: dropModKeyframes,
       uniqueBodyPresets,
+      sectionPresetSwaps,
     },
   });
 }

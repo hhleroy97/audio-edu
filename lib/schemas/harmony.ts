@@ -72,6 +72,7 @@ export const EvaluationDef = z.object({
   minVelocityStdDev: z.number().min(0).default(0.03),
   minModKeyframesPerDrop: z.number().int().min(0).default(4),
   minUniqueBodyPresets: z.number().int().min(1).default(1),
+  minSectionPresetSwaps: z.number().int().min(0).default(0),
 });
 
 export type EvaluationDefType = z.infer<typeof EvaluationDef>;
@@ -89,6 +90,7 @@ export const EvaluationReport = z.object({
     velocityStdDev: z.number().default(0),
     modKeyframeCount: z.number().default(0),
     uniqueBodyPresets: z.number().default(0),
+    sectionPresetSwaps: z.number().default(0),
   }),
 });
 

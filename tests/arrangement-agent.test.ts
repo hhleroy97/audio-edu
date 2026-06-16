@@ -93,6 +93,7 @@ describe("arrangement agent", () => {
     expect(events).toContain("pattern:done");
     expect(events).toContain("transition:done");
     expect(events).toContain("groove:done");
+    expect(events).toContain("timbreRuntime:done");
     expect(events).toContain("drum:done");
     expect(events).toContain("automation:done");
     expect(events).toContain("modfx:done");

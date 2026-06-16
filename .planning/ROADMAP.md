@@ -168,7 +168,7 @@
 |-------|------|------|------------|
 | **106** | Harmony v2 | ChordVoicingAgent — `@tonaljs/voicing`, bar-aligned progressions | `feat(song): ChordVoicingAgent harmony v2 (phase 106)` |
 | **107** | Melodic phrases | MelodicPhraseAgent — chops, micro-timing, hocket | `feat(song): MelodicPhraseAgent (phase 107)` |
-| **108** | Section timbre | Runtime `layerPreset` from TimbreAgent plans | `feat(song): section timbre runtime (phase 108)` |
+| **108** | Section timbre | Runtime `layerPreset` from TimbreAgent plans | `feat(song): section timbre runtime (phase 108)` ✅ |
 | **109** | Sample playback | Wire `loadAllDrumSamples` + drum send audio | `feat(song): sample playback + drum sends (phase 109)` ✅ |
 | **110** | Mod catalog | Rotate 7 mod profiles + yoi/tearout/infekt packs | `feat(song): mod catalog rule packs (phase 110)` |
 | **111** | 4-bar phrases | `RhythmPhraseDef` REMI-z phrase templates | `feat(song): 4-bar rhythm phrases (phase 111)` |
@@ -178,7 +178,7 @@
 ### Definition of done (milestone 106–111)
 
 - [ ] Drops use ≥2 distinct chord roots with bass-register voicings
-- [ ] Section boundaries swap presets (intro ≠ drop)
+- [x] Section boundaries swap presets (intro ≠ drop)
 - [x] WAV drums play in Patch Lab; snare send audible (phase 109)
 - [ ] ≥3 rule packs exercise ≥6 archetype presets
 - [ ] 4-bar drum phrase variation in drops

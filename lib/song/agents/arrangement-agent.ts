@@ -25,6 +25,10 @@ import {
 } from "./pipeline-yield";
 import { runSectionAgent, lintSectionAgent } from "./section-agent";
 import { runTimbreAgent, lintTimbreAgent } from "./timbre-agent";
+import {
+  runTimbreRuntimeAgent,
+  lintTimbreRuntimeAgent,
+} from "./timbre-runtime-agent";
 import { runTransitionAgent, lintTransitionAgent } from "./transition-agent";
 import type { z } from "zod";
 
@@ -80,6 +84,7 @@ function runPipelineSync(
 ): PipelineResult {
   const { pack, req, beatsPerBar, maxBeat } = ctx;
   let { layers, layerIds } = ctx;
+  let timbrePlans: ReturnType<typeof runTimbreAgent>["plans"] = [];
   const events: ArrangementAgentEventType[] = [];
 
   const failAgent = (
@@ -121,6 +126,7 @@ function runPipelineSync(
   }
   layers = timbreResult.layers;
   layerIds = new Set(layers.map((l) => l.id));
+  timbrePlans = timbreResult.plans;
   done("timbre", `${layers.length} layers`);
 
   start("pattern", "tonal pattern grid");
@@ -164,6 +170,21 @@ function runPipelineSync(
   }
   done("groove");
 
+  start("timbreRuntime", "section preset swaps");
+  const timbreRuntimeResult = runTimbreRuntimeAgent({
+    sections: grooveResult.sections,
+    plans: timbrePlans,
+    layerIds,
+  });
+  const timbreRuntimeLint = lintTimbreRuntimeAgent(timbreRuntimeResult);
+  if (!timbreRuntimeLint.ok) {
+    failAgent(
+      "timbreRuntime",
+      `timbre runtime lint: ${timbreRuntimeLint.errors.join("; ")}`
+    );
+  }
+  done("timbreRuntime");
+
   const draftMeta = {
     id: `${pack.id}-${req.seed}`,
     title: pack.title,
@@ -179,7 +200,7 @@ function runPipelineSync(
   start("drum", "riddim pocket grid");
   const drumResult = runDrumAgent({
     pack,
-    draft: { sections: grooveResult.sections, meta: draftMeta },
+    draft: { sections: timbreRuntimeResult.sections, meta: draftMeta },
     seed: req.seed,
     drumExtras: grooveResult.drumExtras,
   });
@@ -193,7 +214,7 @@ function runPipelineSync(
     meta: draftMeta,
     schemaVersion: 2,
     layers,
-    sections: grooveResult.sections,
+    sections: timbreRuntimeResult.sections,
     drums: drumResult.drums,
   });
 
@@ -271,6 +292,7 @@ async function runPipelineAsync(
     "pattern",
     "transition",
     "groove",
+    "timbreRuntime",
     "drum",
     "automation",
     "modfx",
@@ -455,7 +477,13 @@ export function regenerateSection(
     seed: `${request.seed}:${sectionId}`,
     layerIds,
   });
-  patternResult = { sections: grooveResult.sections };
+  const timbreResult = runTimbreAgent(pack);
+  const timbreRuntimeResult = runTimbreRuntimeAgent({
+    sections: grooveResult.sections,
+    plans: timbreResult.plans,
+    layerIds,
+  });
+  patternResult = { sections: timbreRuntimeResult.sections };
 
   emit(onProgress, "pattern", "done", undefined, "running");
   emit(onProgress, "automation", "start", sectionId, "running");

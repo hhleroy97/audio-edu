@@ -18,6 +18,7 @@ const DEFAULT_EVAL = {
   minVelocityStdDev: 0.03,
   minModKeyframesPerDrop: 2,
   minUniqueBodyPresets: 1,
+  minSectionPresetSwaps: 6,
 };
 
 /** Standard 16-bar riddim — intro / build / drop / break / outro. */

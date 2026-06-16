@@ -283,6 +283,7 @@ RhythmPhraseDef = {
 
 - [ ] Generated drops use ≥2 distinct chord roots with bass-register voicings
 - [ ] Section boundaries swap presets (intro ≠ drop timbre)
+- [x] Section boundaries swap presets — phase 108 `TimbreRuntimeAgent`
 - [x] WAV drums play in Patch Lab when files present (phase 109)
 - [x] Snare send reverb audible on drop sections (phase 109)
 - [ ] ≥3 rule packs exercise ≥6 archetype presets
@@ -296,6 +297,7 @@ RhythmPhraseDef = {
 | Phase | Key paths |
 |-------|-----------|
 | **109** | `lib/song/drums/drum-send-bus.ts`, `lib/song/multibus/prepare-engine.ts`, `drumSendFx` pattern event, `ModFxAgent` per-section sends |
+| **108** | `lib/song/agents/timbre-runtime-agent.ts`, pipeline `timbreRuntime`, `minSectionPresetSwaps` eval |
 
 ---
 

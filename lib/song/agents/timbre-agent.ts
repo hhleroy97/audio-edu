@@ -18,15 +18,38 @@ const DEFAULT_TIMBRE: TimbreDefType = {
   dropBBodySwap: "harsh-square-fm",
 };
 
+const LAYER_ORDER = ["sub", "body", "top"] as const;
+
 export type TimbreAgentResult = {
   layers: SongDefType["layers"];
   plans: SectionTimbrePlanType[];
 };
 
+function buildSongLayersFromPlans(
+  plans: SectionTimbrePlanType[]
+): SongDefType["layers"] {
+  const byId = new Map<string, SongDefType["layers"][number]>();
+  for (const plan of plans) {
+    for (const layer of plan.layers) {
+      if (!byId.has(layer.id)) {
+        byId.set(layer.id, {
+          id: layer.id,
+          presetId: layer.presetId,
+          mixProfile: layer.mixProfile,
+          busGain: layer.busGain ?? 0.75,
+          songGain: layer.songGain,
+          defaultMidi: layer.defaultMidi,
+        });
+      }
+    }
+  }
+  return LAYER_ORDER.filter((id) => byId.has(id)).map((id) => byId.get(id)!);
+}
+
 function layersForSection(
   spec: RulePackSectionSpecType,
   timbre: TimbreDefType,
-  pack: ArrangementRulePackType
+  _pack: ArrangementRulePackType
 ): SectionTimbrePlanType {
   const kind = spec.kind;
   const kindPreset = timbre.bySectionKind?.[kind] ?? {
@@ -69,7 +92,7 @@ function layersForSection(
   const topId =
     spec.includeTop === false
       ? null
-      : timbre.defaultTopPresetId;
+      : (kindPreset.top ?? timbre.defaultTopPresetId);
 
   if (
     topId &&
@@ -103,41 +126,9 @@ export function runTimbreAgent(
     layersForSection(spec, timbre, pack)
   );
 
-  const dropPlan =
-    plans.find((p) => p.sectionId.includes("drop-a")) ??
-    plans.find((p) => pack.sections.find((s) => s.id === p.sectionId)?.kind === "drop") ??
-    plans[0];
+  const layers = buildSongLayersFromPlans(plans);
 
-  const layers = dropPlan?.layers ?? [
-    {
-      id: "sub",
-      presetId: "clean-sub",
-      mixProfile: "sub" as const,
-      busGain: 0.72,
-      songGain: 0.82,
-      defaultMidi: DEFAULT_SUB_MIDI,
-    },
-    {
-      id: "body",
-      presetId: "hydraulic-press-wobble",
-      mixProfile: "body" as const,
-      busGain: 0.48,
-      songGain: 0.58,
-      defaultMidi: DEFAULT_BODY_MIDI,
-    },
-  ];
-
-  return {
-    layers: layers.map((l) => ({
-      id: l.id,
-      presetId: l.presetId,
-      mixProfile: l.mixProfile,
-      busGain: l.busGain ?? 0.75,
-      songGain: l.songGain,
-      defaultMidi: l.defaultMidi,
-    })),
-    plans,
-  };
+  return { layers, plans };
 }
 
 export function lintTimbreAgent(result: TimbreAgentResult): {

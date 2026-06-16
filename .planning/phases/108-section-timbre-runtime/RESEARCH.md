@@ -1,6 +1,6 @@
 # Phase 108 — Section timbre runtime (research)
 
-**Status:** Research complete · **Next:** `/gsd-plan-phase 108` (recommended before 106)  
+**Status:** Shipped · **Next:** phase 106 harmony v2  
 **Depends on:** Phase 103 (TimbreAgent plans)  
 **Goal:** Section boundaries emit `layerPreset` / `layerGain` from `SectionTimbrePlan[]`.
 

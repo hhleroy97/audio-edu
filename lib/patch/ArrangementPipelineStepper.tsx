@@ -11,6 +11,7 @@ const AGENT_LABELS: Record<string, string> = {
   pattern: "Patterns",
   transition: "Transitions",
   groove: "Groove",
+  timbreRuntime: "Timbre runtime",
   drum: "Drums",
   automation: "Automation",
   modfx: "Mod / FX",
