@@ -53,7 +53,7 @@ export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
   harmony: {
     progression: ["i", "VI", "III", "VII"],
     scaleOverride: "minor",
-    voicingMode: "fifth",
+    voicingMode: "triad",
     barsPerChord: 1,
     subOctave: 1,
     bodyOctave: 2,
@@ -81,7 +81,10 @@ export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
   modFx: {
     defaultDrumSendReverb: 0.22,
   },
-  evaluation: DEFAULT_EVAL,
+  evaluation: {
+    ...DEFAULT_EVAL,
+    minSimultaneousBodyNotes: 3,
+  },
   sections: [
     { id: "intro", label: "Intro", kind: "intro", startBar: 0, endBar: 2 },
     { id: "build", label: "Build", kind: "build", startBar: 2, endBar: 4 },

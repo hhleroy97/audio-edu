@@ -4,6 +4,18 @@ import { countMaxSimultaneousBodyNotes } from "@/lib/song/agents/chord-voicing-a
 import { RIDDIM_STANDARD_16 } from "@/lib/song/agents/rule-packs";
 
 describe("Chord pattern IR (#117)", () => {
+  it("triad voicing stacks three body notes in standard pack", () => {
+    const run = runArrangement({
+      rulePackId: RIDDIM_STANDARD_16.id,
+      seed: "triad-voicing-test",
+    });
+    expect(RIDDIM_STANDARD_16.harmony?.voicingMode).toBe("triad");
+    const dropIds = new Set(
+      RIDDIM_STANDARD_16.sections.filter((s) => s.kind === "drop").map((s) => s.id)
+    );
+    expect(countMaxSimultaneousBodyNotes(run.song.sections, dropIds)).toBeGreaterThanOrEqual(3);
+  });
+
   it("emits stacked body notes per halftime hit in drops", () => {
     const run = runArrangement({
       rulePackId: RIDDIM_STANDARD_16.id,
