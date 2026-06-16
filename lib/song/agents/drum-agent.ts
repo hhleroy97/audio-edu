@@ -1,15 +1,14 @@
-import type { DrumLaneDefType, SongDefType } from "@/lib/schemas/song";
+import type { DrumHitType, DrumLaneDefType, SongDefType } from "@/lib/schemas/song";
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
 import { DEFAULT_SIDECHAIN } from "@/lib/schemas/drums";
-import { euclideanBeatHits } from "../pattern/euclidean";
 import { buildRiddimDrumGrid } from "../drums/riddim-drum-grid";
 
 export type DrumAgentInput = {
   pack: ArrangementRulePackType;
   draft: Pick<SongDefType, "sections" | "meta">;
   seed: string;
-  /** Euclidean hat grid (optional). */
-  hatEuclidean?: { pulses: number; steps: number };
+  /** Extra hits from GrooveAgent. */
+  drumExtras?: DrumHitType[];
 };
 
 export type DrumAgentResult = {
@@ -39,20 +38,10 @@ export function runDrumAgent(input: DrumAgentInput): DrumAgentResult {
     for (const hit of sectionHits) {
       hits.push({ ...hit, beat: sectionStartBeat + hit.beat });
     }
+  }
 
-    if (input.hatEuclidean && spec?.kind === "drop") {
-      const hatBeats = euclideanBeatHits(
-        input.hatEuclidean.pulses,
-        input.hatEuclidean.steps,
-        sectionBars,
-        input.pack.beatsPerBar,
-        sectionStartBeat,
-        input.seed.length % input.hatEuclidean.steps
-      );
-      for (const beat of hatBeats) {
-        hits.push({ beat, sampleId: "hat", velocity: 0.35 });
-      }
-    }
+  if (input.drumExtras?.length) {
+    hits.push(...input.drumExtras);
   }
 
   hits.sort((a, b) => a.beat - b.beat);
