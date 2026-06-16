@@ -1,5 +1,6 @@
 import * as Tone from "tone";
 import type { WaveformType } from "./context";
+import { voiceDetune, voicePan } from "./unison-voice";
 
 export type UnisonParams = {
   frequency: number;
@@ -29,17 +30,7 @@ export type UnisonChain = {
   masterGain: Tone.Gain;
 };
 
-function voiceDetune(index: number, count: number, totalCents: number): number {
-  if (count <= 1) return 0;
-  const t = index / (count - 1);
-  return (t - 0.5) * totalCents;
-}
-
-function voicePan(index: number, count: number, spread: number): number {
-  if (count <= 1) return 0;
-  const t = index / (count - 1);
-  return (t - 0.5) * 2 * spread;
-}
+export { voiceDetune, voicePan, voiceLayout } from "./unison-voice";
 
 export function createUnisonChain(
   fftAnalyser: Tone.Analyser,

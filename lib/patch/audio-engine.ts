@@ -47,11 +47,14 @@ export class AudioEngine {
   syncUiGraph(
     uiNodes: Node<PatchNodeData>[],
     uiEdges: Edge[]
-  ): void {
+  ): boolean {
     const uiIds = new Set(uiNodes.map((n) => n.id));
+    let structureChanged = false;
+    const newlyCreated = new Set<string>();
 
     for (const [id, runtime] of this.nodes) {
       if (!uiIds.has(id)) {
+        structureChanged = true;
         runtime.dispose();
         this.nodes.delete(id);
       }
@@ -62,13 +65,17 @@ export class AudioEngine {
       if (existing) {
         existing.setParams(uiNode.data.params, this.ctx.currentTime);
       } else {
+        structureChanged = true;
         const runtime = createRuntimeNode(
           this.ctx,
           uiNode.data.kind,
           uiNode.id,
           uiNode.data.params
         );
-        if (runtime) this.nodes.set(uiNode.id, runtime);
+        if (runtime) {
+          this.nodes.set(uiNode.id, runtime);
+          newlyCreated.add(uiNode.id);
+        }
       }
     }
 
@@ -84,6 +91,11 @@ export class AudioEngine {
     );
 
     this.reconnectAll();
+    this.syncDetuneSources(uiNodes);
+
+    if (structureChanged && this.running) {
+      this.restartGenerators(newlyCreated);
+    }
 
     const analyserNode = [...this.nodes.values()].find(
       (n) => n.kind === "analyser"
@@ -92,6 +104,20 @@ export class AudioEngine {
       analyserNode && "analyser" in analyserNode
         ? (analyserNode as RuntimeNode & { analyser: AnalyserNode }).analyser
         : this.findOutputTap();
+
+    return structureChanged;
+  }
+
+  /** Start generators added during a live topology change; leave running sources alone. */
+  private restartGenerators(newlyCreated: Set<string>): void {
+    const t = this.ctx.currentTime;
+    for (const runtime of this.nodes.values()) {
+      if (!newlyCreated.has(runtime.id)) continue;
+      if (runtime.kind === "oscillator" || runtime.kind === "detune") {
+        runtime.start(t);
+      }
+    }
+    this.setGeneratorKeyGate(false);
   }
 
   private findOutputTap(): AnalyserNode | null {
@@ -156,6 +182,34 @@ export class AudioEngine {
     }
   }
 
+  private syncDetuneSources(uiNodes: Node<PatchNodeData>[]): void {
+    for (const uiNode of uiNodes) {
+      if (uiNode.data.kind !== "detune" && uiNode.data.kind !== "unison") continue;
+
+      const runtime = this.nodes.get(uiNode.id);
+      if (!runtime?.syncSource) continue;
+
+      const inWire = this.wires.find(
+        (w) => w.targetId === uiNode.id && w.targetHandle === "audio-in"
+      );
+      if (!inWire) {
+        runtime.syncSource(null);
+        continue;
+      }
+
+      const sourceUi = uiNodes.find((n) => n.id === inWire.sourceId);
+      if (!sourceUi || sourceUi.data.kind !== "oscillator") {
+        runtime.syncSource(null);
+        continue;
+      }
+
+      runtime.syncSource({
+        waveform: (sourceUi.data.params.waveform as OscillatorType) ?? "sine",
+        frequency: Number(sourceUi.data.params.frequency ?? 220),
+      });
+    }
+  }
+
   private applyWire(wire: Wire): void {
     const source = this.nodes.get(wire.sourceId);
     const target = this.nodes.get(wire.targetId);
@@ -191,17 +245,40 @@ export class AudioEngine {
   start(): void {
     const t = this.ctx.currentTime;
     for (const runtime of this.nodes.values()) {
-      if (runtime.kind === "oscillator") runtime.start(t);
+      if (runtime.kind === "oscillator" || runtime.kind === "detune") {
+        runtime.start(t);
+      }
     }
+    this.setGeneratorKeyGate(false);
     this.running = true;
   }
 
   stop(): void {
     const t = this.ctx.currentTime;
+    this.setGeneratorKeyGate(false);
     for (const runtime of this.nodes.values()) {
-      if (runtime.kind === "oscillator") runtime.stop(t + 0.05);
+      if (runtime.kind === "oscillator" || runtime.kind === "detune") {
+        runtime.stop(t + 0.05);
+      }
+      if (runtime.kind === "envelope") {
+        runtime.stop(t);
+      }
     }
     this.running = false;
+  }
+
+  /** Open/close keyboard gate on tone generators; trigger envelope ADSR. */
+  setGeneratorKeyGate(open: boolean): void {
+    const t = this.ctx.currentTime;
+    for (const runtime of this.nodes.values()) {
+      runtime.setKeyGate?.(open, t);
+      runtime.triggerGate?.(open, t);
+    }
+  }
+
+  /** @deprecated Use setGeneratorKeyGate */
+  setOscillatorKeyGate(open: boolean): void {
+    this.setGeneratorKeyGate(open);
   }
 
   dispose(): void {

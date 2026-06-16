@@ -21,6 +21,12 @@ export {
   type UnisonParams,
   type UnisonChain,
 } from "./unison";
+export { voiceDetune, voicePan, voiceLayout } from "./unison-voice";
+export {
+  DEFAULT_AMPLITUDE_ADSR,
+  sampleAmplitudeEnvelope,
+  type AmplitudeADSR,
+} from "./adsr-amplitude";
 export {
   createPitchOscillatorChain,
   applyPitchEnvelope,
