@@ -136,11 +136,30 @@ Already cited in `UI_OVERHAUL_HANDOFF.md`; expanded with 2024–2026 landscape:
 
 ---
 
+### Cycle 3 — 2026-06-16 (song depth / Reddit-proxy pass)
+
+**Goal:** Research phases **106–111** after post-105 flat-output audit.
+
+| Source | Status | Findings ported |
+|--------|--------|-----------------|
+| r/synthrecipes | ❌ Blocked (JSON + site search) | DSF #134: dual LFO, allpass→comb, quantize-off, chord chops |
+| r/AudioSynthesis | ❌ Blocked | Preset Drive #141, Producer Hive #139, LSA #140 layering |
+| DSF riddim thread | ✅ Fetched | Full technique thread — see sources #134 |
+| GitHits `@tonaljs/voicing` | ❌ Backend error | Local README audit → #138 |
+| `@tonaljs/progression` | ✅ In repo | Extend harmony-agent phase 106 |
+
+**Deliverable:** `docs/research/song-depth-phases-106-111.md` + `.planning/phases/106–111/*/RESEARCH.md`
+
+**Recommended execute order:** 109 → 108 → 106 → 107 → 110 → 111
+
+---
+
 ### G. Gaps (remaining)
 
 - [x] Vital riddim techniques — cycle 2
 - [x] arXiv FM-DDSP (Caspe DDX7) — cycle 2
-- [ ] Reddit direct thread URLs (site blocks bots; use manual paste)
+- [ ] Reddit direct thread URLs (site blocks bots; use manual paste) — cycle 3 used DSF + indexed proxies (#134–143)
+- [x] Song depth phases 106–111 research — cycle 3
 - [ ] GitHits code reads: synflow, audio-nodes (needs `githits login`) — **authed 2026-06-16**; use in phase 72/73
 - [x] Pro modulation implementation plan — `.planning/ROADMAP.md` phases 71–75
 - [x] Reference track homework list — cycle 2

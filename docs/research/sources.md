@@ -444,3 +444,35 @@
 
 133. **Tone.js Convolver** — impulse reverb for snare send; dub delay pattern (#126)  
     GitHits `Tone/component/filter/Convolver.ts` · multibus drum send automation
+
+## Research loop — song depth phases 106–111 (2026-06-16)
+
+134. **DSF Community — Riddim production techniques** (Reddit-proxy for r/synthrecipes) — FM wobble @ 1/4, dual LFO half-rate on FX, allpass→comb chain, “turn off quantize”, chord samples to chop  
+    https://community.dsf.ninja/t/riddim-a-type-of-dubstep-production-techniques-help-thread/12308 · `docs/research/song-depth-phases-106-111.md`
+
+135. **EDM Templates — frequency slotting vs naive layering** (Reddit-proxy) — phase cancellation when stacking random bass patches; sub/body/top Hz bands  
+    https://edmtemplates.net/blogs/edm-templates-blog/sound-layering-techniques
+
+136. **Preset Drive — Melodic dubstep production guide** — chord bass in drops, sub follows roots, alternate chord vs single-note phrases, hocket  
+    https://www.presetdrive.com/melodic-dubstep-production-guide-sound-design-arrangement-and-mixing/
+
+137. **Theory Helper — Melodic dubstep scales/progressions** — `i–VI–III–VII`, harmonic minor; r/MelodicDubstep community ref  
+    https://www.theoryhelper.com/genres/melodic-dubstep/scales
+
+138. **@tonaljs/voicing** — `Voicing.get` / `Voicing.search` bass-register voicings; pairs with #112 progression  
+    `node_modules/@tonaljs/voicing/README.md` · ChordVoicingAgent phase 106
+
+139. **Producer Hive — synth bass layering** — sub sine / low-mid / high-mid / top stack; fader leveling  
+    https://producerhive.com/music-production-recording-tips/how-to-layer-bass-synths/
+
+140. **Lost Stories Academy — bassline tricks** — sub 20–80 Hz, mid 80–400 Hz, top 400 Hz–2 kHz; HP mid layers  
+    https://www.loststoriesacademy.com/blogs-and-tutorials/top-3-bassline-tricks-to-make-your-drops-hit-harder
+
+141. **Preset Drive — layer basses in Serum** — EQ boundaries; phase alignment sub+mid  
+    https://www.presetdrive.com/how-to-layer-basses-in-serum-for-massive-sound/
+
+142. **Song depth research doc** — GSD phases 106–111 plan (harmony, timbre runtime, samples, mod catalog, 4-bar phrases)  
+    `docs/research/song-depth-phases-106-111.md`
+
+144. **Phase 109 — sample playback + drum sends** — `prepareMultibusEngine`, `DrumSendBus`, `drumSendFx` section events  
+    `lib/song/multibus/prepare-engine.ts` · `lib/song/drums/drum-send-bus.ts` · see #107, #132–133

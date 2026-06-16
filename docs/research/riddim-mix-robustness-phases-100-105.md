@@ -281,7 +281,7 @@ Inspired by arXiv:2408.01696 (#129) — rule-based, not ML:
 
 ## Suggested first `/gsd-plan-phase`
 
-Phases **100–105 shipped** (2026-06-16). Next research loop: resample node (P3 #16), M/S matrix, spectral ducking — see `riddim-feature-roadmap.md` P3.
+Phases **100–105 shipped** (2026-06-16). **Next milestone:** song depth **106–111** — see `docs/research/song-depth-phases-106-111.md` (harmony, timbre runtime, samples, mod catalog). P3 synth (resample #16, M/S #17) remains parallel track in `riddim-feature-roadmap.md`.
 
 ---
 

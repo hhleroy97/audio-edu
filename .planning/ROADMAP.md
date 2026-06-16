@@ -155,3 +155,31 @@
 - [x] Drop mod profiles on body and top; drum send FX
 - [x] Live sub-agent stepper during generate; clear complete state
 - [x] Golden snapshots + `npm test` green per phase
+
+---
+
+## Planned — Song depth & musical richness (106–111)
+
+> Research: `docs/research/song-depth-phases-106-111.md`  
+> **Motivation:** Post-105 audit — output still flat (monophonic roots, global timbre, procedural drums, weak eval gates).  
+> **Reddit:** `r/synthrecipes` / `r/AudioSynthesis` blocked from bots — DSF + Preset Drive + EDM Templates used as proxies (#134–139).
+
+| Phase | Name | Goal | Commit tag |
+|-------|------|------|------------|
+| **106** | Harmony v2 | ChordVoicingAgent — `@tonaljs/voicing`, bar-aligned progressions | `feat(song): ChordVoicingAgent harmony v2 (phase 106)` |
+| **107** | Melodic phrases | MelodicPhraseAgent — chops, micro-timing, hocket | `feat(song): MelodicPhraseAgent (phase 107)` |
+| **108** | Section timbre | Runtime `layerPreset` from TimbreAgent plans | `feat(song): section timbre runtime (phase 108)` |
+| **109** | Sample playback | Wire `loadAllDrumSamples` + drum send audio | `feat(song): sample playback + drum sends (phase 109)` ✅ |
+| **110** | Mod catalog | Rotate 7 mod profiles + yoi/tearout/infekt packs | `feat(song): mod catalog rule packs (phase 110)` |
+| **111** | 4-bar phrases | `RhythmPhraseDef` REMI-z phrase templates | `feat(song): 4-bar rhythm phrases (phase 111)` |
+
+**Recommended order:** 109 → 108 → 106 → 107 → 110 → 111
+
+### Definition of done (milestone 106–111)
+
+- [ ] Drops use ≥2 distinct chord roots with bass-register voicings
+- [ ] Section boundaries swap presets (intro ≠ drop)
+- [x] WAV drums play in Patch Lab; snare send audible (phase 109)
+- [ ] ≥3 rule packs exercise ≥6 archetype presets
+- [ ] 4-bar drum phrase variation in drops
+- [ ] Golden snapshots + `npm test` green per phase
