@@ -70,3 +70,5 @@ Kick triggers `duckGain` on `sub` + `body` only — top/FX layers unaffected.
 - WAV sample loader (`/public/samples/` or user uploads)
 - `cat` combinator for drum + bass layering
 - Mix agent rules for drum stem level vs sub RMS
+
+See **phase 87+** — arrangement agents, rule-pack generation UI (`docs/research/arrangement-agent-landscape.md`).

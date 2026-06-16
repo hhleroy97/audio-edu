@@ -366,3 +366,26 @@
 
 109. **Procedural drum lane + sidechain duck** — `lib/song/drums/`, `SidechainDef`, `duckGain` per layer  
     `docs/research/song-drums-sidechain-phase3.md` · riddim grid (#56, #91) · duck depth (#61, #118)
+
+## Research loop — arrangement agents phase 87 (2026-06-16)
+
+110. **Tone.js Pattern + PatternGenerator** — GitHits `Tone/event/Pattern.ts`; cyclic note pools for PatternAgent IR  
+    https://github.com/Tonejs/Tone.js
+
+111. **@tonejs/midi** — SMF ↔ JSON interchange (130k dl/mo); optional export path, not runtime scheduler  
+    https://github.com/Tonejs/Midi · npm `@tonejs/midi@2.0.28`
+
+112. **@tonaljs/tonal** — scale degrees, key-aware note names for deterministic bass MIDI (#112)  
+    https://github.com/tonaljs/tonal · `Progression`, `Scale.degrees`
+
+113. **@strudel/core** — Tidal stack/cat/slow semantics; **AGPL** — IR port only, no runtime embed  
+    https://codeberg.org/uzu/strudel · see #76, #79
+
+114. **LangGraph agent patterns** — supervisor + specialist routing; structured run state  
+    https://github.com/langchain-ai/langgraph · mapped to ArrangementRun events
+
+115. **Mix agent pipeline** — analyze → propose → lint → apply template for all sub-agents  
+    `lib/song/mix/`, `docs/research/song-mix-agent-phase2.md`
+
+116. **Arrangement agent architecture** — hierarchical sub-agents, rule packs, song UI  
+    `docs/research/arrangement-agent-landscape.md` · `lib/schemas/agents.ts` · `.planning/phases/87-arrangement-agent-ui/`

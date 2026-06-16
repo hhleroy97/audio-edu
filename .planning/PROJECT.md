@@ -5,32 +5,34 @@
 Web-based sound-synthesis learning lab with Patch Lab node-graph canvas, grounded in
 RIDDIM/dubstep pedagogy and Zod-validated contracts (`AGENTS.md`, `HANDOFF.md`).
 
-## Current milestone: Multibus riddim songs (81–86)
+## Current milestone: Arrangement agents & song UI (87–93)
 
-**Goal:** Parallel layer buses (sub + body + optional top) with audio-clock scheduling and **arranged** riddim songs — intro / drop / break / drop swap — not single-preset hot-swap.
+**Goal:** Procedural song generation from **rule packs** via a **supervisor arrangement agent** with specialist sub-agents (pattern, drum, automation, mix). Full arrangement UI in Patch Lab — generate, preview, further modulate via automation agent.
 
-**Previous milestone (shipped):** Procedural songs v1 (76–80) — SongDef IR, MVP scheduler, templates, lesson 08.
+**Previous milestone (shipped):** Multibus riddim songs (81–86) + mix agent phase 2 + drums/sidechain phase 3.
 
-**Baseline:** 35 presets, archetype catalog, `lib/song/*` pipeline, Patch Lab mixer node, generator restart fixes.
+**Baseline:** SongDef v2, multibus engine, riddim templates, mix pass, procedural drums, PatchSongPanel.
 
 **Gap (this milestone):**
-- Song mode replaces entire graph per note (`loadPreset`) — no true layering
-- `setTimeout` scheduler drifts; global gate timer collides on overlapping notes
-- Templates are repetitive halftime grids — no section arrangement or `cat` variation
-- Offline render is placeholder sine, not multibus stems
+- Templates are hand-authored — no rule-pack generation UI
+- No pluggable MIDI/pattern generator (`tonal` integration pending)
+- Automation is embedded in arrangement builder — not a separable sub-agent contract
+- No supervisor orchestration or sub-agent progress in UI
 
 ## Constraints
 
 - Web Audio API first; no Tone.js runtime dependency
 - Strudel-inspired **IR port only** (stack/cat/slow) — no AGPL embed without review
+- **`tonal` (MIT)** approved for phase 88 pattern generation
 - Every schema change → Zod + lint before write
 - Docs + tests per phase; atomic commits
-- Sub layer protection rules from catalog (#19, #48)
+- Sub-agents follow mix-pass shape: propose → lint → merge → gate
 
 ## Canonical refs
 
-- `docs/research/multibus-song-engine-landscape.md` — **new** GitHits research
+- `docs/research/arrangement-agent-landscape.md` — **new** GitHits + agent hierarchy
+- `docs/research/multibus-song-engine-landscape.md`
 - `docs/research/procedural-music-landscape.md`
 - `docs/research/riddim-sound-catalog.md`
-- `.planning/phases/81-multibus-riddim-songs/PLAN.md`
+- `.planning/phases/87-arrangement-agent-ui/RESEARCH.md`
 - `UI_OVERHAUL_HANDOFF.md`

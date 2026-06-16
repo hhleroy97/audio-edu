@@ -66,3 +66,44 @@
 - SuperCollider server
 - Full DAW / MIDI export
 - Auto-mastering / LUFS
+
+---
+
+## Active — Arrangement agents & song UI (87–93)
+
+| Phase | Name | Goal | Commit tag |
+|-------|------|------|------------|
+| **87** | Agent research | GitHits procedural MIDI + sub-agent hierarchy | `docs(research): arrangement agent landscape` |
+| **88** | PatternAgent + tonal | Scale-degree note generation, euclidean helper | `feat(song): PatternAgent with tonal` |
+| **89** | ArrangementAgent | Supervisor merge pipeline + ArrangementRun | `feat(song): arrangement agent orchestrator` |
+| **90** | AutomationSubAgent | Mod profile expansion as sub-agent | `feat(song): automation sub-agent` |
+| **91** | Arrangement UI | Generate, progress, section timeline in Patch Lab | `feat(lab): song arrangement UI` |
+| **92** | Rule packs | Regenerate-section, optional @tonejs/midi export | `feat(song): arrangement rule packs` |
+| **93** | Lesson + graph | Lesson 10, integration tests, graph nodes | `feat(lab): lesson 10 arrangement agents` |
+
+### Shipped after 81–86 (unnumbered)
+
+| Work | Status |
+|------|--------|
+| Mix agent phase 2 (MixDef pass) | ✅ |
+| Drums + sidechain phase 3 | ✅ |
+
+## Dependency graph (87–93)
+
+```
+81–86 + mix(2) + drums(3) (shipped)
+  └── 87 (research + agent schemas)
+        └── 88 ──► 89 ──► 90 ──► 91 ──► 92 ──► 93
+                    │
+                    └── AutomationAgent subordinate to ArrangementAgent
+                    └── MixAgent optional post-step (existing runMixPass)
+```
+
+## Definition of done (milestone 87–93)
+
+- [ ] Generate full SongDef from rule pack + seed (deterministic hash)
+- [ ] Sub-agents emit Zod-valid fragments; supervisor merges + lintSong
+- [ ] AutomationAgent runs only after pattern/section merge
+- [ ] UI shows sub-agent progress and plays generated song
+- [ ] ≥2 rule packs; optional MIDI export
+- [ ] Lesson 10; docs + graph; `npm test` green

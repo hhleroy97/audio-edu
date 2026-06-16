@@ -110,3 +110,49 @@ authoritative; LLM-discovered edges carry a `confidence` and are clearly separab
 - [ ] `docs/` written: theory, architecture, sources (cited), changelog updated.
 - [ ] Graph extractor runs clean and produces valid nodes/edges for the experiment.
 - [ ] Agent-state feedback visible during any async work.
+
+---
+
+## 7. Hierarchical song agents (arrangement milestone)
+
+Song generation uses a **supervisor + sub-agent** pipeline. Every agent output is Zod-validated
+before merge. Sub-agents follow the same shape as the mix pass (`lib/song/mix/`):
+
+```
+Input (Zod) → propose/transform → lint → merge fragment → gate check
+```
+
+### Supervisor: `ArrangementAgent`
+
+| Field | Contract |
+|-------|----------|
+| Input | `ArrangementRequest` (`lib/schemas/agents.ts`) |
+| Output | `ArrangementRun` containing validated `SongDef` |
+| Order | section → pattern → drum → automation → (optional) mix |
+| Default gate | `human-review` on song; mix only when user applies |
+
+### Sub-agents (specialists)
+
+| Agent | Output fragment | Must lint |
+|-------|-----------------|-----------|
+| **SectionAgent** | `sections[]` | bar bounds, muteLayers |
+| **PatternAgent** | `PatternEvent[]` | layer refs, beat overflow |
+| **DrumAgent** | `drums: DrumLaneDef` | `DRUM_SAMPLE_IDS`, sidechain |
+| **AutomationAgent** | `ModAutomation[]` | nodeId, layer — runs **after** merge target exists |
+| **MixAgent** | `MixDef` | `lintMixDef` (existing) |
+
+**AutomationAgent is subordinate to ArrangementAgent** — it must not run until section/pattern
+fragments are merged into a draft `SongDef` so layer and node refs resolve.
+
+### UI agent state
+
+Emit `ArrangementAgentEvent` during runs. UI maps `phase: start` → red (working),
+`phase: done` → arctic blue (settled). Never run silent on long generation passes.
+
+### Schemas
+
+- `lib/schemas/agents.ts` — `ArrangementRequest`, `ArrangementRun`, sub-agent events
+- `lib/schemas/song.ts` — canonical `SongDef` artifact
+- `lib/schemas/mix.ts` — mix sub-agent output
+
+Research: `docs/research/arrangement-agent-landscape.md`
