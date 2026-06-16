@@ -7,4 +7,8 @@ export { FilterResponseDisplay } from "./FilterResponseDisplay";
 export { Oscilloscope } from "./Oscilloscope";
 export { SpectrumDisplay } from "./SpectrumDisplay";
 export { SpectrogramDisplay } from "./SpectrogramDisplay";
+export { WaveformShape } from "./WaveformShape";
+export { AmplitudeEnvelopeDisplay } from "./AmplitudeEnvelopeDisplay";
+export { UnisonSpreadDisplay } from "./UnisonSpreadDisplay";
 export { LessonDiagram } from "./LessonDiagram";
+export { sampleWaveform, parseWaveformType } from "./waveform-sample";

@@ -127,6 +127,158 @@ export function LessonDiagram({ diagram, className }: LessonDiagramProps) {
         </svg>
       )}
 
+      {diagram === "envelope-pipeline" && (
+        <svg viewBox="0 0 280 120" className="w-full" role="img" aria-label="Full effect pipeline">
+          <rect x="0" y="0" width="280" height="120" fill="#120d1a" stroke="#2a1f3d" />
+          <text x="12" y="18" fill={MUTED} fontSize="10" fontFamily="monospace">
+            osc → detune → envelope → out
+          </text>
+          {[
+            { x: 8, label: "osc", color: STROKE },
+            { x: 72, label: "detune", color: "#a78bfa" },
+            { x: 136, label: "env", color: "#e8343a" },
+            { x: 200, label: "out", color: MUTED },
+          ].map((box, i, arr) => (
+            <g key={box.label}>
+              <rect
+                x={box.x}
+                y="42"
+                width="56"
+                height="36"
+                fill="#0a0612"
+                stroke={box.color}
+                strokeWidth="1.5"
+              />
+              <text
+                x={box.x + 28}
+                y="64"
+                fill="#e8e4f0"
+                fontSize="9"
+                fontFamily="monospace"
+                textAnchor="middle"
+              >
+                {box.label}
+              </text>
+              {i < arr.length - 1 && (
+                <line
+                  x1={box.x + 56}
+                  y1="60"
+                  x2={box.x + 68}
+                  y2="60"
+                  stroke={STROKE}
+                  strokeWidth="2"
+                />
+              )}
+            </g>
+          ))}
+          <text x="12" y="100" fill={MUTED} fontSize="9" fontFamily="monospace">
+            stack effects to build complex timbres
+          </text>
+        </svg>
+      )}
+
+      {diagram === "envelope-adsr" && (
+        <svg viewBox="0 0 280 120" className="w-full" role="img" aria-label="ADSR amplitude envelope">
+          <rect x="0" y="0" width="280" height="120" fill="#120d1a" stroke="#2a1f3d" />
+          <text x="12" y="18" fill={MUTED} fontSize="10" fontFamily="monospace">
+            amplitude over time
+          </text>
+          <polyline
+            points="20,95 50,30 100,55 180,55 250,95"
+            fill="none"
+            stroke="#e8343a"
+            strokeWidth="2"
+          />
+          <text x="24" y="108" fill={MUTED} fontSize="9" fontFamily="monospace">
+            A
+          </text>
+          <text x="68" y="108" fill={MUTED} fontSize="9" fontFamily="monospace">
+            D
+          </text>
+          <text x="130" y="108" fill={MUTED} fontSize="9" fontFamily="monospace">
+            S
+          </text>
+          <text x="220" y="108" fill={MUTED} fontSize="9" fontFamily="monospace">
+            R
+          </text>
+        </svg>
+      )}
+
+      {diagram === "detune-pipeline" && (
+        <svg viewBox="0 0 280 120" className="w-full" role="img" aria-label="Osc detune output pipeline">
+          <rect x="0" y="0" width="280" height="120" fill="#120d1a" stroke="#2a1f3d" />
+          <text x="12" y="18" fill={MUTED} fontSize="10" fontFamily="monospace">
+            osc → detune → output
+          </text>
+          {[
+            { x: 24, label: "osc", color: STROKE },
+            { x: 108, label: "detune", color: "#a78bfa" },
+            { x: 192, label: "out", color: MUTED },
+          ].map((box, i, arr) => (
+            <g key={box.label}>
+              <rect
+                x={box.x}
+                y="42"
+                width="64"
+                height="36"
+                fill="#0a0612"
+                stroke={box.color}
+                strokeWidth="1.5"
+              />
+              <text
+                x={box.x + 32}
+                y="64"
+                fill="#e8e4f0"
+                fontSize="10"
+                fontFamily="monospace"
+                textAnchor="middle"
+              >
+                {box.label}
+              </text>
+              {i < arr.length - 1 && (
+                <line
+                  x1={box.x + 64}
+                  y1="60"
+                  x2={box.x + 92}
+                  y2="60"
+                  stroke={STROKE}
+                  strokeWidth="2"
+                />
+              )}
+            </g>
+          ))}
+          <text x="12" y="100" fill={MUTED} fontSize="9" fontFamily="monospace">
+            detune is an effect in the chain, not a separate source
+          </text>
+        </svg>
+      )}
+
+      {diagram === "unison-spread" && (
+        <svg viewBox="0 0 280 120" className="w-full" role="img" aria-label="Unison detune spread">
+          <rect x="0" y="0" width="280" height="120" fill="#120d1a" stroke="#2a1f3d" />
+          <text x="12" y="18" fill={MUTED} fontSize="10" fontFamily="monospace">
+            one source → many detuned paths
+          </text>
+          <circle cx="140" cy="28" r="6" fill={STROKE} />
+          {[
+            { x: 56, y: 88, label: "−¢ L" },
+            { x: 140, y: 72, label: "0" },
+            { x: 224, y: 88, label: "+¢ R" },
+          ].map((v) => (
+            <g key={v.label}>
+              <line x1="140" y1="28" x2={v.x} y2={v.y} stroke={`${STROKE}88`} strokeWidth="1.5" />
+              <circle cx={v.x} cy={v.y} r="5" fill={STROKE} />
+              <text x={v.x - 12} y={v.y + 18} fill={MUTED} fontSize="9" fontFamily="monospace">
+                {v.label}
+              </text>
+            </g>
+          ))}
+          <text x="12" y="112" fill={MUTED} fontSize="9" fontFamily="monospace">
+            detune widens pitch · spread pans voices in stereo
+          </text>
+        </svg>
+      )}
+
       {diagram === "lesson-complete" && (
         <svg viewBox="0 0 280 120" className="w-full" role="img" aria-label="Lesson complete">
           <rect x="0" y="0" width="280" height="120" fill="#120d1a" stroke="#2a1f3d" />
