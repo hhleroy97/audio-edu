@@ -44,8 +44,8 @@ describe("patch presets", () => {
     expect(mixEdges.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("bundles fifteen presets", () => {
-    expect(PATCH_PRESETS.length).toBe(15);
+  it("bundles eighteen presets", () => {
+    expect(PATCH_PRESETS.length).toBe(18);
   });
 
   it("fm-growl-stub wires LFO cv to FM index", () => {
