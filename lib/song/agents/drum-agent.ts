@@ -1,7 +1,11 @@
 import type { DrumHitType, DrumLaneDefType, SongDefType } from "@/lib/schemas/song";
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
 import { DEFAULT_SIDECHAIN } from "@/lib/schemas/drums";
-import { buildRiddimPocketGrid } from "../drums/riddim-pocket";
+import {
+  buildRiddimPhraseGrid,
+  buildRiddimPocketGrid,
+  phraseSlotsForSection,
+} from "../drums/riddim-pocket";
 import { expandLayeredDrumHits } from "../drums/sample-layers";
 
 export type DrumAgentInput = {
@@ -31,13 +35,30 @@ export function runDrumAgent(input: DrumAgentInput): DrumAgentResult {
       spec?.kind === "build" ||
       section.id.includes("drop");
 
-    const sectionHits = buildRiddimPocketGrid({
-      bars: sectionBars,
-      beatsPerBar: input.pack.beatsPerBar,
-      includeSnare,
-      seed: `${input.seed}:${section.id}`,
-      pocket: input.pack.rhythm,
-    });
+    const phraseSlots = phraseSlotsForSection(
+      input.pack.rhythmPhrase?.templates,
+      spec?.kind ?? "drop"
+    );
+    const phraseLength = input.pack.rhythmPhrase?.phraseLengthBars ?? 4;
+
+    const sectionHits =
+      phraseSlots?.length && spec?.kind === "drop"
+        ? buildRiddimPhraseGrid({
+            bars: sectionBars,
+            beatsPerBar: input.pack.beatsPerBar,
+            includeSnare,
+            seed: `${input.seed}:${section.id}`,
+            pocket: input.pack.rhythm,
+            slots: phraseSlots,
+            phraseLengthBars: phraseLength,
+          })
+        : buildRiddimPocketGrid({
+            bars: sectionBars,
+            beatsPerBar: input.pack.beatsPerBar,
+            includeSnare,
+            seed: `${input.seed}:${section.id}`,
+            pocket: input.pack.rhythm,
+          });
     for (const hit of sectionHits) {
       hits.push({ ...hit, beat: sectionStartBeat + hit.beat });
     }

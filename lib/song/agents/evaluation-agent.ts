@@ -8,6 +8,7 @@ import {
 import type { ArrangementRulePackType } from "@/lib/schemas/rule-pack";
 import {
   countBounceKicks,
+  countPhraseVariationBars,
   drumVelocityStdDev,
 } from "../drums/riddim-pocket";
 import {
@@ -187,6 +188,32 @@ export function runEvaluationAgent(
     );
   }
 
+  let phraseVariationBars = 0;
+  if (song.drums?.hits.length) {
+    for (const section of song.sections) {
+      const spec = pack.sections.find((p) => p.id === section.id);
+      if (spec?.kind !== "drop" && !section.id.includes("drop")) continue;
+      const startBeat = section.startBar * song.meta.beatsPerBar;
+      const endBeat = section.endBar * song.meta.beatsPerBar;
+      const dropHits = song.drums.hits.filter(
+        (h) => h.beat >= startBeat && h.beat < endBeat
+      );
+      phraseVariationBars = Math.max(
+        phraseVariationBars,
+        countPhraseVariationBars(
+          dropHits.map((h) => ({ ...h, beat: h.beat - startBeat })),
+          song.meta.beatsPerBar,
+          pack.rhythmPhrase?.phraseLengthBars ?? 4
+        )
+      );
+    }
+  }
+  if (phraseVariationBars < rules.minPhraseVariationBars) {
+    errors.push(
+      `expected ≥${rules.minPhraseVariationBars} phrase variation bars, got ${phraseVariationBars}`
+    );
+  }
+
   if (totalNoteCount < 8) {
     warnings.push("sparse arrangement — fewer than 8 total notes");
   }
@@ -209,6 +236,7 @@ export function runEvaluationAgent(
       barChordChanges,
       distinctBodyMidis,
       microTimingSpreadMs: timingSpreadMs,
+      phraseVariationBars,
     },
   });
 }

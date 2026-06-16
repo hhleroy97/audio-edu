@@ -10,6 +10,13 @@ const DEFAULT_RHYTHM = {
   velocityJitter: 0.06,
 };
 
+const DEFAULT_RHYTHM_PHRASE = {
+  phraseLengthBars: 4 as const,
+  templates: {
+    drop: ["a", "b", "c", "d"],
+  },
+};
+
 const DEFAULT_EVAL = {
   minDropNotes: 4,
   minDrumHits: 24,
@@ -23,6 +30,7 @@ const DEFAULT_EVAL = {
   minBarChordChanges: 2,
   minDistinctBodyMidis: 3,
   minMicroTimingSpreadMs: 1,
+  minPhraseVariationBars: 4,
 };
 
 /** Standard 16-bar riddim — intro / build / drop / break / outro. */
@@ -38,6 +46,7 @@ export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
   rhythm: DEFAULT_RHYTHM,
+  rhythmPhrase: DEFAULT_RHYTHM_PHRASE,
   harmony: {
     progression: ["i", "VI", "III", "VII"],
     scaleOverride: "minor",
@@ -105,6 +114,7 @@ export const RIDDIM_SICK_DROP_16: ArrangementRulePackType = {
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
   rhythm: { ...DEFAULT_RHYTHM, barBVariant: "hat-roll" as const },
+  rhythmPhrase: DEFAULT_RHYTHM_PHRASE,
   harmony: {
     progression: ["i", "VI", "III", "VII"],
     scaleOverride: "minor",
@@ -180,6 +190,7 @@ export const RIDDIM_YOI_16: ArrangementRulePackType = {
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
   rhythm: DEFAULT_RHYTHM,
+  rhythmPhrase: DEFAULT_RHYTHM_PHRASE,
   harmony: {
     progression: ["i", "VI", "III", "VII"],
     scaleOverride: "minor",
@@ -280,6 +291,7 @@ export const RIDDIM_TEAROUT_16: ArrangementRulePackType = {
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
   rhythm: { ...DEFAULT_RHYTHM, barBVariant: "hat-roll" as const },
+  rhythmPhrase: DEFAULT_RHYTHM_PHRASE,
   harmony: {
     progression: ["i", "iv", "VI", "V"],
     scaleOverride: "minor",
@@ -367,6 +379,7 @@ export const RIDDIM_INFEKT_16: ArrangementRulePackType = {
   drumMuteSectionIds: ["intro", "break", "outro"],
   gate: "human-review",
   rhythm: DEFAULT_RHYTHM,
+  rhythmPhrase: DEFAULT_RHYTHM_PHRASE,
   harmony: {
     progression: ["i", "VI", "III", "VII"],
     scaleOverride: "minor",

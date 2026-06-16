@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RulePackSectionKind } from "./section-kind";
 
 /** Riddim halftime pocket — bounce kicks, 2-bar phrases, swing (#125–127). */
 export const RiddimPocketDef = z.object({
@@ -24,3 +25,13 @@ export const RiddimPocketDef = z.object({
 });
 
 export type RiddimPocketDefType = z.infer<typeof RiddimPocketDef>;
+
+/** 4-bar REMI-z phrase templates — A/B/C/D slots per section kind (#111). */
+export const RhythmPhraseDef = z.object({
+  phraseLengthBars: z.literal(4).default(4),
+  templates: z
+    .record(RulePackSectionKind, z.array(z.string()).min(1))
+    .optional(),
+});
+
+export type RhythmPhraseDefType = z.infer<typeof RhythmPhraseDef>;

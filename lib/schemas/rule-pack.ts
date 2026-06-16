@@ -4,7 +4,7 @@ import { EvaluationDef, GrooveDef, HarmonyDef, TransitionDef } from "./harmony";
 import { MelodyDef } from "./melody";
 import { ModFxDef } from "./mod-fx";
 import { ModCatalogDef } from "./mod-catalog";
-import { RiddimPocketDef } from "./rhythm";
+import { RiddimPocketDef, RhythmPhraseDef } from "./rhythm";
 import { RulePackSectionKind } from "./section-kind";
 import { TimbreDef } from "./timbre";
 import { SongLayerDef } from "./song";
@@ -48,6 +48,7 @@ export const ArrangementRulePack = z.object({
   transition: TransitionDef.optional(),
   evaluation: EvaluationDef.optional(),
   rhythm: RiddimPocketDef.optional(),
+  rhythmPhrase: RhythmPhraseDef.optional(),
   timbre: TimbreDef.optional(),
   modFx: ModFxDef.optional(),
   modCatalog: ModCatalogDef.optional(),

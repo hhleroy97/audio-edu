@@ -171,7 +171,7 @@
 | **108** | Section timbre | Runtime `layerPreset` from TimbreAgent plans | `feat(song): section timbre runtime (phase 108)` ✅ |
 | **109** | Sample playback | Wire `loadAllDrumSamples` + drum send audio | `feat(song): sample playback + drum sends (phase 109)` ✅ |
 | **110** | Mod catalog | Rotate 7 mod profiles + yoi/tearout/infekt packs | `feat(song): mod catalog rule packs (phase 110)` ✅ |
-| **111** | 4-bar phrases | `RhythmPhraseDef` REMI-z phrase templates | `feat(song): 4-bar rhythm phrases (phase 111)` |
+| **111** | 4-bar phrases | `RhythmPhraseDef` REMI-z phrase templates | `feat(song): 4-bar rhythm phrases (phase 111)` ✅ |
 
 **Recommended order:** 109 → 108 → 106 → 107 → 110 → 111
 
@@ -181,5 +181,5 @@
 - [x] Section boundaries swap presets (intro ≠ drop timbre)
 - [x] WAV drums play in Patch Lab; snare send audible (phase 109)
 - [x] ≥3 rule packs exercise ≥6 archetype presets (phase 110 — yoi/tearout/infekt)
-- [ ] 4-bar drum phrase variation in drops
+- [x] 4-bar drum phrase variation in drops (phase 111)
 - [ ] Golden snapshots + `npm test` green per phase

@@ -92,6 +92,7 @@ export const EvaluationDef = z.object({
   minBarChordChanges: z.number().int().min(0).default(0),
   minDistinctBodyMidis: z.number().int().min(0).default(0),
   minMicroTimingSpreadMs: z.number().min(0).default(0),
+  minPhraseVariationBars: z.number().int().min(0).default(0),
 });
 
 export type EvaluationDefType = z.infer<typeof EvaluationDef>;
@@ -114,6 +115,7 @@ export const EvaluationReport = z.object({
     barChordChanges: z.number().default(0),
     distinctBodyMidis: z.number().default(0),
     microTimingSpreadMs: z.number().default(0),
+    phraseVariationBars: z.number().default(0),
   }),
 });
 
