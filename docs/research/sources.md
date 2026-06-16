@@ -389,3 +389,23 @@
 
 116. **Arrangement agent architecture** — hierarchical sub-agents, rule packs, song UI  
     `docs/research/arrangement-agent-landscape.md` · `lib/schemas/agents.ts` · `.planning/phases/87-arrangement-agent-ui/`
+
+## Research loop — song generation phases 94–99 (2026-06-16)
+
+117. **HarmonyAgent + roman progression pools** — `@tonaljs/progression` `fromRomanNumerals`; per-section degree plans  
+    `lib/song/agents/harmony-agent.ts` · `lib/schemas/harmony.ts` · see #112
+
+118. **GrooveAgent — euclidean hats + ghost snares** — Bjorklund distribution; Strudel `cat` IR port (#113)  
+    `lib/song/agents/groove-agent.ts` · riddim halftime pocket (#91)
+
+119. **TransitionAgent — pre-drop dips + build sweeps** — body gain ramps, filter automation (#94, #99)  
+    `lib/song/agents/transition-agent.ts`
+
+120. **EvaluationAgent — quality gates + retry loop** — `EvaluationDef` thresholds; `maxEvalRetries` on pipeline  
+    `lib/song/agents/evaluation-agent.ts` · extends lint/mix metrics (#105)
+
+121. **@tonejs/midi export + sample drum registry** — SMF bytes from SongDef; optional WAV buffers in DrumEngine  
+    `lib/song/export/midi-export.ts` · `lib/song/drums/sample-registry.ts` · see #111, #107
+
+122. **Golden arrangement snapshots + rule-pack viewer** — deterministic regression specs; Patch Lab JSON + MIDI export  
+    `lib/song/agents/golden-snapshots.ts` · `docs/research/song-generation-phases-94-99.md`
