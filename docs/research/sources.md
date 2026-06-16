@@ -345,3 +345,13 @@
 ## Research loop — song mix phase 1 (2026-06-16)
 
 103. **Layer mix strips + master chain** — `lib/song/multibus/mix-profiles.ts`, `layer-mix-strip.ts`, `master-chain.ts`; riddim sub/body/top frequency rules (#19, #47, #93)
+
+## Research loop — mix agent phase 2 (2026-06-16)
+
+104. **Tone.js Limiter + Compressor** — GitHits `Tone/component/dynamics/Limiter.ts`; fast attack limiter as master ceiling pattern  
+    https://github.com/Tonejs/Tone.js
+
+105. **MixDef schema + deterministic mix pass** — `lib/schemas/mix.ts`, `lib/song/mix/`; stem RMS/centroid → proposed gains/EQ  
+    `docs/research/song-mix-agent-phase2.md`
+
+106. **Web Audio analysis** — windowed DFT centroid for offline stem metrics (#96); AnalyserNode metering pattern
