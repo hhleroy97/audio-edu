@@ -17,6 +17,14 @@ const BASS_VOICING_DICT: Record<string, string[]> = {
   sus2: ["1P 2M 5P"],
 };
 
+const TRIAD_VOICING_DICT: Record<string, string[]> = {
+  "": ["1P 3M 5P"],
+  m: ["1P 3m 5P"],
+  m7: ["1P 3m 5P 7m"],
+  sus4: ["1P 4P 5P"],
+  sus2: ["1P 2M 5P"],
+};
+
 function scaleName(pack: ArrangementRulePackType, harmony: HarmonyDefType): string {
   return harmony.scaleOverride ?? pack.scale;
 }
@@ -79,7 +87,11 @@ function bodyMidisForSlot(
 
   const bassHigh = Note.transpose(pack.key, "4P") ?? "B";
   const range: [string, string] = [`${pack.key}1`, `${bassHigh}4`];
-  const voicings = Voicing.search(chordSymbol, range, BASS_VOICING_DICT);
+  const dictionary =
+    harmony.voicingMode === "triad" || harmony.voicingMode === "spread"
+      ? TRIAD_VOICING_DICT
+      : BASS_VOICING_DICT;
+  const voicings = Voicing.search(chordSymbol, range, dictionary);
   const picked = voicings[0] ?? voicings[voicings.length - 1];
 
   if (picked?.length) {
