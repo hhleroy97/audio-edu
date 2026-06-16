@@ -15,9 +15,16 @@ import { runDrumAgent, lintDrumAgent } from "./drum-agent";
 import { runEvaluationAgent } from "./evaluation-agent";
 import { runGrooveAgent, lintGrooveAgent } from "./groove-agent";
 import { runHarmonyAgent, lintHarmonyAgent } from "./harmony-agent";
+import { runModFxAgent, lintModFxAgent } from "./modfx-agent";
 import { runPatternAgent, lintPatternAgent } from "./pattern-agent";
 import { getRulePack } from "./rule-packs";
+import {
+  PIPELINE_TOTAL_STEPS,
+  stepIndexForAgent,
+  yieldToUi,
+} from "./pipeline-yield";
 import { runSectionAgent, lintSectionAgent } from "./section-agent";
+import { runTimbreAgent, lintTimbreAgent } from "./timbre-agent";
 import { runTransitionAgent, lintTransitionAgent } from "./transition-agent";
 import type { z } from "zod";
 
@@ -29,13 +36,17 @@ function emit(
   onProgress: ArrangementProgressCallback | undefined,
   agent: ArrangementAgentEventType["agent"],
   phase: ArrangementAgentEventType["phase"],
-  message?: string
+  message?: string,
+  runPhase?: ArrangementAgentEventType["runPhase"]
 ): ArrangementAgentEventType {
   const event: ArrangementAgentEventType = {
     agent,
     phase,
     message,
     at: Date.now(),
+    stepIndex: stepIndexForAgent(agent),
+    totalSteps: PIPELINE_TOTAL_STEPS,
+    runPhase,
   };
   onProgress?.(event);
   return event;
@@ -54,36 +65,65 @@ type PipelineResult = {
   inputsHash: string;
 };
 
-function runPipeline(
-  pack: ReturnType<typeof ArrangementRulePack.parse>,
-  req: ArrangementRequestType,
-  layers: SongDefType["layers"],
-  layerIds: Set<string>,
-  beatsPerBar: number,
-  maxBeat: number,
+type PipelineContext = {
+  pack: ReturnType<typeof ArrangementRulePack.parse>;
+  req: ArrangementRequestType;
+  layers: SongDefType["layers"];
+  layerIds: Set<string>;
+  beatsPerBar: number;
+  maxBeat: number;
+};
+
+function runPipelineSync(
+  ctx: PipelineContext,
   onProgress?: ArrangementProgressCallback
 ): PipelineResult {
+  const { pack, req, beatsPerBar, maxBeat } = ctx;
+  let { layers, layerIds } = ctx;
   const events: ArrangementAgentEventType[] = [];
 
-  events.push(emit(onProgress, "section", "start", "building sections"));
+  const failAgent = (
+    agent: ArrangementAgentEventType["agent"],
+    msg: string
+  ): never => {
+    events.push(emit(onProgress, agent, "error", msg, "failed"));
+    throw new Error(msg);
+  };
+
+  const start = (agent: ArrangementAgentEventType["agent"], message: string) => {
+    events.push(emit(onProgress, agent, "start", message, "running"));
+  };
+  const done = (agent: ArrangementAgentEventType["agent"], message?: string) => {
+    events.push(emit(onProgress, agent, "done", message, "running"));
+  };
+
+  start("section", "building sections");
   const sectionResult = runSectionAgent(pack, layerIds);
   const sectionLint = lintSectionAgent(sectionResult);
   if (!sectionLint.ok) {
-    events.push(emit(onProgress, "section", "error", sectionLint.errors.join("; ")));
-    throw new Error(`section agent lint: ${sectionLint.errors.join("; ")}`);
+    failAgent("section", `section agent lint: ${sectionLint.errors.join("; ")}`);
   }
-  events.push(emit(onProgress, "section", "done"));
+  done("section");
 
-  events.push(emit(onProgress, "harmony", "start", "roman progression → degrees"));
+  start("harmony", "roman progression → degrees");
   const harmonyResult = runHarmonyAgent(pack, req.seed);
   const harmonyLint = lintHarmonyAgent(harmonyResult);
   if (!harmonyLint.ok) {
-    events.push(emit(onProgress, "harmony", "error", harmonyLint.errors.join("; ")));
-    throw new Error(`harmony agent lint: ${harmonyLint.errors.join("; ")}`);
+    failAgent("harmony", `harmony agent lint: ${harmonyLint.errors.join("; ")}`);
   }
-  events.push(emit(onProgress, "harmony", "done"));
+  done("harmony");
 
-  events.push(emit(onProgress, "pattern", "start", "tonal pattern grid"));
+  start("timbre", "archetype preset stacks");
+  const timbreResult = runTimbreAgent(pack);
+  const timbreLint = lintTimbreAgent(timbreResult);
+  if (!timbreLint.ok) {
+    failAgent("timbre", `timbre agent lint: ${timbreLint.errors.join("; ")}`);
+  }
+  layers = timbreResult.layers;
+  layerIds = new Set(layers.map((l) => l.id));
+  done("timbre", `${layers.length} layers`);
+
+  start("pattern", "tonal pattern grid");
   const patternResult = runPatternAgent({
     pack,
     sections: sectionResult.sections,
@@ -93,24 +133,25 @@ function runPipeline(
   });
   const patternLint = lintPatternAgent(patternResult, maxBeat, beatsPerBar);
   if (!patternLint.ok) {
-    events.push(emit(onProgress, "pattern", "error", patternLint.errors.join("; ")));
-    throw new Error(`pattern agent lint: ${patternLint.errors.join("; ")}`);
+    failAgent("pattern", `pattern agent lint: ${patternLint.errors.join("; ")}`);
   }
-  events.push(emit(onProgress, "pattern", "done"));
+  done("pattern");
 
-  events.push(emit(onProgress, "transition", "start", "pre-drop ramps"));
+  start("transition", "pre-drop ramps");
   const transitionResult = runTransitionAgent({
     pack,
     sections: patternResult.sections,
   });
   const transitionLint = lintTransitionAgent(transitionResult);
   if (!transitionLint.ok) {
-    events.push(emit(onProgress, "transition", "error", transitionLint.errors.join("; ")));
-    throw new Error(`transition agent lint: ${transitionLint.errors.join("; ")}`);
+    failAgent(
+      "transition",
+      `transition agent lint: ${transitionLint.errors.join("; ")}`
+    );
   }
-  events.push(emit(onProgress, "transition", "done"));
+  done("transition");
 
-  events.push(emit(onProgress, "groove", "start", "ghost snares + euclidean hats"));
+  start("groove", "ghost snares + euclidean hats");
   const grooveResult = runGrooveAgent({
     pack,
     sections: transitionResult.sections,
@@ -119,10 +160,9 @@ function runPipeline(
   });
   const grooveLint = lintGrooveAgent(grooveResult);
   if (!grooveLint.ok) {
-    events.push(emit(onProgress, "groove", "error", grooveLint.errors.join("; ")));
-    throw new Error(`groove agent lint: ${grooveLint.errors.join("; ")}`);
+    failAgent("groove", `groove agent lint: ${grooveLint.errors.join("; ")}`);
   }
-  events.push(emit(onProgress, "groove", "done"));
+  done("groove");
 
   const draftMeta = {
     id: `${pack.id}-${req.seed}`,
@@ -136,7 +176,7 @@ function runPipeline(
     version: 2 as const,
   };
 
-  events.push(emit(onProgress, "drum", "start", "kick/snare grid"));
+  start("drum", "riddim pocket grid");
   const drumResult = runDrumAgent({
     pack,
     draft: { sections: grooveResult.sections, meta: draftMeta },
@@ -145,10 +185,9 @@ function runPipeline(
   });
   const drumLint = lintDrumAgent(drumResult);
   if (!drumLint.ok) {
-    events.push(emit(onProgress, "drum", "error", drumLint.errors.join("; ")));
-    throw new Error(`drum agent lint: ${drumLint.errors.join("; ")}`);
+    failAgent("drum", `drum agent lint: ${drumLint.errors.join("; ")}`);
   }
-  events.push(emit(onProgress, "drum", "done"));
+  done("drum", `${drumResult.drums.hits.length} hits`);
 
   let merged = SongDef.parse({
     meta: draftMeta,
@@ -158,44 +197,116 @@ function runPipeline(
     drums: drumResult.drums,
   });
 
-  events.push(emit(onProgress, "automation", "start", "mod profile expansion"));
-  const autoResult = runAutomationAgent({ pack, sections: merged.sections, layerIds });
+  start("automation", "mod profile expansion");
+  const autoResult = runAutomationAgent({
+    pack,
+    sections: merged.sections,
+    layerIds,
+  });
   const autoLint = lintAutomationAgent(autoResult);
   if (!autoLint.ok) {
-    events.push(emit(onProgress, "automation", "error", autoLint.errors.join("; ")));
-    throw new Error(`automation agent lint: ${autoLint.errors.join("; ")}`);
+    failAgent(
+      "automation",
+      `automation agent lint: ${autoLint.errors.join("; ")}`
+    );
   }
   merged = SongDef.parse({ ...merged, sections: autoResult.sections });
-  events.push(emit(onProgress, "automation", "done"));
+  done("automation");
 
-  events.push(emit(onProgress, "evaluation", "start", "quality gates"));
+  start("modfx", "top mod + drum sends");
+  const modFxResult = runModFxAgent({
+    pack,
+    sections: merged.sections,
+    drums: merged.drums ?? drumResult.drums,
+    layerIds,
+  });
+  const modFxLint = lintModFxAgent(modFxResult);
+  if (!modFxLint.ok) {
+    failAgent("modfx", `modfx agent lint: ${modFxLint.errors.join("; ")}`);
+  }
+  merged = SongDef.parse({
+    ...merged,
+    sections: modFxResult.sections,
+    drums: modFxResult.drums,
+  });
+  done("modfx");
+
+  start("evaluation", "quality gates");
   const evalReport = runEvaluationAgent(merged, pack);
   if (!evalReport.ok) {
-    events.push(emit(onProgress, "evaluation", "error", evalReport.errors.join("; ")));
-    throw new Error(`evaluation failed: ${evalReport.errors.join("; ")}`);
-  }
-  events.push(
-    emit(
-      onProgress,
+    failAgent(
       "evaluation",
-      "done",
-      `${evalReport.metrics.totalNoteCount} notes · ${evalReport.metrics.drumHitCount} drums`
-    )
+      `evaluation failed: ${evalReport.errors.join("; ")}`
+    );
+  }
+  done(
+    "evaluation",
+    `${evalReport.metrics.totalNoteCount} notes · ${evalReport.metrics.drumHitCount} drums`
   );
 
-  events.push(emit(onProgress, "mix", "lint", "song lint"));
+  start("mix", "song lint");
+  events.push(emit(onProgress, "mix", "lint", "song lint", "running"));
   const songLint = lintSong(merged);
   if (!songLint.ok) {
-    events.push(emit(onProgress, "mix", "error", songLint.errors.join("; ")));
-    throw new Error(`song lint: ${songLint.errors.join("; ")}`);
+    failAgent("mix", `song lint: ${songLint.errors.join("; ")}`);
   }
-  events.push(emit(onProgress, "mix", "done", "SongDef validated"));
+  events.push(
+    emit(onProgress, "mix", "done", "SongDef validated", "complete")
+  );
 
   const inputsHash = hashSongInputs(merged);
   return { song: merged, events, inputsHash };
 }
 
-/** Supervisor — section → harmony → pattern → transition → groove → drum → automation → evaluation → lint. */
+async function runPipelineAsync(
+  ctx: PipelineContext,
+  onProgress?: ArrangementProgressCallback
+): Promise<PipelineResult> {
+  const syncResult = runPipelineSync(ctx);
+
+  const agents = [
+    "section",
+    "harmony",
+    "timbre",
+    "pattern",
+    "transition",
+    "groove",
+    "drum",
+    "automation",
+    "modfx",
+    "evaluation",
+    "mix",
+  ] as const;
+
+  for (const agent of agents) {
+    const startEv = syncResult.events.find(
+      (e) => e.agent === agent && e.phase === "start"
+    );
+    if (startEv) {
+      onProgress?.({ ...startEv, runPhase: "running" });
+    }
+    await yieldToUi();
+
+    const doneEv =
+      syncResult.events.find(
+        (e) => e.agent === agent && e.phase === "done"
+      ) ??
+      syncResult.events.find(
+        (e) => e.agent === agent && e.phase === "lint"
+      );
+    if (doneEv) {
+      onProgress?.({
+        ...doneEv,
+        runPhase: agent === "mix" ? "complete" : "running",
+      });
+    }
+    await yieldToUi();
+  }
+
+  return syncResult;
+}
+
+/** Sync supervisor — used in tests and golden snapshots. */
 export function runArrangement(
   request: ArrangementRequestType | z.input<typeof ArrangementRequest>,
   onProgress?: ArrangementProgressCallback
@@ -222,13 +333,15 @@ export function runArrangement(
     const attemptSeed = attempt === 0 ? req.seed : `${req.seed}-eval${attempt}`;
     const attemptReq = { ...req, seed: attemptSeed };
     try {
-      const { song, events, inputsHash } = runPipeline(
-        pack,
-        attemptReq,
-        layers,
-        layerIds,
-        beatsPerBar,
-        maxBeat,
+      const { song, events, inputsHash } = runPipelineSync(
+        {
+          pack,
+          req: attemptReq,
+          layers,
+          layerIds,
+          beatsPerBar,
+          maxBeat,
+        },
         onProgress
       );
       return ArrangementRun.parse({
@@ -242,10 +355,68 @@ export function runArrangement(
     } catch (e) {
       lastError = e instanceof Error ? e : new Error(String(e));
       if (attempt >= maxRetries) break;
-      emit(onProgress, "evaluation", "lint", `retry ${attempt + 1}/${maxRetries}`);
+      emit(onProgress, "evaluation", "lint", `retry ${attempt + 1}/${maxRetries}`, "running");
     }
   }
 
+  throw lastError ?? new Error("arrangement failed");
+}
+
+/** Async supervisor — yields between sub-agents for Patch Lab progress UI (#105). */
+export async function runArrangementAsync(
+  request: ArrangementRequestType | z.input<typeof ArrangementRequest>,
+  onProgress?: ArrangementProgressCallback
+): Promise<ArrangementRunType> {
+  const req = ArrangementRequest.parse(request);
+  const rawPack = getRulePack(req.rulePackId);
+  if (!rawPack) throw new Error(`unknown rule pack: ${req.rulePackId}`);
+
+  const pack = ArrangementRulePack.parse({
+    ...rawPack,
+    bpm: req.bpm ?? rawPack.bpm,
+    bars: req.bars ?? rawPack.bars,
+    key: req.key ?? rawPack.key,
+  });
+
+  const layers = pack.layers ?? DEFAULT_RIDDIM_LAYERS;
+  const layerIds = new Set(layers.map((l) => l.id));
+  const beatsPerBar = pack.beatsPerBar;
+  const maxBeat = pack.bars * beatsPerBar;
+  const maxRetries = req.maxEvalRetries ?? 0;
+
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const attemptSeed = attempt === 0 ? req.seed : `${req.seed}-eval${attempt}`;
+    const attemptReq = { ...req, seed: attemptSeed };
+    try {
+      const { song, events, inputsHash } = await runPipelineAsync(
+        {
+          pack,
+          req: attemptReq,
+          layers,
+          layerIds,
+          beatsPerBar,
+          maxBeat,
+        },
+        onProgress
+      );
+      return ArrangementRun.parse({
+        id: `run-${pack.id}-${attemptSeed}-${inputsHash}`,
+        request: attemptReq,
+        song,
+        events,
+        inputsHash,
+        gate: pack.gate,
+      });
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e));
+      if (attempt >= maxRetries) break;
+      emit(onProgress, "evaluation", "lint", `retry ${attempt + 1}/${maxRetries}`, "running");
+      await yieldToUi();
+    }
+  }
+
+  emit(onProgress, "mix", "error", lastError?.message ?? "failed", "failed");
   throw lastError ?? new Error("arrangement failed");
 }
 
@@ -264,7 +435,7 @@ export function regenerateSection(
   const layerIds = new Set(baseSong.layers.map((l) => l.id));
   const harmonyResult = runHarmonyAgent(pack, `${request.seed}:${sectionId}`);
 
-  emit(onProgress, "pattern", "start", `regenerate ${sectionId}`);
+  emit(onProgress, "pattern", "start", `regenerate ${sectionId}`, "running");
   const sectionOnly = baseSong.sections.filter((s) => s.id === sectionId);
   let patternResult = runPatternAgent({
     pack,
@@ -286,14 +457,14 @@ export function regenerateSection(
   });
   patternResult = { sections: grooveResult.sections };
 
-  emit(onProgress, "pattern", "done");
-  emit(onProgress, "automation", "start", sectionId);
+  emit(onProgress, "pattern", "done", undefined, "running");
+  emit(onProgress, "automation", "start", sectionId, "running");
   const autoResult = runAutomationAgent({
     pack,
     sections: patternResult.sections,
     layerIds,
   });
-  emit(onProgress, "automation", "done");
+  emit(onProgress, "automation", "done", undefined, "running");
 
   const updated = autoResult.sections[0];
   if (!updated) throw new Error("regenerate produced no section");
@@ -308,5 +479,6 @@ export function regenerateSection(
     throw new Error(`evaluation failed: ${evalReport.errors.join("; ")}`);
   }
 
+  emit(onProgress, "mix", "done", "section regenerated", "complete");
   return merged;
 }

@@ -134,16 +134,25 @@ export type { SidechainDefType, DrumSampleId } from "@/lib/schemas/drums";
 
 export {
   runArrangement,
+  runArrangementAsync,
   regenerateSection,
   listRulePacks,
   getRulePack,
   ARRANGEMENT_RULE_PACK_LIST,
   runHarmonyAgent,
+  runTimbreAgent,
   runEvaluationAgent,
   verifyGoldenSnapshot,
   GOLDEN_ARRANGEMENT_SNAPSHOTS,
 } from "./agents";
 export type { ArrangementProgressCallback } from "./agents";
+export { PIPELINE_AGENT_ORDER, PIPELINE_TOTAL_STEPS } from "./agents/pipeline-yield";
+export { buildRiddimPocketGrid, countBounceKicks, drumVelocityStdDev } from "./drums/riddim-pocket";
+export { loadAllDrumSamples, DRUM_SAMPLE_PATHS } from "./drums/sample-registry";
+export { RiddimPocketDef } from "@/lib/schemas/rhythm";
+export type { RiddimPocketDefType } from "@/lib/schemas/rhythm";
+export { TimbreDef } from "@/lib/schemas/timbre";
+export { ModFxDef } from "@/lib/schemas/mod-fx";
 export { songToMidiBuffer, songToMidiBlob } from "./export/midi-export";
 export {
   HarmonyDef,

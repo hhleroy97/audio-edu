@@ -19,10 +19,19 @@ export type { DrumAgentInput, DrumAgentResult } from "./drum-agent";
 export { runAutomationAgent, lintAutomationAgent } from "./automation-agent";
 export type { AutomationAgentInput, AutomationAgentResult } from "./automation-agent";
 
+export { PIPELINE_AGENT_ORDER, PIPELINE_TOTAL_STEPS } from "./pipeline-yield";
+
 export { runEvaluationAgent, lintEvaluationAgent } from "./evaluation-agent";
+
+export { runTimbreAgent, lintTimbreAgent, DEFAULT_TIMBRE } from "./timbre-agent";
+export type { TimbreAgentResult } from "./timbre-agent";
+
+export { runModFxAgent, lintModFxAgent, DEFAULT_MOD_FX } from "./modfx-agent";
+export type { ModFxAgentInput, ModFxAgentResult } from "./modfx-agent";
 
 export {
   runArrangement,
+  runArrangementAsync,
   regenerateSection,
 } from "./arrangement-agent";
 export type {
