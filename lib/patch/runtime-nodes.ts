@@ -73,6 +73,8 @@ export function createOscillatorRuntime(
     osc.connect(keyGate);
   };
 
+  keyGate.connect(level);
+
   const rebuildOsc = (atTime: number) => {
     try {
       osc.disconnect();

@@ -1,4 +1,4 @@
-import { PatchLab } from "./PatchLab";
+import { LabClient } from "./LabClient";
 
 export const metadata = {
   title: "Patch Lab — Synthesis Learning Lab",
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function LabPage() {
-  return <PatchLab />;
+  return <LabClient />;
 }

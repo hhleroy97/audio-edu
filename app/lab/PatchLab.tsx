@@ -262,20 +262,14 @@ export function PatchLab() {
             <PatchKeyboardHandler />
             <PatchPianoKeyboard />
             <Background gap={32} size={1} color="#1e1830" />
-            <Controls className="!border-[#2a2038] !bg-[#0c0a12] !shadow-none [&>button]:!border-[#2a2038] [&>button]:!bg-[#120d1a]" />
+            <Controls className="!border-module-border !bg-module-fill !shadow-none [&>button]:!border-module-border [&>button]:!bg-module-header" />
             <MiniMap
-              className="!border-[#2a2038] !bg-[#0c0a12]"
-              nodeColor={(n) => {
-                const kind = n.type as string;
-                if (kind === "output") return "#e8e4dc";
-                if (kind === "envelope") return "#ff3b2f";
-                if (kind === "analyser") return "#39ff14";
-                return "#00e8ff";
-              }}
+              className="!border-module-border !bg-module-fill"
+              nodeColor={() => "#5ec8e8"}
               maskColor="rgba(6, 4, 10, 0.85)"
             />
-            <Panel position="top-left" className="!m-2 overflow-hidden border border-[#2a2038] bg-[#0a0810]/90 backdrop-blur-sm">
-              <p className="border-b border-[#2a2038] px-2 py-1 font-mono text-[8px] uppercase tracking-[0.3em] text-secondary/70">
+            <Panel position="top-left" className="patch-lab-palette !m-2 overflow-hidden">
+              <p className="border-b-2 border-module-border px-2 py-1 font-mono text-[8px] uppercase tracking-[0.3em] text-secondary">
                 modules
               </p>
               <ModulePalette
@@ -286,7 +280,7 @@ export function PatchLab() {
           </ReactFlow>
         </div>
 
-        <aside className="flex w-80 shrink-0 flex-col overflow-y-auto border-l border-border bg-surface p-3">
+        <aside className="patch-lab-aside flex w-80 shrink-0 flex-col overflow-y-auto p-3">
           <Oscilloscope
             analyser={analyser}
             isActive={isRunning}

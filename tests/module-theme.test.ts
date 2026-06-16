@@ -7,9 +7,10 @@ describe("module-theme", () => {
     expect(new Set(codes).size).toBe(codes.length);
   });
 
-  it("uses asymmetric clip paths for each module", () => {
-    const clips = Object.values(MODULE_THEME).map((t) => t.clipPath);
-    expect(new Set(clips).size).toBe(clips.length);
+  it("uses short uppercase codes for flat UI badges", () => {
+    for (const theme of Object.values(MODULE_THEME)) {
+      expect(theme.code).toMatch(/^[A-Z]{3}$/);
+    }
   });
 
   it("falls back to oscillator theme for unknown kinds", () => {

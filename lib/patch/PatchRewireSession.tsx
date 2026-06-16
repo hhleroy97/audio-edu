@@ -53,32 +53,23 @@ function PatchRewireOverlay() {
         <path
           d={path}
           fill="none"
-          stroke="#000000"
-          strokeWidth={10}
-          strokeOpacity={0.45}
-          strokeLinecap="round"
-        />
-        <path
-          d={path}
-          fill="none"
-          stroke={color}
-          strokeWidth={7}
-          strokeOpacity={0.4}
-          strokeLinecap="round"
+          stroke="#0a0612"
+          strokeWidth={6}
+          strokeLinecap="square"
         />
         <path
           d={path}
           fill="none"
           stroke={color}
           strokeWidth={4}
-          strokeOpacity={0.92}
-          strokeLinecap="round"
+          strokeLinecap="square"
         />
-        <circle
-          cx={anchor.x}
-          cy={anchor.y}
-          r={5}
-          fill="#14101c"
+        <rect
+          x={anchor.x - 3}
+          y={anchor.y - 3}
+          width={6}
+          height={6}
+          fill="#0a0612"
           stroke={color}
           strokeWidth={1.5}
         />

@@ -25,8 +25,8 @@ export function isTargetHandle(handle: string | null | undefined): boolean {
 }
 
 export const PORT_COLORS: Record<PortType, string> = {
-  audio: "#00e8ff",
-  cv: "#ff2d95",
+  audio: "#5ec8e8",
+  cv: "#e8343a",
   trigger: "#ffd60a",
 };
 

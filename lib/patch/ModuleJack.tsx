@@ -3,9 +3,9 @@ import { PORT_COLORS } from "@/lib/patch/ports";
 import type { PortType } from "@/lib/schemas/patch";
 import { cn } from "@/lib/utils";
 
-/** I/O strip height — jack mount is vertically centered inside. */
-export const MODULE_IO_STRIP_PX = 72;
-export const JACK_SOCKET_PX = 36;
+/** I/O strip height — port mount is vertically centered inside. */
+export const MODULE_IO_STRIP_PX = 56;
+export const JACK_SOCKET_PX = 28;
 
 /** Horizontal slot along the bottom I/O strip (inputs left, outputs right). */
 export function jackSlotPercent(
@@ -34,7 +34,8 @@ type ModuleJackProps = {
 };
 
 /**
- * Jack visual + RF handle share one mount box so drag targets match the insert.
+ * Shape-coded port tile + RF handle in the same mount box.
+ * Square = input, triangle = output.
  */
 export function ModuleJack({
   type,
@@ -49,38 +50,38 @@ export function ModuleJack({
   return (
     <div
       className={cn(
-        "module-jack-mount",
-        role === "in" ? "module-jack-mount--in" : "module-jack-mount--out"
+        "module-port-mount",
+        role === "in" ? "module-port-mount--in" : "module-port-mount--out"
       )}
       style={
         {
-          "--jack-slot": slot,
-          "--jack-color": color,
+          "--port-slot": slot,
+          "--port-color": color,
         } as React.CSSProperties
       }
       data-signal={signal}
+      data-port-role={role}
     >
-      <div className="module-jack__socket pointer-events-none" aria-hidden>
-        <span className="module-jack__bezel" />
-        <span className="module-jack__collar" />
-        <span className="module-jack__insulator" />
-        <span className="module-jack__well">
-          <span className="module-jack__sleeve" />
-          <span className="module-jack__contact" />
-        </span>
-        <span className="module-jack__glint" aria-hidden />
+      <div
+        className={cn(
+          "module-port pointer-events-none",
+          role === "in" ? "module-port--in" : "module-port--out"
+        )}
+        aria-hidden
+      >
+        <span className="module-port__core" />
       </div>
 
       <Handle
         type={type}
         position={Position.Bottom}
         id={id}
-        className="module-jack__handle nodrag"
+        className="module-port__handle nodrag"
         data-tour-id={`port-${id}`}
         data-signal={signal}
       />
 
-      <span className="module-jack__label pointer-events-none">{label}</span>
+      <span className="module-port__label pointer-events-none">{label}</span>
     </div>
   );
 }

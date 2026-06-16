@@ -4,7 +4,7 @@ import type { ConnectionLineComponentProps } from "@xyflow/react";
 import { buildPatchCablePath } from "@/lib/patch/cable-path";
 import { PORT_COLORS } from "@/lib/patch/ports";
 
-/** Live patch cord preview while dragging from a jack. */
+/** Live patch cord preview while dragging from a port. */
 export function PatchConnectionLine({
   fromX,
   fromY,
@@ -19,28 +19,27 @@ export function PatchConnectionLine({
       <path
         d={path}
         fill="none"
-        stroke="#000000"
-        strokeWidth={10}
-        strokeOpacity={0.4}
-        strokeLinecap="round"
-      />
-      <path
-        d={path}
-        fill="none"
-        stroke={color}
-        strokeWidth={7}
-        strokeOpacity={0.35}
-        strokeLinecap="round"
+        stroke="#0a0612"
+        strokeWidth={6}
+        strokeLinecap="square"
       />
       <path
         d={path}
         fill="none"
         stroke={color}
         strokeWidth={4}
-        strokeOpacity={0.75}
-        strokeLinecap="round"
+        strokeLinecap="square"
+        strokeOpacity={0.9}
       />
-      <circle cx={fromX} cy={fromY} r={5} fill="#14101c" stroke={color} strokeWidth={1.5} />
+      <rect
+        x={fromX - 3}
+        y={fromY - 3}
+        width={6}
+        height={6}
+        fill="#0a0612"
+        stroke={color}
+        strokeWidth={1.5}
+      />
     </g>
   );
 }

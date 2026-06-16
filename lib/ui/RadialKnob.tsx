@@ -122,18 +122,19 @@ export function RadialKnob({
         aria-valuenow={value}
       >
         <svg viewBox="0 0 48 48" className="h-full w-full" aria-hidden>
-          <circle
-            cx="24"
-            cy="24"
-            r="20"
-            fill="#0a0810"
-            stroke="#2a2038"
-            strokeWidth="1.5"
+          <rect
+            x="6"
+            y="6"
+            width="36"
+            height="36"
+            fill="#0c0a12"
+            stroke="#5a5070"
+            strokeWidth="2"
           />
           <path
             d={arcPath(24, 24, 18, START_DEG, START_DEG + SWEEP_DEG)}
             fill="none"
-            stroke="#1e1830"
+            stroke="#2a2440"
             strokeWidth="3"
             strokeLinecap="square"
           />
@@ -143,7 +144,6 @@ export function RadialKnob({
             stroke="var(--module-accent)"
             strokeWidth="3"
             strokeLinecap="square"
-            opacity="0.85"
           />
           {Array.from({ length: 9 }).map((_, i) => {
             const tickAngle = START_DEG + (i / 8) * SWEEP_DEG;
@@ -156,7 +156,7 @@ export function RadialKnob({
                 y1={a.y}
                 x2={b.x}
                 y2={b.y}
-                stroke="#3a3548"
+                stroke="#5a5070"
                 strokeWidth="1"
               />
             );
@@ -170,7 +170,15 @@ export function RadialKnob({
             strokeWidth="2"
             strokeLinecap="square"
           />
-          <circle cx="24" cy="24" r="3" fill="#1a1624" stroke="var(--module-accent)" strokeWidth="1" />
+          <rect
+            x="21"
+            y="21"
+            width="6"
+            height="6"
+            fill="#1a1428"
+            stroke="var(--module-accent)"
+            strokeWidth="1"
+          />
         </svg>
       </div>
       <span className="module-knob__label text-center text-[8px] uppercase tracking-[0.18em] text-secondary/75">

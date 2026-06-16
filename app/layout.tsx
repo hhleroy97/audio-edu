@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Share_Tech_Mono } from "next/font/google";
+import { Share_Tech_Mono, VT323 } from "next/font/google";
 import "./globals.css";
 
 const shareTechMono = Share_Tech_Mono({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-module",
+  display: "swap",
+});
+
+const vt323 = VT323({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-module-display",
   display: "swap",
 });
 
@@ -21,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={shareTechMono.variable}>
+    <html lang="en" className={`${shareTechMono.variable} ${vt323.variable}`}>
       <body className="min-h-screen">{children}</body>
     </html>
   );

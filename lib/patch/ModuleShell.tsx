@@ -22,18 +22,6 @@ type ModuleShellProps = {
   outputs?: PortDef[];
 };
 
-function ModuleScrew({ className }: { className?: string }) {
-  return (
-    <span
-      className={cn(
-        "pointer-events-none absolute z-10 h-1.5 w-1.5 rounded-full border border-[#3a3548] bg-[#1a1624]",
-        className
-      )}
-      aria-hidden
-    />
-  );
-}
-
 export const ModuleShell = memo(function ModuleShell({
   id,
   kind,
@@ -84,65 +72,34 @@ export const ModuleShell = memo(function ModuleShell({
     <div
       ref={shellRef}
       className={cn(
-        "module-panel relative box-border overflow-visible font-mono text-xs",
+        "module-panel relative box-border overflow-visible text-xs",
         `module-panel--${kind}`,
         (hasInputs || hasOutputs) && "module-panel--has-io",
         selected && "module-panel--selected"
       )}
-      style={
-        {
-          width: shellWidth,
-          minWidth: shellWidth,
-          "--module-accent": theme.accent,
-          "--module-accent-dim": theme.accentDim,
-          "--module-panel": theme.panel,
-          "--module-led": theme.led,
-        } as React.CSSProperties
-      }
+      style={{ width: shellWidth, minWidth: shellWidth }}
       data-tour-id={`node-${kind}`}
       data-patch-node-id={id}
       data-module-code={theme.code}
     >
-      <div
-        className="module-panel__face relative"
-        style={{ clipPath: theme.clipPath }}
-      >
-        <ModuleScrew className="left-1.5 top-1.5" />
-        <ModuleScrew className="right-1.5 top-1.5" />
-        <ModuleScrew className="bottom-1.5 left-1.5" />
-        <ModuleScrew className="bottom-1.5 right-1.5" />
-
-        <header
+      <header className="module-panel__header flex items-center gap-2 px-2 py-1.5">
+        <span className="module-panel__code shrink-0">{theme.code}</span>
+        <span className="module-panel__name truncate uppercase">{label}</span>
+        <span
           className={cn(
-            "module-panel__header relative flex items-center gap-2 px-3 py-2",
-            theme.slash === 1 ? "module-panel__header--slash-r" : "module-panel__header--slash-l"
+            "module-panel__state ml-auto shrink-0",
+            selected && "module-panel__state--on"
           )}
-        >
-          <span
-            className="module-panel__code shrink-0 px-1.5 py-0.5 text-[10px] font-bold tracking-widest"
-            style={{ color: theme.accent, borderColor: theme.accent }}
-          >
-            {theme.code}
-          </span>
-          <span className="module-panel__name truncate uppercase tracking-[0.2em] text-primary/90">
-            {label}
-          </span>
-          <span
-            className={cn(
-              "module-panel__led ml-auto h-2 w-2 shrink-0",
-              selected && "module-panel__led--on"
-            )}
-            aria-hidden
-          />
-        </header>
+          aria-hidden
+        />
+      </header>
 
-        <div className="module-panel__body relative px-3 pb-2 pt-2">
-          <div className="module-panel__controls space-y-2">{children}</div>
-        </div>
+      <div className="module-panel__body px-2 pb-2 pt-1.5">
+        <div className="module-panel__controls space-y-2">{children}</div>
       </div>
 
       {(hasInputs || hasOutputs) && (
-        <footer className="module-panel__io relative" aria-label="Patch I/O">
+        <footer className="module-panel__io" aria-label="Patch I/O">
           {inputs.map((port, index) => (
             <ModuleJack
               key={port.id}
@@ -181,7 +138,7 @@ export function ModuleDisplay({
   return (
     <div
       className={cn(
-        "module-display nodrag nopan w-full border border-[#2a2038] bg-[#06040c] p-1",
+        "module-display nodrag nopan w-full border-2 border-module-border bg-module-inset p-1",
         className
       )}
     >

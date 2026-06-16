@@ -3,19 +3,6 @@
 import { getModuleTheme } from "@/lib/patch/module-theme";
 import type { NodeKind } from "@/lib/patch/ports";
 
-const PALETTE_LABEL: Partial<Record<NodeKind, string>> = {
-  oscillator: "VCO",
-  detune: "DST",
-  unison: "UNI",
-  envelope: "ENV",
-  output: "OUT",
-  analyser: "SCOPE",
-  filter: "VCF",
-  wavetable: "WTB",
-  mixer: "MIX",
-  lfo: "LFO",
-};
-
 type ModulePaletteProps = {
   kinds: NodeKind[];
   onAdd: (kind: NodeKind) => void;
@@ -26,25 +13,16 @@ export function ModulePalette({ kinds, onAdd }: ModulePaletteProps) {
     <div className="flex flex-wrap gap-1.5 p-1">
       {kinds.map((kind) => {
         const theme = getModuleTheme(kind);
-        const code = PALETTE_LABEL[kind] ?? theme.code;
         return (
           <button
             key={kind}
             type="button"
             onClick={() => onAdd(kind)}
-            className="module-palette-tile border border-[#2a2038] bg-[#0c0a12] px-2.5 py-1.5 text-[9px] uppercase text-secondary hover:text-primary"
-            style={
-              {
-                "--tile-accent": theme.accentDim,
-                borderColor: `${theme.accent}44`,
-              } as React.CSSProperties
-            }
+            className="module-palette-tile border-2 border-module-border bg-module-fill px-2 py-1 text-[9px] uppercase text-secondary hover:border-cold hover:text-primary"
             title={`Add ${kind}`}
           >
-            <span style={{ color: theme.accent }} className="mr-1.5 font-bold">
-              +
-            </span>
-            <span style={{ color: theme.accent }}>{code}</span>
+            <span className="mr-1 font-bold text-cold">+</span>
+            <span className="font-bold text-primary">{theme.code}</span>
           </button>
         );
       })}
