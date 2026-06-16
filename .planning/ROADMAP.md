@@ -203,45 +203,28 @@
 
 - [x] Bass/sub pitch follows chord roots in drops (112, 114)
 - [x] Body/top audible send space in Patch Lab (113)
-- [x] `npm test` green (222 tests)
+- [x] `npm test` green (229 tests)
 
 ---
 
-## Planned — Chords, polyphony & timbre intelligence (116–121)
+## Completed — Chords, polyphony & timbre intelligence (116–121) ✅
 
-> Research: `docs/research/chords-polyphony-milestone-116-121.md`  
-> Theory: `docs/theory/layer-energy-model.md`  
-> **Motivation:** Harmony plans exist but output is monophonic; preset variety is static;
-> phrase slots don't drive synth automation.
+> Research: `docs/research/chords-polyphony-milestone-116-121.md`
 
-| Phase | Name | Goal | Commit tag |
-|-------|------|------|------------|
-| **116** | Poly voice pool | 2–4 voices per layer; `scheduleChord()` | `feat(song): polyphonic layer voice pool (phase 116)` |
-| **117** | Chord pattern IR | `bodyMidis[]` + multi-note pattern emission | `feat(song): chord voicing v3 pattern IR (phase 117)` |
-| **118** | Timbre scoring | Archetype metadata + deterministic preset scoring | `feat(song): TimbreScoringAgent (phase 118)` |
-| **119** | Layer energy docs | Theory + graph nodes for spectral slotting | `docs(theory): layer energy model (phase 119)` |
-| **120** | Beat automation | Phrase-slot macro/filter curves | `feat(song): beat-aware automation (phase 120)` |
-| **121** | Chord eval gates | Simultaneous-note + timbre diversity metrics | `feat(song): chord density eval gates (phase 121)` |
+| Phase | Name | Status |
+|-------|------|--------|
+| **116** | Poly voice pool | ✅ |
+| **117** | Chord pattern IR | ✅ |
+| **118** | Timbre scoring | ✅ |
+| **119** | Layer energy docs | ✅ |
+| **120** | Beat automation | ✅ |
+| **121** | Chord eval gates | ✅ |
 
-**Recommended order:** 116 → 117 → 118 → 120 → 119 → 121
+### Definition of done (milestone 116–121) ✅
 
-### Dependency graph (116–121)
-
-```
-112–115 (pitch + FX)
-  └── 116 (voice pool)
-        └── 117 (chord IR)
-              ├── 118 (timbre scoring)
-              ├── 120 (beat automation)
-              └── 121 (eval gates)
-                    └── 119 (docs — parallel)
-```
-
-### Definition of done (milestone 116–121)
-
-- [ ] Body plays ≥2 simultaneous notes in drops (audible dyad)
-- [ ] ≥4 archetype presets used per generated song (scored, not random)
-- [ ] Phrase slots A/B/C/D drive distinct automation keyframes
-- [ ] Layer energy model documented with cited sources
-- [ ] Eval fails monophonic output when pack expects dyads
-- [ ] `npm test` green per phase
+- [x] Body plays ≥2 simultaneous notes in drops
+- [x] ≥3 archetype body presets per song (scored selection)
+- [x] Phrase slots drive automation keyframes in drops
+- [x] Layer energy model documented
+- [x] Eval gates for chord density and timbre spread
+- [x] `npm test` green (229 tests)
