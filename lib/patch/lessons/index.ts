@@ -2,11 +2,13 @@ import type { Lesson } from "@/lib/schemas/patch";
 import { lesson01Oscillator } from "./lesson-01-oscillator";
 import { lesson02Unison } from "./lesson-02-unison";
 import { lesson03Envelope } from "./lesson-03-envelope";
+import { lesson07ModMatrix } from "./lesson-07-mod-matrix";
 
 export const LESSONS: Lesson[] = [
   lesson01Oscillator,
   lesson02Unison,
   lesson03Envelope,
+  lesson07ModMatrix,
 ];
 
 export function getLessonBySlug(slug: string): Lesson | undefined {

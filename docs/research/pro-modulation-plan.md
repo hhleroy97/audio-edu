@@ -1,7 +1,7 @@
 # Pro Modulation Implementation Plan
 
 > **GSD milestone:** `.planning/ROADMAP.md` phases **71–75**  
-> **Status:** Planned — execute with `/gsd-execute-phase 71` (or Agent mode phase-by-phase)
+> **Status:** ✅ Shipped — phases 71–75 complete (2026-06-16)
 
 ---
 

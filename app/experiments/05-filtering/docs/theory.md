@@ -34,6 +34,13 @@ Experiment 03's [[envelope]] concept applies equally to cutoff — a filter
 envelope creates classic synth sweeps. Full filter-envelope routing is a natural
 extension after this experiment's static cutoff/resonance controls.
 
+## Bipolar LFO on cutoff (Patch Lab)
+
+Patch Lab mod routes support **bipolar depth** and **DC offset** on CV cables:
+an LFO can push cutoff above and below its base knob value, matching Serum/Vital
+mod-matrix behavior. Negative depth inverts wobble direction; unipolar legacy
+mode rectifies the LFO to 0…1 only.
+
 ## Related concepts
 
 - [[filter]] — frequency-selective processing

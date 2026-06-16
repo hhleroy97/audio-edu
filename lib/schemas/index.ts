@@ -4,6 +4,12 @@ export { GraphNode, GraphEdge, KnowledgeGraph } from "./graph";
 export { TutorialChunk } from "./tutorial";
 export { ExperimentFrontmatter } from "./frontmatter";
 export { PortType, PatchNode, PatchEdge, Patch, PatchPreset, TourStep, Lesson } from "./patch";
+export {
+  PatchEdgeData,
+  DEFAULT_CV_EDGE_DATA,
+  normalizeModDepth,
+  parseCvEdgeData,
+} from "./patch-edge-data";
 export type {
   PortType as PortTypeValue,
   PatchNode as PatchNodeType,

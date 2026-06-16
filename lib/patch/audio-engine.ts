@@ -3,10 +3,17 @@ import { ConnectionRegistry } from "./connection-registry";
 import { parseHandle, isSourceHandle, isTargetHandle } from "./ports";
 import {
   createRuntimeNode,
+  registerRuntimeResampleBuffer,
   type RuntimeNode,
 } from "./runtime-nodes";
 import type { PatchNodeData } from "./ports";
 import { DEFAULT_TRANSPORT_BPM } from "./transport";
+import {
+  getUnipolarCurve,
+  scaledModOffset,
+} from "./cv-routing";
+import { parseCvEdgeData } from "@/lib/schemas/patch-edge-data";
+import { ModPreviewBus } from "./mod-preview";
 
 type Wire = {
   sourceId: string;
@@ -14,14 +21,21 @@ type Wire = {
   targetId: string;
   targetHandle: string;
   modDepth: number;
+  modOffset: number;
+  modBipolar: boolean;
 };
+
+type CvWireNode = AudioNode;
 
 export class AudioEngine {
   readonly ctx: AudioContext;
+  readonly modPreview = new ModPreviewBus();
   private nodes = new Map<string, RuntimeNode>();
   private registry = new ConnectionRegistry();
   private wires: Wire[] = [];
-  private cvWireGains: GainNode[] = [];
+  private cvWireNodes: CvWireNode[] = [];
+  private resampleBuffers = new Map<string, AudioBuffer>();
+  private activeNoteHz = 110;
   private masterAnalyser: AnalyserNode | null = null;
   private readonly scopeAnalyser: AnalyserNode;
   private scopeTapNodeId: string | null = null;
@@ -65,9 +79,78 @@ export class AudioEngine {
     const t = this.ctx.currentTime;
     for (const runtime of this.nodes.values()) {
       if (runtime.kind === "lfo") {
-        runtime.setParams({ transportBpm: this.transportBpm }, t);
+        runtime.setParams(
+          { transportBpm: this.transportBpm, noteHz: this.activeNoteHz },
+          t
+        );
       }
     }
+  }
+
+  setActiveNoteHz(hz: number): void {
+    this.activeNoteHz = Math.max(20, Math.min(20000, hz));
+    const t = this.ctx.currentTime;
+    for (const runtime of this.nodes.values()) {
+      if (runtime.kind === "lfo") {
+        runtime.setParams(
+          { noteHz: this.activeNoteHz, transportBpm: this.transportBpm },
+          t
+        );
+      }
+    }
+  }
+
+  getActiveNoteHz(): number {
+    return this.activeNoteHz;
+  }
+
+  registerResampleBuffer(id: string, buffer: AudioBuffer): void {
+    this.resampleBuffers.set(id, buffer);
+    registerRuntimeResampleBuffer(id, buffer);
+  }
+
+  getResampleBuffer(id: string): AudioBuffer | undefined {
+    return this.resampleBuffers.get(id);
+  }
+
+  /** Capture N seconds from scope tap into a new AudioBuffer. */
+  async recordFromScopeTap(seconds = 2): Promise<AudioBuffer | null> {
+    const tap = this.scopeTapSource;
+    if (!tap || typeof MediaRecorder === "undefined") return null;
+
+    const merger = this.ctx.createGain();
+    try {
+      tap.connect(merger);
+    } catch {
+      return null;
+    }
+
+    const dest = this.ctx.createMediaStreamDestination();
+    merger.connect(dest);
+    const mediaRecorder = new MediaRecorder(dest.stream);
+    const chunks: Blob[] = [];
+
+    return new Promise((resolve) => {
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+      mediaRecorder.onstop = async () => {
+        try {
+          merger.disconnect();
+        } catch {
+          /* noop */
+        }
+        try {
+          const blob = new Blob(chunks, { type: "audio/webm" });
+          const arrayBuffer = await blob.arrayBuffer();
+          resolve(await this.ctx.decodeAudioData(arrayBuffer));
+        } catch {
+          resolve(null);
+        }
+      };
+      mediaRecorder.start();
+      setTimeout(() => mediaRecorder.stop(), seconds * 1000);
+    });
   }
 
   async resume(): Promise<void> {
@@ -96,7 +179,11 @@ export class AudioEngine {
       const existing = this.nodes.get(uiNode.id);
       const params =
         uiNode.data.kind === "lfo"
-          ? { ...uiNode.data.params, transportBpm: this.transportBpm }
+          ? {
+              ...uiNode.data.params,
+              transportBpm: this.transportBpm,
+              noteHz: this.activeNoteHz,
+            }
           : uiNode.data.params;
       if (existing) {
         existing.setParams(params, this.ctx.currentTime);
@@ -115,14 +202,18 @@ export class AudioEngine {
       }
     }
 
-    this.wires = uiEdges.map((e) => ({
-      sourceId: e.source,
-      sourceHandle: e.sourceHandle ?? "audio-out",
-      targetId: e.target,
-      targetHandle: e.targetHandle ?? "audio-in",
-      modDepth:
-        typeof e.data?.modDepth === "number" ? e.data.modDepth : 1,
-    }));
+    this.wires = uiEdges.map((e) => {
+      const cv = parseCvEdgeData(e.data as Record<string, unknown> | undefined);
+      return {
+        sourceId: e.source,
+        sourceHandle: e.sourceHandle ?? "audio-out",
+        targetId: e.target,
+        targetHandle: e.targetHandle ?? "audio-in",
+        modDepth: cv.modDepth,
+        modOffset: cv.modOffset,
+        modBipolar: cv.modBipolar,
+      };
+    });
 
     this.registry.rebuild(
       this.wires.map((w) => ({ source: w.sourceId, target: w.targetId }))
@@ -230,14 +321,15 @@ export class AudioEngine {
   }
 
   private reconnectAll(): void {
-    for (const gain of this.cvWireGains) {
+    this.modPreview.clear();
+    for (const node of this.cvWireNodes) {
       try {
-        gain.disconnect();
+        node.disconnect();
       } catch {
         /* noop */
       }
     }
-    this.cvWireGains = [];
+    this.cvWireNodes = [];
 
     for (const runtime of this.nodes.values()) {
       try {
@@ -318,10 +410,38 @@ export class AudioEngine {
       if (out && param) {
         const depthGain = this.ctx.createGain();
         depthGain.gain.value = wire.modDepth;
+
+        let signalSource: AudioNode = out;
+        if (!wire.modBipolar) {
+          const shaper = this.ctx.createWaveShaper();
+          shaper.curve = new Float32Array(getUnipolarCurve());
+          shaper.oversample = "none";
+          try {
+            out.connect(shaper);
+            signalSource = shaper;
+            this.cvWireNodes.push(shaper);
+          } catch {
+            /* duplicate */
+          }
+        }
+
+        if (wire.modOffset !== 0) {
+          const offsetSource = this.ctx.createConstantSource();
+          offsetSource.offset.value = scaledModOffset(wire.modOffset);
+          try {
+            offsetSource.connect(param);
+            offsetSource.start();
+            this.cvWireNodes.push(offsetSource);
+          } catch {
+            /* duplicate */
+          }
+        }
+
         try {
-          out.connect(depthGain);
+          signalSource.connect(depthGain);
           depthGain.connect(param);
-          this.cvWireGains.push(depthGain);
+          this.cvWireNodes.push(depthGain);
+          this.modPreview.register(wire.targetId, wire.targetHandle, param);
         } catch {
           /* duplicate */
         }
@@ -339,7 +459,8 @@ export class AudioEngine {
         runtime.kind === "fm" ||
         runtime.kind === "noise" ||
         runtime.kind === "modFx" ||
-        runtime.kind === "lfo"
+        runtime.kind === "lfo" ||
+        runtime.kind === "macro"
       ) {
         runtime.start(t);
       }
@@ -359,7 +480,8 @@ export class AudioEngine {
         runtime.kind === "fm" ||
         runtime.kind === "noise" ||
         runtime.kind === "modFx" ||
-        runtime.kind === "lfo"
+        runtime.kind === "lfo" ||
+        runtime.kind === "macro"
       ) {
         runtime.stop(t + 0.05);
       }
@@ -390,6 +512,7 @@ export class AudioEngine {
     this.nodes.clear();
     this.registry.clear();
     this.wires = [];
-    this.cvWireGains = [];
+    this.cvWireNodes = [];
+    this.modPreview.clear();
   }
 }

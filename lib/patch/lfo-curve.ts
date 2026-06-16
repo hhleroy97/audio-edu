@@ -9,6 +9,7 @@ export const LFO_SHAPE_OPTIONS = [
   { id: "triangle", label: "Tri" },
   { id: "square", label: "Sqr" },
   { id: "sawtooth", label: "Saw" },
+  { id: "sampleHold", label: "S&H" },
   { id: "custom", label: "Draw" },
 ] as const;
 
@@ -58,7 +59,16 @@ export function sampleCurveAt(points: LfoCurvePoint[], t: number): number {
   return points[points.length - 1]?.y ?? 0;
 }
 
-const HARMONICS = 32;
+/** Sample-and-hold: quantize phase to N steps, hold last Y. */
+export function sampleHoldAt(steps: number, t: number, seed = 0.37): number {
+  const phase = ((t % 1) + 1) % 1;
+  const n = Math.max(2, Math.floor(steps));
+  const step = Math.floor(phase * n);
+  const pseudo = Math.sin((step + 1) * (seed + 1) * 12.9898) * 43758.5453;
+  return pseudo - Math.floor(pseudo);
+}
+
+const HARMONICS = 64;
 
 /** Build a PeriodicWave from drawable curve (bipolar -1..1 mapped from y 0..1). */
 export function buildPeriodicWave(
@@ -75,6 +85,32 @@ export function buildPeriodicWave(
     for (let k = 0; k < samples; k++) {
       const t = k / samples;
       const y = sampleCurveAt(points, t) * 2 - 1;
+      const angle = (2 * Math.PI * n * k) / samples;
+      re += y * Math.cos(angle);
+      im += y * Math.sin(angle);
+    }
+    real[n] = re / samples;
+    imag[n] = im / samples;
+  }
+
+  return ctx.createPeriodicWave(real, imag);
+}
+
+/** Build S&H periodic wave with `steps` holds per cycle. */
+export function buildSampleHoldWave(
+  ctx: AudioContext,
+  steps = 8
+): PeriodicWave {
+  const real = new Float32Array(HARMONICS + 1);
+  const imag = new Float32Array(HARMONICS + 1);
+  const samples = 256;
+
+  for (let n = 1; n <= HARMONICS; n++) {
+    let re = 0;
+    let im = 0;
+    for (let k = 0; k < samples; k++) {
+      const t = k / samples;
+      const y = sampleHoldAt(steps, t) * 2 - 1;
       const angle = (2 * Math.PI * n * k) / samples;
       re += y * Math.cos(angle);
       im += y * Math.sin(angle);

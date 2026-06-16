@@ -24,6 +24,8 @@ export const MODULE_THEME: Record<NodeKind, ModuleTheme> = {
   multiband: { code: "OTT" },
   modFx: { code: "MFX" },
   filterBank: { code: "FBK" },
+  macro: { code: "MCR" },
+  sampler: { code: "SMP" },
 };
 
 export function getModuleTheme(kind: NodeKind): ModuleTheme {

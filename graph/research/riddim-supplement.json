@@ -160,6 +160,54 @@
       "summary": "arXiv:2111.10003 — 10–20 wavetable dictionary; WT crossfade teaching anchor.",
       "experimentIds": ["04-wavetable"],
       "sources": ["docs/research/sources.md#33"]
+    },
+    {
+      "id": "concept:attenuverter",
+      "label": "attenuverter",
+      "type": "concept",
+      "summary": "Signed modulation depth and DC offset on CV routes — Serum mod matrix parity.",
+      "experimentIds": [],
+      "sources": ["docs/research/sources.md#11", "docs/research/pro-modulation-plan.md"]
+    },
+    {
+      "id": "component:macro",
+      "label": "macro control",
+      "type": "component",
+      "summary": "Single CV source fanning to multiple targets via mod matrix edge depths.",
+      "experimentIds": [],
+      "sources": ["docs/research/pro-modulation-plan.md"]
+    },
+    {
+      "id": "component:sampler",
+      "label": "resample sampler",
+      "type": "component",
+      "summary": "Record patch tap to buffer; loop via sampler node for iterative bass design.",
+      "experimentIds": [],
+      "sources": ["docs/research/sources.md#5"]
+    },
+    {
+      "id": "technique:dual-lfo-chain",
+      "label": "dual LFO chain",
+      "type": "technique",
+      "summary": "Independent LFOs on cutoff and FM index at different sync/ratio — non-repeating growl.",
+      "experimentIds": [],
+      "sources": ["docs/research/pro-modulation-plan.md"]
+    },
+    {
+      "id": "technique:sample-hold-lfo",
+      "label": "sample-hold LFO",
+      "type": "technique",
+      "summary": "Stepped LFO shape for stutter wobble; bipolar depth on filter cutoff.",
+      "experimentIds": ["05-filtering"],
+      "sources": ["docs/research/pro-modulation-plan.md"]
+    },
+    {
+      "id": "technique:resample-workflow",
+      "label": "resample workflow",
+      "type": "technique",
+      "summary": "Bounce wobble to sample, chop and re-layer — Subtronics-style iteration.",
+      "experimentIds": [],
+      "sources": ["docs/research/sources.md#55", "docs/research/sources.md#5"]
     }
   ],
   "edges": [
@@ -288,6 +336,41 @@
       "predicate": "precedes",
       "confidence": 0.9,
       "evidence": "docs/research/sources.md#1"
+    },
+    {
+      "from": "technique:wobble-lfo-cutoff",
+      "to": "concept:attenuverter",
+      "predicate": "uses",
+      "confidence": 0.95,
+      "evidence": "docs/research/pro-modulation-plan.md#71"
+    },
+    {
+      "from": "technique:dual-lfo-chain",
+      "to": "technique:fm-growl",
+      "predicate": "extends",
+      "confidence": 0.9,
+      "evidence": "lib/patch/presets/index.ts#pro-dual-lfo-growl"
+    },
+    {
+      "from": "component:macro",
+      "to": "technique:wobble-lfo-cutoff",
+      "predicate": "modulates",
+      "confidence": 0.85,
+      "evidence": "lib/patch/presets/index.ts#pro-macro-wobble"
+    },
+    {
+      "from": "technique:resample-workflow",
+      "to": "component:sampler",
+      "predicate": "uses",
+      "confidence": 0.9,
+      "evidence": "lib/patch/PatchTransportPanel.tsx"
+    },
+    {
+      "from": "concept:resampling",
+      "to": "technique:resample-workflow",
+      "predicate": "implements",
+      "confidence": 0.9,
+      "evidence": "docs/research/sources.md#55"
     }
   ]
 }

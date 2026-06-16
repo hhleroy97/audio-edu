@@ -575,3 +575,15 @@ export const FILTER_BANK_CONTROLS: ModuleControlSpec[] = [
     tall: true,
   },
 ];
+
+export const MACRO_CONTROLS: ModuleControlSpec[] = [
+  {
+    type: "knob",
+    param: "value",
+    label: "Macro",
+    min: 0,
+    max: 1,
+    step: 0.01,
+    area: "gain",
+  },
+];

@@ -20,7 +20,14 @@ describe("patch lesson registry", () => {
   it("returns the next lesson in sequence", () => {
     expect(getNextLesson("01-oscillator")?.slug).toBe("02-unison");
     expect(getNextLesson("02-unison")?.slug).toBe("03-envelope");
-    expect(getNextLesson("03-envelope")).toBeNull();
+    expect(getNextLesson("03-envelope")?.slug).toBe("07-mod-matrix");
+    expect(getNextLesson("07-mod-matrix")).toBeNull();
     expect(getNextLesson("unknown")).toBeNull();
+  });
+
+  it("validates lesson 07 mod matrix schema", () => {
+    const lesson = getLessonBySlug("07-mod-matrix");
+    expect(lesson?.unlocksNodes).toContain("macro");
+    expect(lesson?.pages.length).toBeGreaterThanOrEqual(2);
   });
 });

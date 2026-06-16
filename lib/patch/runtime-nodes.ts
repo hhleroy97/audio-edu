@@ -12,12 +12,26 @@ import {
 } from "./waveshaper-curves";
 import {
   buildPeriodicWave,
+  buildSampleHoldWave,
   DEFAULT_LFO_CURVE,
   parseCurvePoints,
 } from "./lfo-curve";
 import { getFormantVowel } from "./formant-presets";
 import { createNoiseBuffer } from "@/lib/audio/noise-buffer";
 import { rampFrequency } from "./glide";
+
+const resampleBuffers = new Map<string, AudioBuffer>();
+
+export function registerRuntimeResampleBuffer(
+  id: string,
+  buffer: AudioBuffer
+): void {
+  resampleBuffers.set(id, buffer);
+}
+
+export function getRuntimeResampleBuffer(id: string): AudioBuffer | undefined {
+  return resampleBuffers.get(id);
+}
 
 export type SourceTone = {
   waveform: OscillatorType;
@@ -517,6 +531,11 @@ function applyLfoShape(
     osc.setPeriodicWave(buildPeriodicWave(ctx, points));
     return;
   }
+  if (shape === "sampleHold") {
+    const steps = Number(params.holdSteps ?? 8);
+    osc.setPeriodicWave(buildSampleHoldWave(ctx, steps));
+    return;
+  }
   osc.type = parseLfoShape(shape);
 }
 
@@ -551,10 +570,15 @@ function createLfoRuntime(
         p.rate !== undefined ||
         p.sync !== undefined ||
         p.transportBpm !== undefined ||
-        p.rateRatio !== undefined
+        p.rateRatio !== undefined ||
+        p.keyTrack !== undefined ||
+        p.noteHz !== undefined
       ) {
         const hz = resolveLfoRateHz(params, Number(params.transportBpm ?? 140));
         osc.frequency.setTargetAtTime(hz, atTime, 0.02);
+      }
+      if (p.holdSteps !== undefined && String(params.shape) === "sampleHold") {
+        applyLfoShape(osc, ctx, params);
       }
       if (p.depth !== undefined) {
         depthGain.gain.setTargetAtTime(Number(p.depth), atTime, 0.02);
@@ -628,6 +652,123 @@ function createFilterRuntime(
     dispose: () => {
       input.disconnect();
       filter.disconnect();
+      output.disconnect();
+    },
+  };
+}
+
+function createMacroRuntime(
+  ctx: AudioContext,
+  id: string,
+  params: Record<string, number | string | boolean>
+): RuntimeNode {
+  const source = ctx.createConstantSource();
+  const depthGain = ctx.createGain();
+  const value = Number(params.value ?? 0.5);
+  source.offset.value = value * 2 - 1;
+  source.connect(depthGain);
+  let started = false;
+
+  return {
+    id,
+    kind: "macro",
+    getOutput: (handle) => (handle === "cv-out" ? depthGain : null),
+    getInput: () => null,
+    getParam: () => null,
+    getTap: () => depthGain,
+    setParams: (p, atTime) => {
+      Object.assign(params, p);
+      if (p.value !== undefined) {
+        source.offset.setTargetAtTime(Number(p.value) * 2 - 1, atTime, 0.02);
+      }
+    },
+    start: (atTime) => {
+      if (started) return;
+      try {
+        source.start(atTime);
+        started = true;
+      } catch {
+        /* already running */
+      }
+    },
+    stop: () => {},
+    dispose: () => {
+      try {
+        if (started) source.stop();
+      } catch {
+        /* noop */
+      }
+      source.disconnect();
+      depthGain.disconnect();
+    },
+  };
+}
+
+function createSamplerRuntime(
+  ctx: AudioContext,
+  id: string,
+  params: Record<string, number | string | boolean>
+): RuntimeNode {
+  const output = ctx.createGain();
+  const keyGate = ctx.createGain();
+  keyGate.gain.value = 0;
+  output.gain.value = Number(params.gain ?? 0.8);
+  keyGate.connect(output);
+
+  let player: AudioBufferSourceNode | null = null;
+  let bufferId = String(params.bufferId ?? "");
+
+  const playBuffer = (atTime: number) => {
+    const buffer = getRuntimeResampleBuffer(bufferId);
+    if (!buffer) return;
+    try {
+      player?.stop();
+    } catch {
+      /* noop */
+    }
+    player = ctx.createBufferSource();
+    player.buffer = buffer;
+    player.loop = Boolean(params.loop ?? true);
+    player.connect(keyGate);
+    player.start(atTime);
+  };
+
+  return {
+    id,
+    kind: "sampler",
+    getOutput: (handle) => (handle === "audio-out" ? output : null),
+    getInput: () => null,
+    getParam: () => null,
+    getTap: () => output,
+    setParams: (p, atTime) => {
+      if (p.gain !== undefined) {
+        output.gain.setTargetAtTime(Number(p.gain), atTime, 0.02);
+      }
+      if (p.bufferId !== undefined) {
+        bufferId = String(p.bufferId);
+      }
+    },
+    setKeyGate: (open, atTime) => {
+      keyGate.gain.setTargetAtTime(open ? 1 : 0, atTime, 0.01);
+      if (open) playBuffer(atTime);
+      else {
+        try {
+          player?.stop(atTime + 0.05);
+        } catch {
+          /* noop */
+        }
+      }
+    },
+    start: () => {},
+    stop: () => {},
+    dispose: () => {
+      try {
+        player?.stop();
+      } catch {
+        /* noop */
+      }
+      player?.disconnect();
+      keyGate.disconnect();
       output.disconnect();
     },
   };
@@ -1625,6 +1766,10 @@ export function createRuntimeNode(
       return createModFxRuntime(ctx, id, params);
     case "filterBank":
       return createFilterBankRuntime(ctx, id, params);
+    case "macro":
+      return createMacroRuntime(ctx, id, params);
+    case "sampler":
+      return createSamplerRuntime(ctx, id, params);
     default:
       return null;
   }

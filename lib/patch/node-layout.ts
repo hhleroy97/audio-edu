@@ -24,6 +24,8 @@ const NODE_LAYOUT_RAW = {
   multiband: { width: 256, height: 340 },
   modFx: { width: 216, height: 300 },
   filterBank: { width: 256, height: 320 },
+  macro: { width: 180, height: 180 },
+  sampler: { width: 216, height: 200 },
 } as const satisfies Record<NodeKind, NodeLayoutSize>;
 
 export const NODE_LAYOUT_METADATA: Record<NodeKind, NodeLayoutSize> =

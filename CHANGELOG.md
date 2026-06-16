@@ -15,11 +15,13 @@
 - `mergeResearchSupplements()` in `graph/extract/research.ts`; extract script merges research JSON
 - Updated `graph/index.md`, `riddim-synthesis.md` §6, `riddim-feature-roadmap.md` academic refs
 
-### Pro modulation milestone (planned)
+### Pro modulation (Patch Lab phases 71–75)
 
-- GSD roadmap phases 71–75: `.planning/ROADMAP.md`
-- Executive plan: `docs/research/pro-modulation-plan.md`
-- Phase D gap table in `riddim-feature-roadmap.md`
+- **Phase 71:** Bipolar CV depth (−1…+1), offset, unipolar legacy on mod matrix routes
+- **Phase 72:** Live effective-value preview on CV-modulated filter/FM params
+- **Phase 73:** Sample-hold LFO, key-tracked rate, macro CV node
+- **Phase 74:** Four pro presets, lesson 07 mod matrix mastery
+- **Phase 75:** Resample → sampler, spectral centroid on FFT, transport sync grid
 
 ## 0.4.0 — 2026-06-15
 

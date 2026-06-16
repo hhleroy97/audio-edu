@@ -49,6 +49,8 @@ export const NODE_COLORS: Record<string, string> = {
   multiband: "#00ff9f",
   modFx: "#7b68ee",
   filterBank: "#da70d6",
+  macro: "#ff9100",
+  sampler: "#66ffcc",
 };
 
 export type NodeKind =
@@ -69,7 +71,9 @@ export type NodeKind =
   | "noise"
   | "multiband"
   | "modFx"
-  | "filterBank";
+  | "filterBank"
+  | "macro"
+  | "sampler";
 
 export type PatchNodeData = {
   label: string;

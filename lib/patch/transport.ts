@@ -13,6 +13,17 @@ export const LFO_SYNC_OPTIONS: { id: LfoSyncDivision; label: string }[] = [
 
 import { lfoRateMultiplier } from "./lfo-ratio";
 
+/** Reference pitch for key-tracked LFO rate (A2 ≈ riddim body). */
+export const KEY_TRACK_REF_HZ = 110;
+
+export function keyTrackRateMultiplier(
+  noteHz: number | undefined,
+  enabled: boolean
+): number {
+  if (!enabled || !noteHz || noteHz <= 0) return 1;
+  return noteHz / KEY_TRACK_REF_HZ;
+}
+
 /** One LFO cycle per division at `bpm` (quarter-note = one beat in 4/4). */
 export function syncedLfoHz(bpm: number, sync: string): number {
   const beatHz = bpm / 60;
@@ -37,5 +48,10 @@ export function resolveLfoRateHz(
   const sync = String(params.sync ?? "free");
   const base =
     sync === "free" ? Number(params.rate ?? 2) : syncedLfoHz(transportBpm, sync);
-  return base * lfoRateMultiplier(params.rateRatio);
+  const ratioMul = lfoRateMultiplier(params.rateRatio);
+  const keyMul = keyTrackRateMultiplier(
+    typeof params.noteHz === "number" ? params.noteHz : undefined,
+    Boolean(params.keyTrack)
+  );
+  return base * ratioMul * keyMul;
 }

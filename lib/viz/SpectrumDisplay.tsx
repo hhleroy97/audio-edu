@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { spectralCentroidHz, rmsFromTimeDomain } from "./spectral-metrics";
 
 type SpectrumDisplayProps = {
   analyser: AnalyserNode | null;
@@ -38,6 +39,7 @@ export function SpectrumDisplay({
     if (!ctx) return;
 
     const buf = new Uint8Array(analyser.frequencyBinCount);
+    const timeBuf = new Uint8Array(analyser.fftSize);
     const minDb = analyser.minDecibels;
     const maxDb = analyser.maxDecibels;
 
@@ -48,6 +50,9 @@ export function SpectrumDisplay({
       const plotH = h - MARGIN.top - MARGIN.bottom;
 
       analyser.getByteFrequencyData(buf);
+      analyser.getByteTimeDomainData(timeBuf);
+      const centroid = spectralCentroidHz(buf, sampleRate, analyser.fftSize);
+      const rms = rmsFromTimeDomain(timeBuf);
 
       ctx.fillStyle = "#120d1a";
       ctx.fillRect(0, 0, w, h);
@@ -68,6 +73,12 @@ export function SpectrumDisplay({
       ctx.fillText(`${minDb} dBFS`, 4, MARGIN.top + plotH);
       ctx.fillText("20 Hz", MARGIN.left, h - 6);
       ctx.fillText("20 kHz", MARGIN.left + plotW - 36, h - 6);
+      ctx.fillStyle = "#5ec8e8";
+      ctx.fillText(
+        `centroid ${Math.round(centroid)} Hz · rms ${rms.toFixed(2)}`,
+        MARGIN.left,
+        MARGIN.top + 10
+      );
 
       const barW = plotW / buf.length;
       for (let i = 1; i < buf.length; i++) {

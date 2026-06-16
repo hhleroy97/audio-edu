@@ -51,13 +51,38 @@ import {
 } from "./sub-protection";
 import { DEFAULT_TRANSPORT_BPM } from "./transport";
 import { DEFAULT_LFO_CURVE } from "./lfo-curve";
+import {
+  DEFAULT_CV_EDGE_DATA,
+  normalizeModDepth,
+} from "@/lib/schemas/patch-edge-data";
 
 function edgeDataFromConnection(connection: Connection) {
   const signal = parseHandle(connection.sourceHandle)?.signal ?? "audio";
   if (signal === "cv") {
-    return { signal, modDepth: 1 };
+    return { signal, ...DEFAULT_CV_EDGE_DATA };
   }
   return { signal };
+}
+
+function migrateEdgeData(data: Record<string, unknown> | undefined) {
+  if (!data) return data;
+  if (data.signal !== "cv") return data;
+  const depth =
+    typeof data.modDepth === "number"
+      ? normalizeModDepth(data.modDepth)
+      : DEFAULT_CV_EDGE_DATA.modDepth;
+  return {
+    ...data,
+    modDepth: depth,
+    modOffset:
+      typeof data.modOffset === "number"
+        ? Math.max(-1, Math.min(1, data.modOffset))
+        : DEFAULT_CV_EDGE_DATA.modOffset,
+    modBipolar:
+      typeof data.modBipolar === "boolean"
+        ? data.modBipolar
+        : DEFAULT_CV_EDGE_DATA.modBipolar,
+  };
 }
 
 let engine: AudioEngine | null = null;
@@ -78,7 +103,13 @@ function patchToFlow(patch: Patch): { nodes: Node<PatchNodeData>[]; edges: Edge[
     sourceHandle: e.sourceHandle,
     targetHandle: e.targetHandle,
     type: "patchCable" as const,
-    data: { signal: e.signal },
+    data:
+      e.signal === "cv"
+        ? migrateEdgeData({
+            signal: e.signal,
+            ...DEFAULT_CV_EDGE_DATA,
+          })
+        : { signal: e.signal },
   }));
 
   const nodes = patch.nodes.map((n) => ({
@@ -201,6 +232,11 @@ export type PatchStore = {
   setScopeTapNodeId: (id: string | null) => void;
   setTransportBpm: (bpm: number) => void;
   updateModDepth: (edgeId: string, depth: number) => void;
+  updateModOffset: (edgeId: string, offset: number) => void;
+  updateModBipolar: (edgeId: string, bipolar: boolean) => void;
+  getLiveParamValue: (nodeId: string, handle: string) => number | undefined;
+  subscribeModPreview: (listener: () => void) => () => void;
+  recordResample: (seconds?: number) => Promise<string | null>;
   syncEngine: () => void;
   toPatch: () => Patch;
   getAnalyser: () => AnalyserNode | null;
@@ -582,6 +618,8 @@ export const usePatchStore = create<PatchStore>((set, get) => {
         sync: "free",
         rateRatio: "1",
         curvePoints: DEFAULT_LFO_CURVE,
+        keyTrack: false,
+        holdSteps: 8,
       },
       fm: {
         carrierWave: "sine",
@@ -639,6 +677,8 @@ export const usePatchStore = create<PatchStore>((set, get) => {
         f2Res: 2,
         gain: 0.8,
       },
+      macro: { value: 0.5 },
+      sampler: { gain: 0.85, bufferId: "", loop: true },
     };
 
     const layoutNodes = get().nodes.map((n) => ({
@@ -705,6 +745,9 @@ export const usePatchStore = create<PatchStore>((set, get) => {
     );
     if (next.every((n, i) => n === nodes[i])) return;
     set({ nodes: next });
+    if (typeof params.frequency === "number") {
+      getEngine().setActiveNoteHz(params.frequency);
+    }
     get().syncEngine();
   },
 
@@ -880,7 +923,7 @@ export const usePatchStore = create<PatchStore>((set, get) => {
   },
 
   updateModDepth: (edgeId, depth) => {
-    const clamped = Math.max(0, Math.min(2, depth));
+    const clamped = Math.max(-1, Math.min(1, depth));
     set({
       edges: get().edges.map((e) =>
         e.id === edgeId
@@ -889,6 +932,47 @@ export const usePatchStore = create<PatchStore>((set, get) => {
       ),
     });
     get().syncEngine();
+  },
+
+  updateModOffset: (edgeId, offset) => {
+    const clamped = Math.max(-1, Math.min(1, offset));
+    set({
+      edges: get().edges.map((e) =>
+        e.id === edgeId
+          ? { ...e, data: { ...e.data, modOffset: clamped } }
+          : e
+      ),
+    });
+    get().syncEngine();
+  },
+
+  updateModBipolar: (edgeId, bipolar) => {
+    set({
+      edges: get().edges.map((e) =>
+        e.id === edgeId ? { ...e, data: { ...e.data, modBipolar: bipolar } } : e
+      ),
+    });
+    get().syncEngine();
+  },
+
+  getLiveParamValue: (nodeId, handle) =>
+    getEngine().modPreview.getValue(nodeId, handle),
+
+  subscribeModPreview: (listener) => getEngine().modPreview.subscribe(listener),
+
+  recordResample: async (seconds = 2) => {
+    const eng = getEngine();
+    const buffer = await eng.recordFromScopeTap(seconds);
+    if (!buffer) return null;
+    const bufferId = `resample-${nanoid(8)}`;
+    eng.registerResampleBuffer(bufferId, buffer);
+    const before = get().nodes.length;
+    get().addNode("sampler", { x: 420, y: 280 });
+    const added = get().nodes[get().nodes.length - 1];
+    if (added && get().nodes.length > before) {
+      get().updateNodeParams(added.id, { bufferId, gain: 0.85 });
+    }
+    return bufferId;
   },
 
   syncEngine: () => {

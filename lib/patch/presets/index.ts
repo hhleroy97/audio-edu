@@ -1354,6 +1354,348 @@ export const dualFilterGrowlPreset = preset({
   },
 });
 
+/** Pro dual-LFO growl — cutoff + FM index at different sync rates. */
+export const proDualLfoGrowlPreset = preset({
+  id: "pro-dual-lfo-growl",
+  title: "Pro Dual-LFO Growl",
+  description:
+    "LFO1 on filter cutoff (1/4), LFO2 on FM index (1/8 half-rate) through OTT polish.",
+  techniqueTags: [
+    "technique:fm-growl",
+    "technique:wobble-lfo-cutoff",
+    "technique:dual-lfo-chain",
+    "technique:ott-polish",
+  ],
+  requiredNodes: ["fm", "lfo", "filter", "multiband", "distortion", "output", "analyser"],
+  patch: {
+    nodes: [
+      {
+        id: "fm-1",
+        type: "fm",
+        params: {
+          carrierWave: "sine",
+          modWave: "sawtooth",
+          frequency: 110,
+          ratio: 1,
+          index: 420,
+          gain: 0.5,
+        },
+      },
+      {
+        id: "lfo-cut",
+        type: "lfo",
+        params: { sync: "1/4", depth: 360, shape: "sine" },
+      },
+      {
+        id: "lfo-idx",
+        type: "lfo",
+        params: { sync: "1/8", depth: 280, shape: "triangle", rateRatio: "half" },
+      },
+      {
+        id: "filt-1",
+        type: "filter",
+        params: { cutoff: 520, resonance: 6 },
+      },
+      {
+        id: "dist-1",
+        type: "distortion",
+        params: { type: "hard", drive: 5.5, mix: 0.9, gain: 0.65 },
+      },
+      {
+        id: "ott-1",
+        type: "multiband",
+        params: { amount: 0.6, threshold: -22, ratio: 6, gain: 0.82 },
+      },
+      { id: "ana-1", type: "analyser", params: {} },
+      { id: "out-1", type: "output", params: { gain: 0.58 } },
+    ],
+    edges: [
+      {
+        id: "e-lfo-cut",
+        source: "lfo-cut",
+        sourceHandle: "cv-out",
+        target: "filt-1",
+        targetHandle: "cv-cutoff",
+        signal: "cv",
+      },
+      {
+        id: "e-lfo-idx",
+        source: "lfo-idx",
+        sourceHandle: "cv-out",
+        target: "fm-1",
+        targetHandle: "cv-index",
+        signal: "cv",
+      },
+      {
+        id: "e-fm-filt",
+        source: "fm-1",
+        sourceHandle: "audio-out",
+        target: "filt-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-filt-dist",
+        source: "filt-1",
+        sourceHandle: "audio-out",
+        target: "dist-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-dist-ott",
+        source: "dist-1",
+        sourceHandle: "audio-out",
+        target: "ott-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ott-ana",
+        source: "ott-1",
+        sourceHandle: "audio-out",
+        target: "ana-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ana-out",
+        source: "ana-1",
+        sourceHandle: "audio-out",
+        target: "out-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+    ],
+  },
+});
+
+/** Sample-hold stutter wobble with synced LFO. */
+export const proStutterWobblePreset = preset({
+  id: "pro-stutter-wobble",
+  title: "Pro Stutter Wobble",
+  description: "S&H LFO on filter cutoff at 1/4 — stepped riddim motion.",
+  techniqueTags: ["technique:wobble-lfo-cutoff", "technique:sample-hold-lfo"],
+  requiredNodes: ["oscillator", "lfo", "filter", "output", "analyser"],
+  patch: {
+    nodes: [
+      {
+        id: "osc-1",
+        type: "oscillator",
+        params: { waveform: "sawtooth", frequency: 110, gain: 0.52 },
+      },
+      {
+        id: "lfo-1",
+        type: "lfo",
+        params: { sync: "1/4", depth: 400, shape: "sampleHold", holdSteps: 8 },
+      },
+      {
+        id: "filt-1",
+        type: "filter",
+        params: { cutoff: 420, resonance: 7 },
+      },
+      { id: "ana-1", type: "analyser", params: {} },
+      { id: "out-1", type: "output", params: { gain: 0.62 } },
+    ],
+    edges: [
+      {
+        id: "e-osc-filt",
+        source: "osc-1",
+        sourceHandle: "audio-out",
+        target: "filt-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-lfo-cut",
+        source: "lfo-1",
+        sourceHandle: "cv-out",
+        target: "filt-1",
+        targetHandle: "cv-cutoff",
+        signal: "cv",
+      },
+      {
+        id: "e-filt-ana",
+        source: "filt-1",
+        sourceHandle: "audio-out",
+        target: "ana-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ana-out",
+        source: "ana-1",
+        sourceHandle: "audio-out",
+        target: "out-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+    ],
+  },
+});
+
+/** Macro fan-out wobble on cutoff + FM index. */
+export const proMacroWobblePreset = preset({
+  id: "pro-macro-wobble",
+  title: "Pro Macro Wobble",
+  description: "Single macro CV drives filter cutoff and FM index together.",
+  techniqueTags: [
+    "technique:wobble-lfo-cutoff",
+    "technique:fm-growl",
+    "component:macro",
+  ],
+  requiredNodes: ["fm", "macro", "filter", "output", "analyser"],
+  patch: {
+    nodes: [
+      {
+        id: "fm-1",
+        type: "fm",
+        params: {
+          frequency: 110,
+          ratio: 1,
+          index: 380,
+          gain: 0.48,
+        },
+      },
+      {
+        id: "macro-1",
+        type: "macro",
+        params: { value: 0.55 },
+      },
+      {
+        id: "filt-1",
+        type: "filter",
+        params: { cutoff: 500, resonance: 5.5 },
+      },
+      { id: "ana-1", type: "analyser", params: {} },
+      { id: "out-1", type: "output", params: { gain: 0.6 } },
+    ],
+    edges: [
+      {
+        id: "e-macro-cut",
+        source: "macro-1",
+        sourceHandle: "cv-out",
+        target: "filt-1",
+        targetHandle: "cv-cutoff",
+        signal: "cv",
+      },
+      {
+        id: "e-macro-idx",
+        source: "macro-1",
+        sourceHandle: "cv-out",
+        target: "fm-1",
+        targetHandle: "cv-index",
+        signal: "cv",
+      },
+      {
+        id: "e-fm-filt",
+        source: "fm-1",
+        sourceHandle: "audio-out",
+        target: "filt-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-filt-ana",
+        source: "filt-1",
+        sourceHandle: "audio-out",
+        target: "ana-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ana-out",
+        source: "ana-1",
+        sourceHandle: "audio-out",
+        target: "out-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+    ],
+  },
+});
+
+/** FM + comb metallic formant sweep. */
+export const proMetallicCombPreset = preset({
+  id: "pro-metallic-comb",
+  title: "Pro Metallic Comb",
+  description: "FM growl through comb modFx and formant vowel sweep.",
+  techniqueTags: [
+    "technique:fm-growl",
+    "technique:comb-metallic",
+    "technique:formant-yoi",
+  ],
+  requiredNodes: ["fm", "modFx", "formant", "filter", "output", "analyser"],
+  patch: {
+    nodes: [
+      {
+        id: "fm-1",
+        type: "fm",
+        params: { frequency: 95, ratio: 2, index: 500, gain: 0.52 },
+      },
+      {
+        id: "mfx-1",
+        type: "modFx",
+        params: { type: "comb", rate: 0.25, depth: 0.85, mix: 0.65, gain: 0.78 },
+      },
+      {
+        id: "fmt-1",
+        type: "formant",
+        params: { vowel: "o", formantShift: 0.45, q: 10, gain: 0.6 },
+      },
+      {
+        id: "filt-1",
+        type: "filter",
+        params: { cutoff: 650, resonance: 4.5 },
+      },
+      { id: "ana-1", type: "analyser", params: {} },
+      { id: "out-1", type: "output", params: { gain: 0.58 } },
+    ],
+    edges: [
+      {
+        id: "e-fm-mfx",
+        source: "fm-1",
+        sourceHandle: "audio-out",
+        target: "mfx-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-mfx-fmt",
+        source: "mfx-1",
+        sourceHandle: "audio-out",
+        target: "fmt-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-fmt-filt",
+        source: "fmt-1",
+        sourceHandle: "audio-out",
+        target: "filt-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-filt-ana",
+        source: "filt-1",
+        sourceHandle: "audio-out",
+        target: "ana-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ana-out",
+        source: "ana-1",
+        sourceHandle: "audio-out",
+        target: "out-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+    ],
+  },
+});
+
 export const PATCH_PRESETS = [
   cleanSubPreset,
   sawBodyPreset,
@@ -1373,6 +1715,10 @@ export const PATCH_PRESETS = [
   ottBassPolishPreset,
   metallicPhaserPreset,
   dualFilterGrowlPreset,
+  proDualLfoGrowlPreset,
+  proStutterWobblePreset,
+  proMacroWobblePreset,
+  proMetallicCombPreset,
 ] as const;
 
 export function getPatchPreset(id: string): PatchPreset | undefined {

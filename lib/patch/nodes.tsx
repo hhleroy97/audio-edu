@@ -22,6 +22,7 @@ import {
   MULTIBAND_CONTROLS,
   MOD_FX_CONTROLS,
   FILTER_BANK_CONTROLS,
+  MACRO_CONTROLS,
   OSCILLATOR_CONTROLS,
   OUTPUT_CONTROLS,
   WAVETABLE_CONTROLS,
@@ -41,6 +42,17 @@ import { LFO_SHAPE_OPTIONS, DEFAULT_LFO_CURVE } from "@/lib/patch/lfo-curve";
 import { LFO_RATE_RATIO_OPTIONS } from "@/lib/patch/lfo-ratio";
 import { FORMANT_VOWELS } from "@/lib/patch/formant-presets";
 import { LfoCurveEditor } from "@/lib/viz/LfoCurveEditor";
+import { useLiveParamModulation } from "@/lib/patch/useLiveParamModulation";
+
+function isCvTarget(
+  edges: { target: string; targetHandle?: string | null }[],
+  nodeId: string,
+  handle: string
+): boolean {
+  return edges.some(
+    (e) => e.target === nodeId && e.targetHandle === handle && e.targetHandle
+  );
+}
 
 function moduleLabel(data: PatchNodeData) {
   return data.label;
@@ -336,6 +348,15 @@ export function LfoFlowNode(props: NodeProps) {
           ))}
         </select>
       </div>
+      <label className="mb-2 flex items-center gap-2 text-[9px] text-secondary">
+        <input
+          type="checkbox"
+          checked={Boolean(params.keyTrack)}
+          onChange={(e) => update(props.id, { keyTrack: e.target.checked })}
+          className="nodrag nopan accent-hot"
+        />
+        key-track rate
+      </label>
       <ModuleControlGrid
         kind="lfo"
         layout="lfo"
@@ -353,10 +374,14 @@ export function LfoFlowNode(props: NodeProps) {
 
 export function FilterFlowNode(props: NodeProps) {
   const update = usePatchStore((s) => s.updateNodeParams);
+  const edges = usePatchStore((s) => s.edges);
   const data = props.data as PatchNodeData;
   const params = data.params;
   const cutoff = Number(params.cutoff ?? 1200);
   const resonance = Number(params.resonance ?? 1);
+  const cvCutoff = isCvTarget(edges, props.id, "cv-cutoff");
+  const liveCutoff = useLiveParamModulation(props.id, "cv-cutoff", cvCutoff);
+  const displayCutoff = liveCutoff ?? cutoff;
 
   return (
     <ModuleShell
@@ -370,9 +395,12 @@ export function FilterFlowNode(props: NodeProps) {
       ]}
       outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
     >
+      {cvCutoff ? (
+        <p className="module-hint mb-1 text-cold">mod · live cutoff</p>
+      ) : null}
       <ModuleDisplay className="mb-2">
         <FilterResponseDisplay
-          cutoff={cutoff}
+          cutoff={displayCutoff}
           resonance={resonance}
           className="h-16 w-full"
         />
@@ -459,10 +487,14 @@ export function WavetableFlowNode(props: NodeProps) {
 
 export function FmFlowNode(props: NodeProps) {
   const update = usePatchStore((s) => s.updateNodeParams);
+  const edges = usePatchStore((s) => s.edges);
   const data = props.data as PatchNodeData;
   const params = data.params;
   const carrierWave = parseWaveformType(params.carrierWave);
   const modWave = parseWaveformType(params.modWave);
+  const cvIndex = isCvTarget(edges, props.id, "cv-index");
+  const liveIndex = useLiveParamModulation(props.id, "cv-index", cvIndex);
+  const index = Number(params.index ?? 300);
 
   return (
     <ModuleShell
@@ -500,7 +532,19 @@ export function FmFlowNode(props: NodeProps) {
           />
         </div>
       </div>
-      <p className="module-hint mb-2">FM growl · key gated</p>
+      <p className="module-hint mb-2">
+        FM growl · key gated
+        {cvIndex && liveIndex !== undefined
+          ? ` · idx ${Math.round(liveIndex)}`
+          : cvIndex
+            ? " · mod idx"
+            : ""}
+      </p>
+      {!cvIndex ? null : (
+        <p className="module-hint mb-1 text-[8px] text-cold">
+          base idx {Math.round(index)}
+        </p>
+      )}
       <ModuleControlGrid
         kind="fm"
         layout="fm"
@@ -795,6 +839,69 @@ export function FilterBankFlowNode(props: NodeProps) {
   );
 }
 
+export function MacroFlowNode(props: NodeProps) {
+  const update = usePatchStore((s) => s.updateNodeParams);
+  const data = props.data as PatchNodeData;
+  const params = data.params;
+
+  return (
+    <ModuleShell
+      id={props.id}
+      kind="macro"
+      label={moduleLabel(data)}
+      selected={props.selected}
+      outputs={[{ id: "cv-out", signal: "cv", label: "cv" }]}
+    >
+      <p className="module-hint mb-2">macro · fan-out in mod matrix</p>
+      <ModuleControlGrid
+        kind="macro"
+        layout="macro"
+        controls={MACRO_CONTROLS}
+        params={params}
+        onParamChange={(param, value) => update(props.id, { [param]: value })}
+      />
+    </ModuleShell>
+  );
+}
+
+export function SamplerFlowNode(props: NodeProps) {
+  const update = usePatchStore((s) => s.updateNodeParams);
+  const data = props.data as PatchNodeData;
+  const params = data.params;
+  const hasBuffer = Boolean(String(params.bufferId ?? "").length);
+
+  return (
+    <ModuleShell
+      id={props.id}
+      kind="sampler"
+      label={moduleLabel(data)}
+      selected={props.selected}
+      outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
+    >
+      <p className="module-hint mb-2">
+        {hasBuffer ? "resample loop · key gated" : "record from transport panel"}
+      </p>
+      <ModuleControlGrid
+        kind="sampler"
+        layout="sampler"
+        controls={[
+          {
+            type: "knob",
+            param: "gain",
+            label: "Gain",
+            min: 0,
+            max: 1,
+            step: 0.01,
+            area: "gain",
+          },
+        ]}
+        params={params}
+        onParamChange={(param, value) => update(props.id, { [param]: value })}
+      />
+    </ModuleShell>
+  );
+}
+
 export const patchNodeTypes = {
   oscillator: OscillatorFlowNode,
   detune: DetuneFlowNode,
@@ -814,4 +921,6 @@ export const patchNodeTypes = {
   multiband: MultibandFlowNode,
   modFx: ModFxFlowNode,
   filterBank: FilterBankFlowNode,
+  macro: MacroFlowNode,
+  sampler: SamplerFlowNode,
 };

@@ -1,6 +1,7 @@
 import type { Edge, Node } from "@xyflow/react";
 import type { PatchNodeData } from "./ports";
 import { getModuleTheme } from "./module-theme";
+import { parseCvEdgeData } from "@/lib/schemas/patch-edge-data";
 
 export type ModRoute = {
   edgeId: string;
@@ -13,6 +14,8 @@ export type ModRoute = {
   sourceHandle: string;
   targetHandle: string;
   depth: number;
+  offset: number;
+  bipolar: boolean;
 };
 
 export function listCvModRoutes(
@@ -29,6 +32,7 @@ export function listCvModRoutes(
     const target = nodeMap.get(edge.target);
     if (!source || !target) continue;
 
+    const cv = parseCvEdgeData(edge.data as Record<string, unknown> | undefined);
     routes.push({
       edgeId: edge.id,
       sourceId: edge.source,
@@ -39,7 +43,9 @@ export function listCvModRoutes(
       targetCode: getModuleTheme(target.data.kind).code,
       sourceHandle: edge.sourceHandle ?? "cv-out",
       targetHandle: edge.targetHandle ?? "cv-freq",
-      depth: typeof edge.data?.modDepth === "number" ? edge.data.modDepth : 1,
+      depth: cv.modDepth,
+      offset: cv.modOffset,
+      bipolar: cv.modBipolar,
     });
   }
 
