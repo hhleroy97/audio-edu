@@ -86,6 +86,11 @@ function buildSectionPatternEvents(
 
   let hitIndex = 0;
   const midiForLayer = (layer: "sub" | "body", localBeat: number) => {
+    if (harmonyPlan?.barSlots?.length && layer === "sub") {
+      const barIdx = Math.floor(localBeat / beatsPerBar);
+      const slot = harmonyPlan.barSlots[barIdx % harmonyPlan.barSlots.length];
+      if (slot?.rootMidi !== undefined) return slot.rootMidi;
+    }
     const degrees = degreesAtBeat(harmonyPlan, localBeat, beatsPerBar, config);
     const pool = layer === "sub" ? degrees.subDegrees : degrees.bodyDegrees;
     const octave = layer === "sub" ? config.subOctave : config.bodyOctave;
