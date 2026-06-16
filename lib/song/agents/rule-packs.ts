@@ -21,6 +21,8 @@ const DEFAULT_EVAL = {
   minSectionPresetSwaps: 6,
   minUniqueChordRoots: 2,
   minBarChordChanges: 2,
+  minDistinctBodyMidis: 3,
+  minMicroTimingSpreadMs: 1,
 };
 
 /** Standard 16-bar riddim — intro / build / drop / break / outro. */
@@ -43,6 +45,13 @@ export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
     barsPerChord: 1,
     subOctave: 1,
     bodyOctave: 2,
+  },
+  melody: {
+    enableChops: true,
+    chopEveryBars: 2,
+    octaveJumpProbability: 0.18,
+    microTimingMs: 12,
+    hocketAlternate: true,
   },
   groove: {
     ghostSnare: { enabled: true, velocity: 0.28, beatInBar: 3 },
@@ -103,6 +112,13 @@ export const RIDDIM_SICK_DROP_16: ArrangementRulePackType = {
     barsPerChord: 1,
     subOctave: 1,
     bodyOctave: 2,
+  },
+  melody: {
+    enableChops: true,
+    chopEveryBars: 2,
+    octaveJumpProbability: 0.2,
+    microTimingMs: 14,
+    hocketAlternate: true,
   },
   groove: {
     ghostSnare: { enabled: true, velocity: 0.28, beatInBar: 3 },

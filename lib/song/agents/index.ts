@@ -14,6 +14,18 @@ export {
 export { runPatternAgent, lintPatternAgent } from "./pattern-agent";
 export type { PatternAgentInput, PatternAgentResult } from "./pattern-agent";
 
+export {
+  runMelodicPhraseAgent,
+  lintMelodicPhraseAgent,
+  countDistinctBodyMidis,
+  microTimingSpreadMs,
+  DEFAULT_MELODY,
+} from "./melodic-phrase-agent";
+export type {
+  MelodicPhraseAgentInput,
+  MelodicPhraseAgentResult,
+} from "./melodic-phrase-agent";
+
 export { runTransitionAgent, lintTransitionAgent } from "./transition-agent";
 export type { TransitionAgentInput, TransitionAgentResult } from "./transition-agent";
 

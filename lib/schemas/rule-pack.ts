@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AgentGate } from "./agents";
 import { EvaluationDef, GrooveDef, HarmonyDef, TransitionDef } from "./harmony";
+import { MelodyDef } from "./melody";
 import { ModFxDef } from "./mod-fx";
 import { RiddimPocketDef } from "./rhythm";
 import { RulePackSectionKind } from "./section-kind";
@@ -41,6 +42,7 @@ export const ArrangementRulePack = z.object({
   drumMuteSectionIds: z.array(z.string()).default(["intro", "break", "outro"]),
   gate: AgentGate.default("human-review"),
   harmony: HarmonyDef.optional(),
+  melody: MelodyDef.optional(),
   groove: GrooveDef.optional(),
   transition: TransitionDef.optional(),
   evaluation: EvaluationDef.optional(),

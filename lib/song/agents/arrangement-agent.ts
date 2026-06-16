@@ -21,6 +21,10 @@ import {
 } from "./chord-voicing-agent";
 import { runModFxAgent, lintModFxAgent } from "./modfx-agent";
 import { runPatternAgent, lintPatternAgent } from "./pattern-agent";
+import {
+  runMelodicPhraseAgent,
+  lintMelodicPhraseAgent,
+} from "./melodic-phrase-agent";
 import { getRulePack } from "./rule-packs";
 import {
   PIPELINE_TOTAL_STEPS,
@@ -154,10 +158,22 @@ function runPipelineSync(
   }
   done("pattern");
 
+  start("melody", "chops + micro-timing");
+  const melodyResult = runMelodicPhraseAgent({
+    pack,
+    sections: patternResult.sections,
+    seed: req.seed,
+  });
+  const melodyLint = lintMelodicPhraseAgent(melodyResult, pack);
+  if (!melodyLint.ok) {
+    failAgent("melody", `melodic phrase lint: ${melodyLint.errors.join("; ")}`);
+  }
+  done("melody");
+
   start("transition", "pre-drop ramps");
   const transitionResult = runTransitionAgent({
     pack,
-    sections: patternResult.sections,
+    sections: melodyResult.sections,
   });
   const transitionLint = lintTransitionAgent(transitionResult);
   if (!transitionLint.ok) {
@@ -301,6 +317,7 @@ async function runPipelineAsync(
     "harmony",
     "timbre",
     "pattern",
+    "melody",
     "transition",
     "groove",
     "timbreRuntime",
@@ -479,9 +496,15 @@ export function regenerateSection(
     harmonyPlans: voicingResult.plans.filter((p) => p.sectionId === sectionId),
   });
 
-  const transitionResult = runTransitionAgent({
+  const melodyResult = runMelodicPhraseAgent({
     pack,
     sections: patternResult.sections,
+    seed: `${request.seed}:${sectionId}`,
+  });
+
+  const transitionResult = runTransitionAgent({
+    pack,
+    sections: melodyResult.sections,
   });
   const grooveResult = runGrooveAgent({
     pack,

@@ -9,6 +9,7 @@ const AGENT_LABELS: Record<string, string> = {
   harmony: "Harmony",
   timbre: "Timbre",
   pattern: "Patterns",
+  melody: "Melody",
   transition: "Transitions",
   groove: "Groove",
   timbreRuntime: "Timbre runtime",

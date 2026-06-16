@@ -14,6 +14,7 @@ export const PIPELINE_AGENT_ORDER = [
   "harmony",
   "timbre",
   "pattern",
+  "melody",
   "transition",
   "groove",
   "timbreRuntime",

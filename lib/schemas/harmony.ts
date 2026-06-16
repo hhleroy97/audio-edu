@@ -90,6 +90,8 @@ export const EvaluationDef = z.object({
   minSectionPresetSwaps: z.number().int().min(0).default(0),
   minUniqueChordRoots: z.number().int().min(0).default(0),
   minBarChordChanges: z.number().int().min(0).default(0),
+  minDistinctBodyMidis: z.number().int().min(0).default(0),
+  minMicroTimingSpreadMs: z.number().min(0).default(0),
 });
 
 export type EvaluationDefType = z.infer<typeof EvaluationDef>;
@@ -110,6 +112,8 @@ export const EvaluationReport = z.object({
     sectionPresetSwaps: z.number().default(0),
     uniqueChordRoots: z.number().default(0),
     barChordChanges: z.number().default(0),
+    distinctBodyMidis: z.number().default(0),
+    microTimingSpreadMs: z.number().default(0),
   }),
 });
 

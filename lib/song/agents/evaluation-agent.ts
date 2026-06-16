@@ -10,6 +10,10 @@ import {
   countBounceKicks,
   drumVelocityStdDev,
 } from "../drums/riddim-pocket";
+import {
+  countDistinctBodyMidis,
+  microTimingSpreadMs,
+} from "./melodic-phrase-agent";
 
 function chordMetricsFromSong(
   song: SongDefType,
@@ -157,6 +161,32 @@ export function runEvaluationAgent(
     );
   }
 
+  const dropSectionIds = new Set(
+    song.sections
+      .filter((s) => {
+        const spec = pack.sections.find((p) => p.id === s.id);
+        return spec?.kind === "drop" || s.id.includes("drop");
+      })
+      .map((s) => s.id)
+  );
+  const distinctBodyMidis = countDistinctBodyMidis(song.sections, dropSectionIds);
+  const timingSpreadMs = microTimingSpreadMs(
+    song.sections,
+    song.meta.bpm,
+    dropSectionIds
+  );
+
+  if (distinctBodyMidis < rules.minDistinctBodyMidis) {
+    errors.push(
+      `expected ≥${rules.minDistinctBodyMidis} distinct body midis in drops, got ${distinctBodyMidis}`
+    );
+  }
+  if (timingSpreadMs < rules.minMicroTimingSpreadMs) {
+    errors.push(
+      `expected micro-timing spread ≥${rules.minMicroTimingSpreadMs}ms, got ${timingSpreadMs.toFixed(1)}ms`
+    );
+  }
+
   if (totalNoteCount < 8) {
     warnings.push("sparse arrangement — fewer than 8 total notes");
   }
@@ -177,6 +207,8 @@ export function runEvaluationAgent(
       sectionPresetSwaps,
       uniqueChordRoots,
       barChordChanges,
+      distinctBodyMidis,
+      microTimingSpreadMs: timingSpreadMs,
     },
   });
 }

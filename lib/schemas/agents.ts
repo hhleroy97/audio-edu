@@ -7,6 +7,7 @@ export const ArrangementSubAgentId = z.enum([
   "harmony",
   "timbre",
   "pattern",
+  "melody",
   "transition",
   "groove",
   "timbreRuntime",
