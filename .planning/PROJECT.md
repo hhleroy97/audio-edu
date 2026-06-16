@@ -5,28 +5,32 @@
 Web-based sound-synthesis learning lab with Patch Lab node-graph canvas, grounded in
 RIDDIM/dubstep pedagogy and Zod-validated contracts (`AGENTS.md`, `HANDOFF.md`).
 
-## Current milestone: Procedural song generation
+## Current milestone: Multibus riddim songs (81–86)
 
-**Goal:** Pre-generate full riddim songs — arrangement (pattern/time) + timbre (Patch Lab presets) → reproducible WAV + manifest.
+**Goal:** Parallel layer buses (sub + body + optional top) with audio-clock scheduling and **arranged** riddim songs — intro / drop / break / drop swap — not single-preset hot-swap.
 
-**Previous milestone (shipped):** Pro modulation parity (phases 71–75) + riddim archetype catalog (cycle 4).
+**Previous milestone (shipped):** Procedural songs v1 (76–80) — SongDef IR, MVP scheduler, templates, lesson 08.
 
-**Baseline:** 35 Patch Lab presets, transport grid, resample→sampler, Zod contracts, knowledge graph.
+**Baseline:** 35 presets, archetype catalog, `lib/song/*` pipeline, Patch Lab mixer node, generator restart fixes.
 
-**Gap (this milestone):** No song-level schema, no pattern scheduler, no offline render pipeline, no Strudel/Tidal-inspired arrangement layer.
+**Gap (this milestone):**
+- Song mode replaces entire graph per note (`loadPreset`) — no true layering
+- `setTimeout` scheduler drifts; global gate timer collides on overlapping notes
+- Templates are repetitive halftime grids — no section arrangement or `cat` variation
+- Offline render is placeholder sine, not multibus stems
 
 ## Constraints
 
-- Web Audio API first; WASM only if profiling proves need
-- Every schema change → Zod validate before write
-- Docs + tests alongside each phase; atomic commits per phase
-- Sources in `docs/research/sources.md`; graph updates in `graph/research/`
+- Web Audio API first; no Tone.js runtime dependency
+- Strudel-inspired **IR port only** (stack/cat/slow) — no AGPL embed without review
+- Every schema change → Zod + lint before write
+- Docs + tests per phase; atomic commits
+- Sub layer protection rules from catalog (#19, #48)
 
 ## Canonical refs
 
-- `docs/research/riddim-feature-roadmap.md`
-- `docs/research/riddim-synthesis.md`
-- `docs/research/pro-modulation-plan.md`
-- `UI_OVERHAUL_HANDOFF.md`
+- `docs/research/multibus-song-engine-landscape.md` — **new** GitHits research
 - `docs/research/procedural-music-landscape.md`
 - `docs/research/riddim-sound-catalog.md`
+- `.planning/phases/81-multibus-riddim-songs/PLAN.md`
+- `UI_OVERHAUL_HANDOFF.md`

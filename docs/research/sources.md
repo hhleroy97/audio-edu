@@ -299,3 +299,49 @@
 
 88. **Barn Lab — Strudel programming music** — pattern-as-data; export limitations  
     https://warped3.substack.com/p/programming-music
+
+## Research loop — multibus song engine (2026-06-16, phase 81)
+
+89. **Web Audio API — ChannelMerger multibus scheduling** — GitHits solution `355afbb7`; per-bus GainNode, schedule at `currentTime`  
+    https://app.githits.com/solutions/355afbb7-934f-4470-b533-aa4647586802
+
+90. **Tone.js — Channel routing + Transport loops** — GitHits solution `d0296a62`; part channels, send buses, `triggerAttackRelease` at `time`  
+    https://github.com/Tonejs/Tone.js · https://app.githits.com/solutions/d0296a62-0597-4dea-9f65-e272f88417a5
+
+91. **Strudel pattern combinators (stack/cat/slow)** — GitHits distilled engine `600680ce`; port subset to Zod IR  
+    https://github.com/tidalcycles/strudel · https://app.githits.com/solutions/600680ce-f64a-447b-8da1-fe897d5bcb15
+
+92. **Parallel layer patch lab (Web Audio)** — GitHits solution `3c31252a`; named layers → master mixBus  
+    https://app.githits.com/solutions/3c31252a-207c-41b6-a0ef-54541a81e49e
+
+93. **Preset Drive — Layer Basses in Serum** — sub/mid/top zones; separate instances (maps to SongLayerDef)  
+    https://www.presetdrive.com/how-to-layer-basses-in-serum-for-massive-sound/ · see also #19
+
+94. **UKF — Infekt Riddim Guide** — flow, repetition, non-static bass (arrangement sections)  
+    https://ukf.com/read/infekts-guide-to-riddim/ · see also #27
+
+95. **Project architecture** — `.planning/phases/81-multibus-riddim-songs/`, `docs/research/multibus-song-engine-landscape.md`
+
+## Research loop — riddim arrangement & mod layering (2026-06-16, cycle 5)
+
+96. **Web Audio API — AudioParam automation** — `setValueAtTime`, `linearRampToValueAtTime`; song scheduler CV keyframes  
+    https://webaudio.github.io/web-audio-api/#automation-methods · GitHub: `webaudio/web-audio-api`
+
+97. **Tone.js Channel send/receive buses** — GitHits: per-part routing before master (`Tone/component/channel/Channel.ts`)  
+    https://github.com/Tonejs/Tone.js · see also #90
+
+98. **DSF — Virtual Riot wobble bass thread** — dual LFO (cutoff + FM), square+FM recipe  
+    see #64 · https://forum.dsf.ninja/
+
+99. **Infekt riddim arrangement flow** — repetition, non-static bass, section contrast  
+    see #35, #94 · https://ukf.com/read/infekts-guide-to-riddim/
+
+100. **Hydraulic press / 1/4 wobble pocket** — Subfiltronik minimal repetition  
+     see #63 · `docs/research/riddim-sound-catalog.md` §1
+
+101. **Modulation Discovery (arXiv)** — LFO→filter dominance in hard bass presets  
+     see #11 · https://arxiv.org/abs/2305.12868
+
+## Research loop — song mix phase 1 (2026-06-16)
+
+103. **Layer mix strips + master chain** — `lib/song/multibus/mix-profiles.ts`, `layer-mix-strip.ts`, `master-chain.ts`; riddim sub/body/top frequency rules (#19, #47, #93)

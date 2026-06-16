@@ -123,3 +123,22 @@ SongDef (Zod)
 - `docs/research/riddim-sound-catalog.md` — timbre presets (cycle 4)
 - `lib/patch/presets/riddim-archetypes.ts` — preset ids for song `patches` map
 - `.planning/phases/76-procedural-song-generation/` — GSD research + plan
+
+---
+
+## SongDef schema (phase 77)
+
+Validated in `lib/schemas/song.ts` — Strudel-inspired **Pattern IR** without runtime embed:
+
+| Type | Fields | Role |
+|------|--------|------|
+| `SongMeta` | `id`, `title`, `bpm`, `key`, `bars`, `beatsPerBar`, `gate` | Reproducible song header |
+| `PatchAssignment` | `layer`, `presetId`, `defaultMidi?` | Maps sub/body → Patch Lab preset |
+| `PatternEvent` | discriminated `note` \| `preset` \| `gate` \| `automation` | Beat-grid triggers |
+| `ModAutomation` | `beat`, `param`, `value`, `nodeId?` | CV keyframes (optional) |
+| `SectionDef` | `startBar`, `endBar`, `events[]`, `patches?` | Intro / drop / break blocks |
+| `SongDef` | `meta`, `patches[]`, `sections[]` | Full declarative song |
+
+Example artifact: `songs/riddim-drop-01.json` (8 bars, `clean-sub` + `pro-dual-lfo-growl`).
+
+Pipeline modules: `lib/song/validate-song.ts`, `scheduler.ts`, `render-offline.ts`, `templates.ts`.

@@ -232,6 +232,38 @@
       "summary": "Slow heavy 1/4 body wobble 80–400 Hz — riddim hydraulic press.",
       "experimentIds": ["05-filtering"],
       "sources": ["docs/research/sources.md#63", "docs/research/riddim-sound-catalog.md"]
+    },
+    {
+      "id": "concept:algorithmic-composition",
+      "label": "algorithmic composition",
+      "type": "concept",
+      "summary": "Declarative song definitions (SongDef) compiled to scheduled Patch Lab performance — patterns over cyclic time.",
+      "experimentIds": [],
+      "sources": ["docs/research/procedural-music-landscape.md", "docs/research/sources.md#79"]
+    },
+    {
+      "id": "technique:pattern-scheduling",
+      "label": "pattern scheduling",
+      "type": "technique",
+      "summary": "Beat-grid scheduler fires preset loads and key gates at transport BPM — Strudel-inspired IR without REPL embed.",
+      "experimentIds": [],
+      "sources": ["lib/song/scheduler.ts", "songs/riddim-drop-01.json"]
+    },
+    {
+      "id": "technique:multibus-layering",
+      "label": "multibus layering",
+      "type": "technique",
+      "summary": "Parallel SongLayerEngine graphs summed on MasterBus — sub + body simultaneously without loadPreset hot-swap.",
+      "experimentIds": [],
+      "sources": ["lib/song/multibus/song-layer-engine.ts", "docs/research/multibus-song-engine-landscape.md"]
+    },
+    {
+      "id": "technique:arrangement-sections",
+      "label": "arrangement sections",
+      "type": "technique",
+      "summary": "Intro / drop / break / drop-B blocks with muteLayers and layerPreset swaps — riddim set structure.",
+      "experimentIds": [],
+      "sources": ["lib/song/templates/multibus-riddim.ts#riddim-16-standard"]
     }
   ],
   "edges": [
@@ -423,6 +455,34 @@
       "predicate": "validates",
       "confidence": 0.85,
       "evidence": "arXiv:2510.06204 Bass Hard presets"
+    },
+    {
+      "from": "concept:algorithmic-composition",
+      "to": "technique:pattern-scheduling",
+      "predicate": "uses",
+      "confidence": 0.95,
+      "evidence": "lib/song/scheduler.ts"
+    },
+    {
+      "from": "technique:pattern-scheduling",
+      "to": "technique:sub-layer",
+      "predicate": "triggers",
+      "confidence": 0.9,
+      "evidence": "songs/riddim-drop-01.json#clean-sub"
+    },
+    {
+      "from": "technique:multibus-layering",
+      "to": "technique:pattern-scheduling",
+      "predicate": "extends",
+      "confidence": 0.92,
+      "evidence": "lib/song/multibus/audio-scheduler.ts"
+    },
+    {
+      "from": "technique:arrangement-sections",
+      "to": "concept:algorithmic-composition",
+      "predicate": "structures",
+      "confidence": 0.9,
+      "evidence": "lib/song/templates/multibus-riddim.ts"
     }
   ]
 }
