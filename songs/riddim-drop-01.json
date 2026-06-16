@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "id": "riddim-drop-01",
+    "title": "Riddim Drop 01",
+    "bpm": 140,
+    "key": "F#",
+    "rootMidi": 42,
+    "bars": 8,
+    "beatsPerBar": 4,
+    "gate": "human-review",
+    "version": 1
+  },
+  "patches": [
+    { "layer": "sub", "presetId": "clean-sub", "defaultMidi": 30 },
+    { "layer": "body", "presetId": "pro-dual-lfo-growl", "defaultMidi": 42 }
+  ],
+  "sections": [
+    {
+      "id": "drop",
+      "label": "Drop",
+      "startBar": 0,
+      "endBar": 8,
+      "patches": [
+        { "layer": "sub", "presetId": "clean-sub", "defaultMidi": 30 },
+        { "layer": "body", "presetId": "pro-dual-lfo-growl", "defaultMidi": 42 }
+      ],
+      "events": [
+        {
+          "kind": "preset",
+          "beat": 0,
+          "layer": "body",
+          "presetId": "pro-dual-lfo-growl"
+        },
+        {
+          "kind": "preset",
+          "beat": 0,
+          "layer": "sub",
+          "presetId": "clean-sub"
+        },
+        { "kind": "note", "beat": 0, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 0, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 2, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 2, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 4, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 4, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 6, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 6, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 8, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 8, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 10, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 10, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 12, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 12, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 14, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 14, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 16, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 16, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 18, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 18, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 20, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 20, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 22, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 22, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 24, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 24, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 26, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 26, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 28, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 28, "layer": "body", "midi": 42, "durationBeats": 1.75 },
+        { "kind": "note", "beat": 30, "layer": "sub", "midi": 30, "durationBeats": 1.9 },
+        { "kind": "note", "beat": 30, "layer": "body", "midi": 42, "durationBeats": 1.75 }
+      ]
+    }
+  ]
+}

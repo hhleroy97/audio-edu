@@ -1,0 +1,134 @@
+export {
+  SongMeta,
+  PatchAssignment,
+  ModAutomation,
+  PatternEvent,
+  SectionDef,
+  SongDef,
+} from "@/lib/schemas/song";
+export type {
+  SongMetaType,
+  PatchAssignmentType,
+  ModAutomationType,
+  PatternEventType,
+  SectionDefType,
+  SongDefType,
+} from "@/lib/schemas/song";
+
+export { validateSong } from "./validate-song";
+export type { SongValidationResult } from "./validate-song";
+
+export {
+  beatToSeconds,
+  barBeatToAbsolute,
+  songTotalBeats,
+  songDurationSec,
+  flattenSongEvents,
+  eventsInBar,
+} from "./timeline";
+export type { FlatScheduledEvent } from "./timeline";
+
+export {
+  SongScheduler,
+  scheduleBarTimeline,
+} from "./scheduler";
+export type { SongSchedulerProgress, SongSchedulerOptions } from "./scheduler";
+
+export {
+  triggerPatchNote,
+  dispatchPatternEvent,
+  buildLayerPresetMap,
+  clearPatchNoteTimer,
+} from "./trigger-patch-note";
+export type { PatchSongBridge, TriggerPatchNoteOptions } from "./trigger-patch-note";
+
+export {
+  buildSongManifest,
+  collectPresetIds,
+  hashSongInputs,
+  renderSongOffline,
+  encodeWavPcm16,
+  manifestToJson,
+} from "./render-offline";
+export type {
+  SongManifest,
+  SongManifestSection,
+  OfflineRenderResult,
+  RenderOfflineOptions,
+} from "./render-offline";
+
+export {
+  riddimDrop01,
+  riddimDropMinimal,
+  riddimDropArchetypeStack,
+  SONG_TEMPLATES,
+  getSongTemplate,
+} from "./templates";
+
+export {
+  riddim16Standard,
+  riddim32Set,
+  riddimTearout16,
+  MULTIBUS_SONG_TEMPLATES,
+  isMultibusSong,
+} from "./templates/multibus-riddim";
+
+export { MasterBus } from "./multibus/master-bus";
+export { LayerMixStrip } from "./multibus/layer-mix-strip";
+export { MasterChain, DEFAULT_MASTER_CHAIN, dbToLinear } from "./multibus/master-chain";
+export {
+  MIX_STRIP_DEFAULTS,
+  inferMixProfile,
+  applyMixDefaultsToLayer,
+  applyMixDefaultsToLayers,
+  stripConfigForProfile,
+  resolveMixProfile,
+} from "./multibus/mix-profiles";
+export type { LayerMixStripConfig } from "./multibus/mix-profiles";
+export { MixProfile } from "@/lib/schemas/song";
+export type { MixProfileType } from "@/lib/schemas/song";
+export { applySongGainToFlow } from "./multibus/layer-engine";
+export { LayerEngine } from "./multibus/layer-engine";
+export { SongLayerEngine } from "./multibus/song-layer-engine";
+export {
+  compileMultibusSchedule,
+  scheduleEndTime,
+} from "./multibus/compile-schedule";
+export type { CompiledAction } from "./multibus/compile-schedule";
+export {
+  MultibusAudioScheduler,
+  dispatchMultibusAction,
+} from "./multibus/audio-scheduler";
+export type {
+  MultibusSchedulerProgress,
+  MultibusAudioSchedulerOptions,
+} from "./multibus/audio-scheduler";
+
+export { lintSong } from "./lint-song";
+export type { SongLintResult } from "./lint-song";
+
+export { renderMultibusStems } from "./render-stems";
+export type { StemRenderResult, StemManifestEntry } from "./render-stems";
+
+export {
+  RIDDIM_MOD_PROFILES,
+  getModProfile,
+  listModProfiles,
+  expandModProfile,
+  buildHalftimeGroove,
+  buildSparseIntroSub,
+  buildTopOffbeatStabs,
+  buildLayerGainRamp,
+  buildRiddimArrangement,
+  riddimSickDrop16,
+  riddimSickDrop32,
+  RIDDIM_ARRANGEMENT_TEMPLATES,
+  DEFAULT_RIDDIM_LAYERS,
+} from "./riddim";
+export type {
+  ModKeyframe,
+  RiddimModProfile,
+  RiddimSectionKind,
+  RiddimSectionSpec,
+  RiddimArrangementConfig,
+} from "./riddim";

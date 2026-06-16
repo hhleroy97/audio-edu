@@ -2,6 +2,31 @@ export { ExperimentMetadata, Gating } from "./metadata";
 export type { ExperimentMetadata as ExperimentMetadataType } from "./metadata";
 export { GraphNode, GraphEdge, KnowledgeGraph } from "./graph";
 export { TutorialChunk } from "./tutorial";
+export {
+  SongMeta,
+  PatchAssignment,
+  ModAutomation,
+  PatternEvent,
+  SectionDef,
+  SongDef,
+  SongLayerDef,
+  MixProfile,
+  DrumHit,
+  DrumLaneDef,
+  PatternCombinator,
+} from "./song";
+export type {
+  SongMetaType,
+  PatchAssignmentType,
+  ModAutomationType,
+  PatternEventType,
+  SectionDefType,
+  SongDefType,
+  SongLayerDefType,
+  MixProfileType,
+  DrumHitType,
+  PatternCombinatorType,
+} from "./song";
 export { ExperimentFrontmatter } from "./frontmatter";
 export { PortType, PatchNode, PatchEdge, Patch, PatchPreset, TourStep, Lesson } from "./patch";
 export {
