@@ -15,6 +15,10 @@ import { runDrumAgent, lintDrumAgent } from "./drum-agent";
 import { runEvaluationAgent } from "./evaluation-agent";
 import { runGrooveAgent, lintGrooveAgent } from "./groove-agent";
 import { runHarmonyAgent, lintHarmonyAgent } from "./harmony-agent";
+import {
+  runChordVoicingAgent,
+  lintChordVoicingAgent,
+} from "./chord-voicing-agent";
 import { runModFxAgent, lintModFxAgent } from "./modfx-agent";
 import { runPatternAgent, lintPatternAgent } from "./pattern-agent";
 import { getRulePack } from "./rule-packs";
@@ -118,6 +122,13 @@ function runPipelineSync(
   }
   done("harmony");
 
+  const voicingResult = runChordVoicingAgent(pack, harmonyResult);
+  const voicingLint = lintChordVoicingAgent(voicingResult);
+  if (!voicingLint.ok) {
+    failAgent("harmony", `chord voicing lint: ${voicingLint.errors.join("; ")}`);
+  }
+  const harmonyPlans = voicingResult.plans;
+
   start("timbre", "archetype preset stacks");
   const timbreResult = runTimbreAgent(pack);
   const timbreLint = lintTimbreAgent(timbreResult);
@@ -135,7 +146,7 @@ function runPipelineSync(
     sections: sectionResult.sections,
     seed: req.seed,
     layerIds,
-    harmonyPlans: harmonyResult.plans,
+    harmonyPlans: harmonyPlans,
   });
   const patternLint = lintPatternAgent(patternResult, maxBeat, beatsPerBar);
   if (!patternLint.ok) {
@@ -192,7 +203,7 @@ function runPipelineSync(
     key: pack.key,
     bars: pack.bars,
     beatsPerBar,
-    rootMidi: harmonyResult.rootMidi,
+    rootMidi: voicingResult.rootMidi,
     gate: pack.gate,
     version: 2 as const,
   };
@@ -456,6 +467,7 @@ export function regenerateSection(
 
   const layerIds = new Set(baseSong.layers.map((l) => l.id));
   const harmonyResult = runHarmonyAgent(pack, `${request.seed}:${sectionId}`);
+  const voicingResult = runChordVoicingAgent(pack, harmonyResult);
 
   emit(onProgress, "pattern", "start", `regenerate ${sectionId}`, "running");
   const sectionOnly = baseSong.sections.filter((s) => s.id === sectionId);
@@ -464,7 +476,7 @@ export function regenerateSection(
     sections: sectionOnly.map((s) => ({ ...s, events: [] })),
     seed: `${request.seed}:${sectionId}`,
     layerIds,
-    harmonyPlans: harmonyResult.plans.filter((p) => p.sectionId === sectionId),
+    harmonyPlans: voicingResult.plans.filter((p) => p.sectionId === sectionId),
   });
 
   const transitionResult = runTransitionAgent({

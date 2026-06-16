@@ -1,8 +1,15 @@
 export { runSectionAgent, lintSectionAgent } from "./section-agent";
 export type { SectionAgentResult } from "./section-agent";
 
-export { runHarmonyAgent, lintHarmonyAgent, progressionToDegrees } from "./harmony-agent";
+export { runHarmonyAgent, lintHarmonyAgent, progressionToDegrees, rootMidiForDegree } from "./harmony-agent";
 export type { HarmonyAgentResult } from "./harmony-agent";
+
+export {
+  runChordVoicingAgent,
+  lintChordVoicingAgent,
+  countUniqueChordRoots,
+  countBarChordChanges,
+} from "./chord-voicing-agent";
 
 export { runPatternAgent, lintPatternAgent } from "./pattern-agent";
 export type { PatternAgentInput, PatternAgentResult } from "./pattern-agent";

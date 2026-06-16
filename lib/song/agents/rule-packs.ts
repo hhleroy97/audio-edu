@@ -19,6 +19,8 @@ const DEFAULT_EVAL = {
   minModKeyframesPerDrop: 2,
   minUniqueBodyPresets: 1,
   minSectionPresetSwaps: 6,
+  minUniqueChordRoots: 2,
+  minBarChordChanges: 2,
 };
 
 /** Standard 16-bar riddim — intro / build / drop / break / outro. */
@@ -35,7 +37,10 @@ export const RIDDIM_STANDARD_16: ArrangementRulePackType = {
   gate: "human-review",
   rhythm: DEFAULT_RHYTHM,
   harmony: {
-    progression: ["i", "i", "iv", "i"],
+    progression: ["i", "VI", "III", "VII"],
+    scaleOverride: "minor",
+    voicingMode: "fifth",
+    barsPerChord: 1,
     subOctave: 1,
     bodyOctave: 2,
   },
@@ -92,7 +97,10 @@ export const RIDDIM_SICK_DROP_16: ArrangementRulePackType = {
   gate: "human-review",
   rhythm: { ...DEFAULT_RHYTHM, barBVariant: "hat-roll" as const },
   harmony: {
-    progression: ["i", "i", "iv", "i"],
+    progression: ["i", "VI", "III", "VII"],
+    scaleOverride: "minor",
+    voicingMode: "fifth",
+    barsPerChord: 1,
     subOctave: 1,
     bodyOctave: 2,
   },

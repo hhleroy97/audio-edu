@@ -48,47 +48,67 @@ function sectionBarCount(spec: RulePackSectionSpecType): number {
   return spec.endBar - spec.startBar;
 }
 
+function degreesAtBeat(
+  plan: SectionHarmonyPlanType | undefined,
+  localBeat: number,
+  beatsPerBar: number,
+  config: PatternAgentConfigType
+): { subDegrees: number[]; bodyDegrees: number[] } {
+  if (plan?.barSlots?.length) {
+    const barIdx = Math.floor(localBeat / beatsPerBar);
+    const slot = plan.barSlots[barIdx % plan.barSlots.length];
+    if (slot) {
+      return {
+        subDegrees: [slot.subDegree],
+        bodyDegrees: slot.bodyDegrees,
+      };
+    }
+  }
+  return {
+    subDegrees: config.subDegrees,
+    bodyDegrees: config.bodyDegrees,
+  };
+}
+
 function buildSectionPatternEvents(
   spec: RulePackSectionSpecType,
   pack: ArrangementRulePackType,
   seed: string,
   config: PatternAgentConfigType,
-  layerIds: Set<string>
+  layerIds: Set<string>,
+  harmonyPlan?: SectionHarmonyPlanType
 ): PatternEventType[] {
   const bars = sectionBarCount(spec);
   const rng = createSeededRng(`${seed}:${spec.id}`);
   const key = pack.key;
-  const scale = pack.scale;
-
-  const subMidi = (hitIndex: number) =>
-    midiFromScaleDegree(
-      key,
-      scale,
-      pickDegree(config.subDegrees, rng, hitIndex),
-      config.subOctave
-    );
-
-  const bodyMidi = (hitIndex: number) =>
-    midiFromScaleDegree(
-      key,
-      scale,
-      pickDegree(config.bodyDegrees, rng, hitIndex + 7),
-      config.bodyOctave
-    );
+  const scale = pack.harmony?.scaleOverride ?? pack.scale;
+  const beatsPerBar = pack.beatsPerBar;
 
   let hitIndex = 0;
+  const midiForLayer = (layer: "sub" | "body", localBeat: number) => {
+    const degrees = degreesAtBeat(harmonyPlan, localBeat, beatsPerBar, config);
+    const pool = layer === "sub" ? degrees.subDegrees : degrees.bodyDegrees;
+    const octave = layer === "sub" ? config.subOctave : config.bodyOctave;
+    hitIndex++;
+    return midiFromScaleDegree(
+      key,
+      scale,
+      pickDegree(pool, rng, hitIndex + (layer === "body" ? 7 : 0)),
+      octave
+    );
+  };
+
   const withMidi = (
     events: PatternEventType[],
     layer: "sub" | "body" | "top"
   ): PatternEventType[] =>
     events.map((ev) => {
       if (ev.kind !== "note" || ev.layer !== layer) return ev;
-      hitIndex++;
       const midi =
         layer === "sub"
-          ? subMidi(hitIndex)
+          ? midiForLayer("sub", ev.beat)
           : layer === "body"
-            ? bodyMidi(hitIndex)
+            ? midiForLayer("body", ev.beat)
             : ev.midi;
       return { ...ev, midi };
     });
@@ -99,14 +119,28 @@ function buildSectionPatternEvents(
     case "intro":
       if (layerIds.has("sub")) {
         events.push(
-          ...withMidi(buildSparseIntroSub(bars, pack.beatsPerBar, subMidi(0)), "sub")
+          ...withMidi(
+            buildSparseIntroSub(
+              bars,
+              pack.beatsPerBar,
+              midiForLayer("sub", 0)
+            ),
+            "sub"
+          )
         );
       }
       break;
     case "build":
       if (layerIds.has("sub")) {
         events.push(
-          ...withMidi(buildSparseIntroSub(bars, pack.beatsPerBar, subMidi(0)), "sub")
+          ...withMidi(
+            buildSparseIntroSub(
+              bars,
+              pack.beatsPerBar,
+              midiForLayer("sub", 0)
+            ),
+            "sub"
+          )
         );
       }
       if (layerIds.has("body")) {
@@ -246,7 +280,8 @@ export function runPatternAgent(input: PatternAgentInput): PatternAgentResult {
       input.pack,
       input.seed,
       config,
-      input.layerIds
+      input.layerIds,
+      plan
     );
     return { ...section, events };
   });

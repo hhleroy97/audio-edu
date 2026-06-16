@@ -11,6 +11,40 @@ import {
   drumVelocityStdDev,
 } from "../drums/riddim-pocket";
 
+function chordMetricsFromSong(
+  song: SongDefType,
+  pack: ArrangementRulePackType
+): { uniqueChordRoots: number; barChordChanges: number } {
+  const rootMidis = new Set<number>();
+  let barChordChanges = 0;
+  const beatsPerBar = song.meta.beatsPerBar;
+
+  for (const section of song.sections) {
+    const spec = pack.sections.find((s) => s.id === section.id);
+    const isDrop = spec?.kind === "drop" || section.id.includes("drop");
+    if (!isDrop) continue;
+
+    const rootsByBar = new Map<number, number>();
+    for (const ev of section.events) {
+      if (ev.kind !== "note" || ev.layer !== "sub" || ev.midi === undefined) continue;
+      const bar = Math.floor(ev.beat / beatsPerBar);
+      if (!rootsByBar.has(bar)) rootsByBar.set(bar, ev.midi);
+      rootMidis.add(ev.midi);
+    }
+
+    const bars = [...rootsByBar.keys()].sort((a, b) => a - b);
+    for (let i = 1; i < bars.length; i++) {
+      const prev = rootsByBar.get(bars[i - 1]!);
+      const cur = rootsByBar.get(bars[i]!);
+      if (prev !== undefined && cur !== undefined && prev !== cur) {
+        barChordChanges++;
+      }
+    }
+  }
+
+  return { uniqueChordRoots: rootMidis.size, barChordChanges };
+}
+
 /** Structural quality gates — sync checks before human review (#105). */
 export function runEvaluationAgent(
   song: SongDefType,
@@ -110,6 +144,19 @@ export function runEvaluationAgent(
     );
   }
 
+  const { uniqueChordRoots, barChordChanges } = chordMetricsFromSong(song, pack);
+
+  if (uniqueChordRoots < rules.minUniqueChordRoots) {
+    errors.push(
+      `expected ≥${rules.minUniqueChordRoots} unique chord roots, got ${uniqueChordRoots}`
+    );
+  }
+  if (barChordChanges < rules.minBarChordChanges) {
+    errors.push(
+      `expected ≥${rules.minBarChordChanges} bar chord changes, got ${barChordChanges}`
+    );
+  }
+
   if (totalNoteCount < 8) {
     warnings.push("sparse arrangement — fewer than 8 total notes");
   }
@@ -128,6 +175,8 @@ export function runEvaluationAgent(
       modKeyframeCount: dropModKeyframes,
       uniqueBodyPresets,
       sectionPresetSwaps,
+      uniqueChordRoots,
+      barChordChanges,
     },
   });
 }

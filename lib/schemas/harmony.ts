@@ -8,17 +8,32 @@ export const HarmonyDef = z.object({
   progression: z.array(z.string()).default(["i", "i", "iv", "i"]),
   subOctave: z.number().int().min(0).max(8).default(1),
   bodyOctave: z.number().int().min(0).max(8).default(2),
+  /** Override pack.scale for chord spelling (e.g. "minor" vs pentatonic). */
+  scaleOverride: z.string().optional(),
+  voicingMode: z.enum(["root", "fifth"]).default("root"),
+  barsPerChord: z.union([z.literal(1), z.literal(2), z.literal(4)]).default(1),
   /** Extra scale-degree offset per section kind (cycles progression index). */
   kindOffsets: z.record(SectionKind, z.number().int()).optional(),
 });
 
 export type HarmonyDefType = z.infer<typeof HarmonyDef>;
 
+export const BarHarmonySlot = z.object({
+  barOffset: z.number().int().min(0),
+  chordSymbol: z.string(),
+  subDegree: z.number().int().min(1).max(7),
+  bodyDegrees: z.array(z.number().int().min(1).max(7)),
+  rootMidi: z.number().int().min(0).max(127),
+});
+
+export type BarHarmonySlotType = z.infer<typeof BarHarmonySlot>;
+
 export const SectionHarmonyPlan = z.object({
   sectionId: z.string(),
   subDegrees: z.array(z.number().int().min(1).max(7)),
   bodyDegrees: z.array(z.number().int().min(1).max(7)),
   rootMidi: z.number().int().min(0).max(127),
+  barSlots: z.array(BarHarmonySlot).optional(),
 });
 
 export type SectionHarmonyPlanType = z.infer<typeof SectionHarmonyPlan>;
@@ -73,6 +88,8 @@ export const EvaluationDef = z.object({
   minModKeyframesPerDrop: z.number().int().min(0).default(4),
   minUniqueBodyPresets: z.number().int().min(1).default(1),
   minSectionPresetSwaps: z.number().int().min(0).default(0),
+  minUniqueChordRoots: z.number().int().min(0).default(0),
+  minBarChordChanges: z.number().int().min(0).default(0),
 });
 
 export type EvaluationDefType = z.infer<typeof EvaluationDef>;
@@ -91,6 +108,8 @@ export const EvaluationReport = z.object({
     modKeyframeCount: z.number().default(0),
     uniqueBodyPresets: z.number().default(0),
     sectionPresetSwaps: z.number().default(0),
+    uniqueChordRoots: z.number().default(0),
+    barChordChanges: z.number().default(0),
   }),
 });
 

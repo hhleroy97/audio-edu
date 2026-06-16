@@ -1,4 +1,4 @@
-import { Note, Progression, Scale } from "tonal";
+import { Note, RomanNumeral, Scale } from "tonal";
 import type {
   HarmonyDefType,
   SectionHarmonyPlanType,
@@ -23,21 +23,20 @@ export function progressionToDegrees(
   scaleName: string,
   romans: string[]
 ): number[] {
-  const chords = Progression.fromRomanNumerals(key, romans);
   const scale = Scale.get(`${key} ${scaleName}`);
-  const notes = scale.notes.length > 0 ? scale.notes : Scale.get(`${key} minor`).notes;
+  const scaleLen =
+    scale.notes.length > 0
+      ? scale.notes.length
+      : Scale.get(`${key} minor`).notes.length || 7;
 
-  return chords.map((chord) => {
-    const rootMatch = chord.match(/^([A-Ga-g])([#b]?)/);
-    const root = rootMatch ? `${rootMatch[1]}${rootMatch[2] ?? ""}` : chord.charAt(0);
-    const chroma = Note.chroma(root);
-    if (chroma === undefined) return 1;
-    const idx = notes.findIndex((n) => Note.chroma(n) === chroma);
-    return idx >= 0 ? idx + 1 : 1;
+  return romans.map((roman) => {
+    const rn = RomanNumeral.get(roman);
+    if (rn.empty || rn.step === undefined) return 1;
+    return ((rn.step % scaleLen) + scaleLen) % scaleLen + 1;
   });
 }
 
-function rootMidiForDegree(
+export function rootMidiForDegree(
   key: string,
   scaleName: string,
   degree: number,
@@ -65,6 +64,8 @@ export function runHarmonyAgent(
     progression: ["i", "i", "iv", "i"],
     subOctave: 1,
     bodyOctave: 2,
+    voicingMode: "root",
+    barsPerChord: 1,
   };
 
   const degrees = progressionToDegrees(pack.key, pack.scale, harmony.progression);
