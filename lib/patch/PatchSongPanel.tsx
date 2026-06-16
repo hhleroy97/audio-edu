@@ -14,7 +14,7 @@ import {
   regenerateSection,
   renderMultibusStems,
   renderSongOffline,
-  runArrangement,
+  runArrangementAsync,
   runMixPass,
   songToMidiBlob,
   songTotalBeats,
@@ -25,32 +25,9 @@ import { MixDef } from "@/lib/schemas/mix";
 import type { SongDefType } from "@/lib/schemas/song";
 import { MULTIBUS_SONG_TEMPLATES, SONG_TEMPLATES } from "@/lib/song/templates";
 import { usePatchStore } from "@/lib/patch/store";
+import { ArrangementPipelineStepper } from "@/lib/patch/ArrangementPipelineStepper";
 
 const ALL_TEMPLATES = [...MULTIBUS_SONG_TEMPLATES, ...SONG_TEMPLATES];
-
-const AGENT_LABELS: Record<string, string> = {
-  section: "sections",
-  harmony: "harmony",
-  pattern: "patterns",
-  transition: "trans",
-  groove: "groove",
-  drum: "drums",
-  automation: "auto",
-  evaluation: "eval",
-  mix: "lint",
-};
-
-const AGENT_ORDER = [
-  "section",
-  "harmony",
-  "pattern",
-  "transition",
-  "groove",
-  "drum",
-  "automation",
-  "evaluation",
-  "mix",
-] as const;
 
 type SongSource = "template" | "generated";
 
@@ -73,6 +50,8 @@ export function PatchSongPanel() {
   const [inputsHash, setInputsHash] = useState<string | null>(null);
   const [agentEvents, setAgentEvents] = useState<ArrangementAgentEventType[]>([]);
   const [generateBusy, setGenerateBusy] = useState(false);
+  const [genComplete, setGenComplete] = useState(false);
+  const [genFailed, setGenFailed] = useState(false);
   const [regenSectionId, setRegenSectionId] = useState("");
   const [showRulePackJson, setShowRulePackJson] = useState(false);
 
@@ -198,25 +177,24 @@ export function PatchSongPanel() {
     setStatus("stopped");
   }, []);
 
-  const handleGenerate = useCallback(() => {
+  const handleGenerate = useCallback(async () => {
     stopSong();
     setGenerateBusy(true);
+    setGenComplete(false);
+    setGenFailed(false);
     setAgentEvents([]);
     setStatus("arrangement · generating…");
     try {
-      const events: ArrangementAgentEventType[] = [];
-      const run = runArrangement(
-        { rulePackId, seed },
-        (ev) => {
-          events.push(ev);
-          setAgentEvents([...events]);
-        }
-      );
+      const run = await runArrangementAsync({ rulePackId, seed }, (ev) => {
+        setAgentEvents((prev) => [...prev, ev]);
+      });
       setGeneratedSong(run.song);
       setInputsHash(run.inputsHash ?? null);
       setSongSource("generated");
+      setGenComplete(true);
       setStatus(`generated · ${run.song.meta.title} · hash ${run.inputsHash}`);
     } catch (e) {
+      setGenFailed(true);
       setStatus(e instanceof Error ? e.message : "generation failed");
     } finally {
       setGenerateBusy(false);
@@ -347,14 +325,6 @@ export function PatchSongPanel() {
   const progressPct =
     totalBeats > 0 ? Math.min(100, (progressBeat / totalBeats) * 100) : 0;
 
-  const latestAgentPhase = useMemo(() => {
-    const map = new Map<string, ArrangementAgentEventType>();
-    for (const ev of agentEvents) {
-      map.set(ev.agent, ev);
-    }
-    return map;
-  }, [agentEvents]);
-
   return (
     <div className="mb-4 border-2 border-module-border bg-module-fill p-2">
       <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.3em] text-secondary">
@@ -409,31 +379,14 @@ export function PatchSongPanel() {
         >
           {generateBusy ? "generating…" : "generate song"}
         </button>
-        {latestAgentPhase.size > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {AGENT_ORDER.map((id) => {
-                const ev = latestAgentPhase.get(id);
-                if (!ev) return null;
-                const working =
-                  ev.phase === "start" || ev.phase === "lint";
-                const error = ev.phase === "error";
-                return (
-                  <span
-                    key={id}
-                    className={`font-mono text-[7px] uppercase px-1 py-0.5 border ${
-                      error
-                        ? "border-hot text-hot"
-                        : working
-                          ? "border-hot text-hot animate-pulse"
-                          : "border-cold text-cold"
-                    }`}
-                  >
-                    {AGENT_LABELS[id] ?? id}
-                  </span>
-                );
-              })}
-          </div>
-        )}
+        {agentEvents.length > 0 || generateBusy || genComplete ? (
+          <ArrangementPipelineStepper
+            events={agentEvents}
+            busy={generateBusy}
+            complete={genComplete}
+            failed={genFailed}
+          />
+        ) : null}
         {generatedSong && (
           <div className="mt-2 flex gap-1">
             <select

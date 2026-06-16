@@ -5,11 +5,13 @@ import { SongDef } from "./song";
 export const ArrangementSubAgentId = z.enum([
   "section",
   "harmony",
+  "timbre",
   "pattern",
   "transition",
   "groove",
   "drum",
   "automation",
+  "modfx",
   "evaluation",
   "mix",
 ]);
@@ -25,6 +27,9 @@ export const ArrangementAgentEvent = z.object({
   phase: z.enum(["start", "lint", "done", "error"]),
   message: z.string().optional(),
   at: z.number(),
+  stepIndex: z.number().int().min(0).optional(),
+  totalSteps: z.number().int().min(1).optional(),
+  runPhase: z.enum(["running", "complete", "failed"]).optional(),
 });
 
 export type ArrangementAgentEventType = z.infer<typeof ArrangementAgentEvent>;

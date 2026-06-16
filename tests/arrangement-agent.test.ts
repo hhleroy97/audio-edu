@@ -89,12 +89,35 @@ describe("arrangement agent", () => {
     );
     expect(events).toContain("section:done");
     expect(events).toContain("harmony:done");
+    expect(events).toContain("timbre:done");
     expect(events).toContain("pattern:done");
     expect(events).toContain("transition:done");
     expect(events).toContain("groove:done");
     expect(events).toContain("drum:done");
     expect(events).toContain("automation:done");
+    expect(events).toContain("modfx:done");
     expect(events).toContain("evaluation:done");
+  });
+
+  it("async run emits stepped progress", async () => {
+    const { runArrangementAsync } = await import("@/lib/song/agents/arrangement-agent");
+    const events: string[] = [];
+    await runArrangementAsync(
+      { rulePackId: RIDDIM_STANDARD_16.id, seed: "async-events" },
+      (ev) => events.push(`${ev.agent}:${ev.phase}`)
+    );
+    expect(events.filter((e) => e.endsWith(":start")).length).toBeGreaterThanOrEqual(9);
+    expect(events.some((e) => e.includes("mix:done"))).toBe(true);
+  });
+
+  it("includes bounce kicks in riddim pocket", () => {
+    const run = runArrangement({
+      rulePackId: RIDDIM_STANDARD_16.id,
+      seed: "bounce-test",
+    });
+    const kicks = run.song.drums?.hits.filter((h) => h.sampleId === "kick") ?? [];
+    expect(kicks.length).toBeGreaterThan(8);
+    expect(run.song.layers.some((l) => l.id === "top")).toBe(true);
   });
 
   it("exports midi buffer from generated song", () => {
