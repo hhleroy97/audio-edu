@@ -1,0 +1,51 @@
+import { z } from "zod";
+import { SongDef } from "./song";
+
+/** Which specialist ran in an arrangement pass. */
+export const ArrangementSubAgentId = z.enum([
+  "section",
+  "pattern",
+  "drum",
+  "automation",
+  "mix",
+]);
+
+export type ArrangementSubAgentIdType = z.infer<typeof ArrangementSubAgentId>;
+
+export const AgentGate = z.enum(["auto", "human-review"]);
+export type AgentGateType = z.infer<typeof AgentGate>;
+
+/** Progress event for arrangement UI (red = working, blue = settled). */
+export const ArrangementAgentEvent = z.object({
+  agent: ArrangementSubAgentId,
+  phase: z.enum(["start", "lint", "done", "error"]),
+  message: z.string().optional(),
+  at: z.number(),
+});
+
+export type ArrangementAgentEventType = z.infer<typeof ArrangementAgentEvent>;
+
+/** User-facing generate request — deterministic when seed is set. */
+export const ArrangementRequest = z.object({
+  rulePackId: z.string(),
+  seed: z.string().default("default"),
+  bpm: z.number().positive().optional(),
+  bars: z.number().int().positive().optional(),
+  key: z.string().optional(),
+  /** Run mix sub-agent after merge (respects MixDef gate). */
+  runMixPass: z.boolean().default(false),
+});
+
+export type ArrangementRequestType = z.infer<typeof ArrangementRequest>;
+
+/** Full arrangement run artifact. */
+export const ArrangementRun = z.object({
+  id: z.string(),
+  request: ArrangementRequest,
+  song: SongDef,
+  events: z.array(ArrangementAgentEvent).default([]),
+  inputsHash: z.string().optional(),
+  gate: AgentGate.default("human-review"),
+});
+
+export type ArrangementRunType = z.infer<typeof ArrangementRun>;
