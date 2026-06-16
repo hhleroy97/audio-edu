@@ -21,6 +21,9 @@ const NODE_LAYOUT_RAW = {
   layerStack: { width: 256, height: 380 },
   formant: { width: 216, height: 300 },
   noise: { width: 216, height: 280 },
+  multiband: { width: 256, height: 340 },
+  modFx: { width: 216, height: 300 },
+  filterBank: { width: 256, height: 320 },
 } as const satisfies Record<NodeKind, NodeLayoutSize>;
 
 export const NODE_LAYOUT_METADATA: Record<NodeKind, NodeLayoutSize> =

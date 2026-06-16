@@ -17,6 +17,9 @@ export const SCOPE_TAPPABLE_KINDS: ReadonlySet<NodeKind> = new Set([
   "layerStack",
   "formant",
   "noise",
+  "multiband",
+  "modFx",
+  "filterBank",
 ]);
 
 export function isScopeTappable(kind: NodeKind): boolean {

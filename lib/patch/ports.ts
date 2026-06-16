@@ -46,6 +46,9 @@ export const NODE_COLORS: Record<string, string> = {
   layerStack: "#ffe600",
   formant: "#b388ff",
   noise: "#a8a8a8",
+  multiband: "#00ff9f",
+  modFx: "#7b68ee",
+  filterBank: "#da70d6",
 };
 
 export type NodeKind =
@@ -63,7 +66,10 @@ export type NodeKind =
   | "distortion"
   | "layerStack"
   | "formant"
-  | "noise";
+  | "noise"
+  | "multiband"
+  | "modFx"
+  | "filterBank";
 
 export type PatchNodeData = {
   label: string;

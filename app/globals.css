@@ -369,8 +369,9 @@
 }
 
 .module-control-grid--oscillator {
-  display: flex;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: 1fr 36px;
+  grid-template-areas: "glideMs fader";
   padding-top: 4px;
 }
 
@@ -423,14 +424,18 @@
 .module-control-grid--wavetable {
   display: grid;
   grid-template-columns: 1fr 36px;
-  grid-template-areas: "position fader";
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "glideMs fader"
+    "position fader";
 }
 
 .module-control-grid--fm {
   display: grid;
   grid-template-columns: 1fr 1fr 36px;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   grid-template-areas:
+    "glideMs glideMs fader"
     "frequency ratio fader"
     "index index fader";
 }
@@ -461,6 +466,33 @@
   display: grid;
   grid-template-columns: 1fr 1fr 36px;
   grid-template-areas: "cutoff resonance fader";
+}
+
+.module-control-grid--multiband {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "amount threshold fader"
+    "lowCross lowCross fader";
+}
+
+.module-control-grid--modFx {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "rate depth fader"
+    "mix mix fader";
+}
+
+.module-control-grid--filterBank {
+  display: grid;
+  grid-template-columns: 1fr 1fr 36px;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "f1Cutoff f2Cutoff fader"
+    "f1Res f1Res fader";
 }
 
 .module-control-grid__cell {

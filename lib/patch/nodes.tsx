@@ -19,6 +19,9 @@ import {
   LAYER_STACK_CONTROLS,
   FORMANT_CONTROLS,
   NOISE_CONTROLS,
+  MULTIBAND_CONTROLS,
+  MOD_FX_CONTROLS,
+  FILTER_BANK_CONTROLS,
   OSCILLATOR_CONTROLS,
   OUTPUT_CONTROLS,
   WAVETABLE_CONTROLS,
@@ -35,6 +38,7 @@ import type { WaveformType } from "@/lib/audio";
 import type { PatchNodeData } from "@/lib/patch/ports";
 import { LFO_SYNC_OPTIONS } from "@/lib/patch/transport";
 import { LFO_SHAPE_OPTIONS, DEFAULT_LFO_CURVE } from "@/lib/patch/lfo-curve";
+import { LFO_RATE_RATIO_OPTIONS } from "@/lib/patch/lfo-ratio";
 import { FORMANT_VOWELS } from "@/lib/patch/formant-presets";
 import { LfoCurveEditor } from "@/lib/viz/LfoCurveEditor";
 
@@ -267,6 +271,7 @@ export function LfoFlowNode(props: NodeProps) {
   const params = data.params;
   const sync = String(params.sync ?? "free");
   const shape = String(params.shape ?? "sine");
+  const rateRatio = String(params.rateRatio ?? "1");
 
   return (
     <ModuleShell
@@ -311,6 +316,20 @@ export function LfoFlowNode(props: NodeProps) {
           onChange={(e) => update(props.id, { sync: e.target.value })}
         >
           {LFO_SYNC_OPTIONS.map((opt) => (
+            <option key={opt.id} value={opt.id}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-2">
+        <span className="module-label">ratio</span>
+        <select
+          className="nodrag nopan mt-1 w-full border-2 border-module-border bg-module-header px-2 py-1 font-mono text-[10px] text-primary outline-none focus:border-cold"
+          value={rateRatio}
+          onChange={(e) => update(props.id, { rateRatio: e.target.value })}
+        >
+          {LFO_RATE_RATIO_OPTIONS.map((opt) => (
             <option key={opt.id} value={opt.id}>
               {opt.label}
             </option>
@@ -657,6 +676,125 @@ export function NoiseFlowNode(props: NodeProps) {
   );
 }
 
+export function MultibandFlowNode(props: NodeProps) {
+  const update = usePatchStore((s) => s.updateNodeParams);
+  const data = props.data as PatchNodeData;
+  const params = data.params;
+
+  return (
+    <ModuleShell
+      id={props.id}
+      kind="multiband"
+      label={moduleLabel(data)}
+      selected={props.selected}
+      inputs={[{ id: "audio-in", signal: "audio", label: "in" }]}
+      outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
+    >
+      <p className="module-hint mb-2">3-band OTT-style dynamics</p>
+      <ModuleControlGrid
+        kind="multiband"
+        layout="multiband"
+        controls={MULTIBAND_CONTROLS}
+        params={params}
+        onParamChange={(param, value) => update(props.id, { [param]: value })}
+      />
+    </ModuleShell>
+  );
+}
+
+export function ModFxFlowNode(props: NodeProps) {
+  const update = usePatchStore((s) => s.updateNodeParams);
+  const data = props.data as PatchNodeData;
+  const params = data.params;
+  const type = String(params.type ?? "phaser");
+
+  return (
+    <ModuleShell
+      id={props.id}
+      kind="modFx"
+      label={moduleLabel(data)}
+      selected={props.selected}
+      inputs={[
+        { id: "audio-in", signal: "audio", label: "in" },
+        { id: "cv-depth", signal: "cv", label: "dep" },
+      ]}
+      outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
+    >
+      <div className="mb-2 flex gap-1">
+        {(["phaser", "flanger", "comb"] as const).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            className={`nodrag nopan flex-1 border-2 py-0.5 font-mono text-[9px] uppercase ${
+              type === mode
+                ? "border-hot bg-module-header text-hot"
+                : "border-module-border bg-module-fill text-secondary hover:border-cold"
+            }`}
+            onClick={() => update(props.id, { type: mode })}
+          >
+            {mode}
+          </button>
+        ))}
+      </div>
+      <p className="module-hint mb-2">metallic · movement FX</p>
+      <ModuleControlGrid
+        kind="modFx"
+        layout="modFx"
+        controls={MOD_FX_CONTROLS}
+        params={params}
+        onParamChange={(param, value) => update(props.id, { [param]: value })}
+      />
+    </ModuleShell>
+  );
+}
+
+export function FilterBankFlowNode(props: NodeProps) {
+  const update = usePatchStore((s) => s.updateNodeParams);
+  const data = props.data as PatchNodeData;
+  const params = data.params;
+  const mode = String(params.mode ?? "serial");
+
+  return (
+    <ModuleShell
+      id={props.id}
+      kind="filterBank"
+      label={moduleLabel(data)}
+      selected={props.selected}
+      inputs={[
+        { id: "audio-in", signal: "audio", label: "in" },
+        { id: "cv-cutoff", signal: "cv", label: "f1" },
+        { id: "cv-cutoff-b", signal: "cv", label: "f2" },
+      ]}
+      outputs={[{ id: "audio-out", signal: "audio", label: "out" }]}
+    >
+      <div className="mb-2 flex gap-1">
+        {(["serial", "parallel"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            className={`nodrag nopan flex-1 border-2 py-0.5 font-mono text-[9px] uppercase ${
+              mode === m
+                ? "border-hot bg-module-header text-hot"
+                : "border-module-border bg-module-fill text-secondary hover:border-cold"
+            }`}
+            onClick={() => update(props.id, { mode: m })}
+          >
+            {m}
+          </button>
+        ))}
+      </div>
+      <p className="module-hint mb-2">dual filter · growl sculpt</p>
+      <ModuleControlGrid
+        kind="filterBank"
+        layout="filterBank"
+        controls={FILTER_BANK_CONTROLS}
+        params={params}
+        onParamChange={(param, value) => update(props.id, { [param]: value })}
+      />
+    </ModuleShell>
+  );
+}
+
 export const patchNodeTypes = {
   oscillator: OscillatorFlowNode,
   detune: DetuneFlowNode,
@@ -673,4 +811,7 @@ export const patchNodeTypes = {
   layerStack: LayerStackFlowNode,
   formant: FormantFlowNode,
   noise: NoiseFlowNode,
+  multiband: MultibandFlowNode,
+  modFx: ModFxFlowNode,
+  filterBank: FilterBankFlowNode,
 };

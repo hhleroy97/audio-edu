@@ -182,7 +182,8 @@ export class AudioEngine {
         runtime.kind === "detune" ||
         runtime.kind === "wavetable" ||
         runtime.kind === "fm" ||
-        runtime.kind === "noise"
+        runtime.kind === "noise" ||
+        runtime.kind === "modFx"
       ) {
         runtime.start(t);
       }
@@ -337,6 +338,7 @@ export class AudioEngine {
         runtime.kind === "wavetable" ||
         runtime.kind === "fm" ||
         runtime.kind === "noise" ||
+        runtime.kind === "modFx" ||
         runtime.kind === "lfo"
       ) {
         runtime.start(t);
@@ -356,6 +358,7 @@ export class AudioEngine {
         runtime.kind === "wavetable" ||
         runtime.kind === "fm" ||
         runtime.kind === "noise" ||
+        runtime.kind === "modFx" ||
         runtime.kind === "lfo"
       ) {
         runtime.stop(t + 0.05);

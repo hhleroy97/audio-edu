@@ -21,6 +21,9 @@ export const MODULE_THEME: Record<NodeKind, ModuleTheme> = {
   layerStack: { code: "LAY" },
   formant: { code: "FMT" },
   noise: { code: "NOZ" },
+  multiband: { code: "OTT" },
+  modFx: { code: "MFX" },
+  filterBank: { code: "FBK" },
 };
 
 export function getModuleTheme(kind: NodeKind): ModuleTheme {

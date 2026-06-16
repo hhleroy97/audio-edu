@@ -1120,6 +1120,240 @@ export const customLfoWobblePreset = preset({
   },
 });
 
+/** OTT multiband polish on riddim layer stack output. */
+export const ottBassPolishPreset = preset({
+  id: "ott-bass-polish",
+  title: "OTT Polish",
+  description: "3-band OTT-style dynamics on a riddim layer stack for finished bass weight.",
+  techniqueTags: ["technique:multiband-ott", "technique:sub-body-split"],
+  requiredNodes: [
+    "oscillator",
+    "layerStack",
+    "multiband",
+    "output",
+    "analyser",
+  ],
+  patch: {
+    nodes: [
+      {
+        id: "osc-sub",
+        type: "oscillator",
+        params: { waveform: "sine", frequency: 55, gain: 0.85 },
+      },
+      {
+        id: "osc-body",
+        type: "oscillator",
+        params: { waveform: "sawtooth", frequency: 110, gain: 0.5, glideMs: 40 },
+      },
+      {
+        id: "stack-1",
+        type: "layerStack",
+        params: { subGain: 0.75, bodyGain: 0.55, topGain: 0, gain: 0.8 },
+      },
+      {
+        id: "ott-1",
+        type: "multiband",
+        params: { amount: 0.72, threshold: -22, lowCross: 220, gain: 0.88 },
+      },
+      { id: "ana-1", type: "analyser", params: {} },
+      { id: "out-1", type: "output", params: { gain: 0.65 } },
+    ],
+    edges: [
+      {
+        id: "e-sub-stack",
+        source: "osc-sub",
+        sourceHandle: "audio-out",
+        target: "stack-1",
+        targetHandle: "audio-in-sub",
+        signal: "audio",
+      },
+      {
+        id: "e-body-stack",
+        source: "osc-body",
+        sourceHandle: "audio-out",
+        target: "stack-1",
+        targetHandle: "audio-in-body",
+        signal: "audio",
+      },
+      {
+        id: "e-stack-ott",
+        source: "stack-1",
+        sourceHandle: "audio-out",
+        target: "ott-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ott-ana",
+        source: "ott-1",
+        sourceHandle: "audio-out",
+        target: "ana-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ana-out",
+        source: "ana-1",
+        sourceHandle: "audio-out",
+        target: "out-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+    ],
+  },
+});
+
+/** Metallic phaser on FM growl. */
+export const metallicPhaserPreset = preset({
+  id: "metallic-phaser",
+  title: "Metallic Phaser",
+  description: "FM growl through phaser mod FX — metallic riddim variant.",
+  techniqueTags: ["technique:fm-growl", "technique:mod-fx-phaser"],
+  requiredNodes: ["fm", "modFx", "filter", "output", "analyser"],
+  patch: {
+    nodes: [
+      {
+        id: "fm-1",
+        type: "fm",
+        params: {
+          frequency: 95,
+          ratio: 2,
+          index: 480,
+          gain: 0.55,
+          glideMs: 30,
+        },
+      },
+      {
+        id: "mfx-1",
+        type: "modFx",
+        params: { type: "phaser", rate: 0.35, depth: 0.8, mix: 0.6, gain: 0.75 },
+      },
+      {
+        id: "filt-1",
+        type: "filter",
+        params: { cutoff: 700, resonance: 5 },
+      },
+      { id: "ana-1", type: "analyser", params: {} },
+      { id: "out-1", type: "output", params: { gain: 0.62 } },
+    ],
+    edges: [
+      {
+        id: "e-fm-mfx",
+        source: "fm-1",
+        sourceHandle: "audio-out",
+        target: "mfx-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-mfx-filt",
+        source: "mfx-1",
+        sourceHandle: "audio-out",
+        target: "filt-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-filt-ana",
+        source: "filt-1",
+        sourceHandle: "audio-out",
+        target: "ana-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ana-out",
+        source: "ana-1",
+        sourceHandle: "audio-out",
+        target: "out-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+    ],
+  },
+});
+
+/** Serial dual-filter growl sculpt. */
+export const dualFilterGrowlPreset = preset({
+  id: "dual-filter-growl",
+  title: "Dual Filter Growl",
+  description: "Saw body through serial filter bank with half-rate LFO wobble.",
+  techniqueTags: [
+    "technique:filter-bank",
+    "technique:wobble-lfo-cutoff",
+    "technique:dual-lfo-ratio",
+  ],
+  requiredNodes: [
+    "oscillator",
+    "filterBank",
+    "lfo",
+    "output",
+    "analyser",
+  ],
+  patch: {
+    nodes: [
+      {
+        id: "osc-1",
+        type: "oscillator",
+        params: { waveform: "sawtooth", frequency: 110, gain: 0.55, glideMs: 35 },
+      },
+      {
+        id: "fb-1",
+        type: "filterBank",
+        params: {
+          mode: "serial",
+          f1Cutoff: 420,
+          f2Cutoff: 2800,
+          f1Res: 6,
+          f2Res: 3,
+          gain: 0.8,
+        },
+      },
+      {
+        id: "lfo-1",
+        type: "lfo",
+        params: { sync: "1/8", depth: 380, shape: "sine", rateRatio: "half" },
+      },
+      { id: "ana-1", type: "analyser", params: {} },
+      { id: "out-1", type: "output", params: { gain: 0.6 } },
+    ],
+    edges: [
+      {
+        id: "e-osc-fb",
+        source: "osc-1",
+        sourceHandle: "audio-out",
+        target: "fb-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-lfo-f1",
+        source: "lfo-1",
+        sourceHandle: "cv-out",
+        target: "fb-1",
+        targetHandle: "cv-cutoff",
+        signal: "cv",
+      },
+      {
+        id: "e-fb-ana",
+        source: "fb-1",
+        sourceHandle: "audio-out",
+        target: "ana-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+      {
+        id: "e-ana-out",
+        source: "ana-1",
+        sourceHandle: "audio-out",
+        target: "out-1",
+        targetHandle: "audio-in",
+        signal: "audio",
+      },
+    ],
+  },
+});
+
 export const PATCH_PRESETS = [
   cleanSubPreset,
   sawBodyPreset,
@@ -1136,6 +1370,9 @@ export const PATCH_PRESETS = [
   yoiFormantPreset,
   noiseFizzPreset,
   customLfoWobblePreset,
+  ottBassPolishPreset,
+  metallicPhaserPreset,
+  dualFilterGrowlPreset,
 ] as const;
 
 export function getPatchPreset(id: string): PatchPreset | undefined {

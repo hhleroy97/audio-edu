@@ -551,7 +551,7 @@ export const usePatchStore = create<PatchStore>((set, get) => {
     get().pushHistory();
     const id = `${kind}-${nanoid(6)}`;
     const defaults: Record<NodeKind, Record<string, number | string | boolean>> = {
-      oscillator: { waveform: "sine", frequency: 261.63, gain: 1 },
+      oscillator: { waveform: "sine", frequency: 261.63, gain: 1, glideMs: 35 },
       output: { gain: 0.8 },
       analyser: {},
       filter: { cutoff: 1200, resonance: 1 },
@@ -570,6 +570,7 @@ export const usePatchStore = create<PatchStore>((set, get) => {
         frequency: 110,
         position: 0,
         gain: 0.5,
+        glideMs: 35,
       },
       detune: { voices: 3, detune: 15, spread: 0.8, gain: 1 },
       unison: { voices: 3, detune: 15, spread: 0.8, gain: 1 },
@@ -579,6 +580,7 @@ export const usePatchStore = create<PatchStore>((set, get) => {
         depth: 350,
         shape: "sine",
         sync: "free",
+        rateRatio: "1",
         curvePoints: DEFAULT_LFO_CURVE,
       },
       fm: {
@@ -588,6 +590,7 @@ export const usePatchStore = create<PatchStore>((set, get) => {
         ratio: 1,
         index: 400,
         gain: 0.5,
+        glideMs: 35,
       },
       distortion: { type: "hard", drive: 5, mix: 0.9, gain: 0.7 },
       layerStack: {
@@ -611,6 +614,30 @@ export const usePatchStore = create<PatchStore>((set, get) => {
         cutoff: 3200,
         resonance: 2.5,
         gain: 0.35,
+      },
+      multiband: {
+        amount: 0.65,
+        threshold: -24,
+        ratio: 8,
+        lowCross: 250,
+        highCross: 2500,
+        gain: 0.85,
+      },
+      modFx: {
+        type: "phaser",
+        rate: 0.4,
+        depth: 0.7,
+        mix: 0.55,
+        feedback: 0.45,
+        gain: 0.8,
+      },
+      filterBank: {
+        mode: "serial",
+        f1Cutoff: 900,
+        f2Cutoff: 3200,
+        f1Res: 4,
+        f2Res: 2,
+        gain: 0.8,
       },
     };
 
@@ -670,8 +697,9 @@ export const usePatchStore = create<PatchStore>((set, get) => {
 
   updateGeneratorNodesLive: (params) => {
     const nodes = get().nodes;
+    const liveKinds = new Set<NodeKind>(["oscillator", "fm", "wavetable"]);
     const next = nodes.map((n) =>
-      n.data.kind === "oscillator"
+      liveKinds.has(n.data.kind)
         ? { ...n, data: { ...n.data, params: { ...n.data.params, ...params } } }
         : n
     );

@@ -17,6 +17,7 @@ import {
 } from "./lfo-curve";
 import { getFormantVowel } from "./formant-presets";
 import { createNoiseBuffer } from "@/lib/audio/noise-buffer";
+import { rampFrequency } from "./glide";
 
 export type SourceTone = {
   waveform: OscillatorType;
@@ -67,6 +68,7 @@ export function createOscillatorRuntime(
 
   let osc = ctx.createOscillator();
   let started = false;
+  let gateOpen = false;
 
   const applyOscParams = (
     p: Record<string, number | string | boolean> = params,
@@ -74,7 +76,13 @@ export function createOscillatorRuntime(
   ) => {
     osc.type = (p.waveform as OscillatorType) ?? osc.type;
     if (p.frequency !== undefined) {
-      osc.frequency.setTargetAtTime(Number(p.frequency), atTime, 0.02);
+      rampFrequency(
+        osc.frequency,
+        Number(p.frequency),
+        atTime,
+        Number(p.glideMs ?? params.glideMs ?? 0),
+        gateOpen
+      );
     }
     if (p.detune !== undefined) {
       osc.detune.setTargetAtTime(Number(p.detune), atTime, 0.02);
@@ -117,7 +125,13 @@ export function createOscillatorRuntime(
     setParams: (p, atTime) => {
       if (p.waveform !== undefined) osc.type = p.waveform as OscillatorType;
       if (p.frequency !== undefined) {
-        osc.frequency.setTargetAtTime(Number(p.frequency), atTime, 0.02);
+        rampFrequency(
+          osc.frequency,
+          Number(p.frequency),
+          atTime,
+          Number(p.glideMs ?? params.glideMs ?? 0),
+          gateOpen
+        );
       }
       if (p.detune !== undefined) {
         osc.detune.setTargetAtTime(Number(p.detune), atTime, 0.02);
@@ -125,8 +139,10 @@ export function createOscillatorRuntime(
       if (p.gain !== undefined) {
         level.gain.setTargetAtTime(Number(p.gain), atTime, 0.02);
       }
+      if (p.glideMs !== undefined) Object.assign(params, { glideMs: p.glideMs });
     },
     setKeyGate: (open, atTime) => {
+      gateOpen = open;
       keyGate.gain.setTargetAtTime(open ? 1 : 0, atTime, 0.01);
     },
     start: (atTime) => {
@@ -534,7 +550,8 @@ function createLfoRuntime(
       if (
         p.rate !== undefined ||
         p.sync !== undefined ||
-        p.transportBpm !== undefined
+        p.transportBpm !== undefined ||
+        p.rateRatio !== undefined
       ) {
         const hz = resolveLfoRateHz(params, Number(params.transportBpm ?? 140));
         osc.frequency.setTargetAtTime(hz, atTime, 0.02);
@@ -691,6 +708,7 @@ function createWavetableRuntime(
   const gainA = ctx.createGain();
   const gainB = ctx.createGain();
   let started = false;
+  let gateOpen = false;
 
   const applyPosition = (position: number, atTime: number) => {
     gainA.gain.setTargetAtTime(1 - position, atTime, 0.02);
@@ -714,8 +732,9 @@ function createWavetableRuntime(
     oscB.type = parseWaveformParam(p.waveformB);
     if (p.frequency !== undefined) {
       const freq = Number(p.frequency);
-      oscA.frequency.setTargetAtTime(freq, atTime, 0.02);
-      oscB.frequency.setTargetAtTime(freq, atTime, 0.02);
+      const glide = Number(p.glideMs ?? params.glideMs ?? 0);
+      rampFrequency(oscA.frequency, freq, atTime, glide, gateOpen);
+      rampFrequency(oscB.frequency, freq, atTime, glide, gateOpen);
     }
     if (p.position !== undefined) {
       applyPosition(Number(p.position), atTime);
@@ -743,6 +762,7 @@ function createWavetableRuntime(
       }
     },
     setKeyGate: (open, atTime) => {
+      gateOpen = open;
       keyGate.gain.setTargetAtTime(open ? 1 : 0, atTime, 0.01);
     },
     start: (atTime) => {
@@ -792,16 +812,20 @@ function createFmRuntime(
   const modulator = ctx.createOscillator();
   const modDepth = ctx.createGain();
 
+  let started = false;
+  let gateOpen = false;
+
   const applyFm = (
     p: Record<string, number | string | boolean> = params,
     atTime = ctx.currentTime
   ) => {
     const freq = Number(p.frequency ?? 110);
     const ratio = Number(p.ratio ?? 1);
+    const glide = Number(p.glideMs ?? params.glideMs ?? 0);
     carrier.type = parseWaveformParam(p.carrierWave);
     modulator.type = parseWaveformParam(p.modWave);
-    carrier.frequency.setTargetAtTime(freq, atTime, 0.02);
-    modulator.frequency.setTargetAtTime(freq * ratio, atTime, 0.02);
+    rampFrequency(carrier.frequency, freq, atTime, glide, gateOpen);
+    rampFrequency(modulator.frequency, freq * ratio, atTime, glide, gateOpen);
     modDepth.gain.setTargetAtTime(Number(p.index ?? 300), atTime, 0.02);
     if (p.gain !== undefined) {
       level.gain.setTargetAtTime(Number(p.gain), atTime, 0.02);
@@ -813,8 +837,6 @@ function createFmRuntime(
   carrier.connect(keyGate);
   keyGate.connect(level);
   applyFm(params, ctx.currentTime);
-
-  let started = false;
 
   return {
     id,
@@ -832,6 +854,7 @@ function createFmRuntime(
       applyFm(p, atTime);
     },
     setKeyGate: (open, atTime) => {
+      gateOpen = open;
       keyGate.gain.setTargetAtTime(open ? 1 : 0, atTime, 0.01);
     },
     start: (atTime) => {
@@ -1209,6 +1232,357 @@ function createNoiseRuntime(
   };
 }
 
+type BandChain = {
+  filter: BiquadFilterNode;
+  comp: DynamicsCompressorNode;
+  gain: GainNode;
+};
+
+function createMultibandRuntime(
+  ctx: AudioContext,
+  id: string,
+  params: Record<string, number | string | boolean>
+): RuntimeNode {
+  const input = ctx.createGain();
+  const output = ctx.createGain();
+  const dry = ctx.createGain();
+  const wet = ctx.createGain();
+  input.connect(dry);
+  dry.connect(output);
+
+  const lowCross = Number(params.lowCross ?? 250);
+  const highCross = Number(params.highCross ?? 2500);
+  const amount = Number(params.amount ?? 0.65);
+
+  const makeBand = (
+    type: BiquadFilterType,
+    freq: number,
+    q = 0.7
+  ): BandChain => {
+    const filter = ctx.createBiquadFilter();
+    filter.type = type;
+    filter.frequency.value = freq;
+    filter.Q.value = q;
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = Number(params.threshold ?? -24);
+    comp.ratio.value = Number(params.ratio ?? 8);
+    comp.attack.value = 0.003;
+    comp.release.value = 0.12;
+    comp.knee.value = 6;
+    const gain = ctx.createGain();
+    gain.gain.value = 1;
+    input.connect(filter);
+    filter.connect(comp);
+    comp.connect(gain);
+    gain.connect(wet);
+    return { filter, comp, gain };
+  };
+
+  const low = makeBand("lowpass", lowCross);
+  const high = makeBand("highpass", highCross);
+  const midHpf = ctx.createBiquadFilter();
+  midHpf.type = "highpass";
+  midHpf.frequency.value = lowCross;
+  const midLpf = ctx.createBiquadFilter();
+  midLpf.type = "lowpass";
+  midLpf.frequency.value = highCross;
+  const midComp = ctx.createDynamicsCompressor();
+  midComp.threshold.value = Number(params.threshold ?? -24);
+  midComp.ratio.value = Number(params.ratio ?? 8);
+  const midGain = ctx.createGain();
+  input.connect(midHpf);
+  midHpf.connect(midLpf);
+  midLpf.connect(midComp);
+  midComp.connect(midGain);
+  midGain.connect(wet);
+  wet.connect(output);
+
+  const applyMix = (atTime: number) => {
+    const amt = Number(params.amount ?? 0.65);
+    wet.gain.setTargetAtTime(amt, atTime, 0.02);
+    dry.gain.setTargetAtTime(1 - amt * 0.35, atTime, 0.02);
+    output.gain.setTargetAtTime(Number(params.gain ?? 0.85), atTime, 0.02);
+  };
+  applyMix(ctx.currentTime);
+
+  return {
+    id,
+    kind: "multiband",
+    getOutput: (handle) => (handle === "audio-out" ? output : null),
+    getInput: (handle) => (handle === "audio-in" ? input : null),
+    getParam: () => null,
+    getTap: () => output,
+    setParams: (p, atTime) => {
+      Object.assign(params, p);
+      if (p.lowCross !== undefined) {
+        low.filter.frequency.setTargetAtTime(Number(p.lowCross), atTime, 0.02);
+        midHpf.frequency.setTargetAtTime(Number(p.lowCross), atTime, 0.02);
+      }
+      if (p.highCross !== undefined) {
+        high.filter.frequency.setTargetAtTime(Number(p.highCross), atTime, 0.02);
+        midLpf.frequency.setTargetAtTime(Number(p.highCross), atTime, 0.02);
+      }
+      if (p.threshold !== undefined || p.ratio !== undefined) {
+        const th = Number(params.threshold ?? -24);
+        const ra = Number(params.ratio ?? 8);
+        for (const band of [low, high]) {
+          band.comp.threshold.setTargetAtTime(th, atTime, 0.02);
+          band.comp.ratio.setTargetAtTime(ra, atTime, 0.02);
+        }
+        midComp.threshold.setTargetAtTime(th, atTime, 0.02);
+        midComp.ratio.setTargetAtTime(ra, atTime, 0.02);
+      }
+      applyMix(atTime);
+    },
+    start: () => {},
+    stop: () => {},
+    dispose: () => {
+      input.disconnect();
+      output.disconnect();
+      dry.disconnect();
+      wet.disconnect();
+      low.filter.disconnect();
+      low.comp.disconnect();
+      low.gain.disconnect();
+      high.filter.disconnect();
+      high.comp.disconnect();
+      high.gain.disconnect();
+      midHpf.disconnect();
+      midLpf.disconnect();
+      midComp.disconnect();
+      midGain.disconnect();
+    },
+  };
+}
+
+function createModFxRuntime(
+  ctx: AudioContext,
+  id: string,
+  params: Record<string, number | string | boolean>
+): RuntimeNode {
+  const input = ctx.createGain();
+  const output = ctx.createGain();
+  const dry = ctx.createGain();
+  const wet = ctx.createGain();
+  const depthGain = ctx.createGain();
+  const modOsc = ctx.createOscillator();
+  const modScale = ctx.createGain();
+
+  input.connect(dry);
+  dry.connect(output);
+  input.connect(wet);
+  wet.connect(output);
+
+  const delay = ctx.createDelay(0.05);
+  const feedback = ctx.createGain();
+  const phaserStages: BiquadFilterNode[] = [];
+
+  for (let i = 0; i < 4; i++) {
+    const ap = ctx.createBiquadFilter();
+    ap.type = "allpass";
+    ap.frequency.value = 600 + i * 180;
+    ap.Q.value = 0.9;
+    phaserStages.push(ap);
+  }
+
+  let fxPath: AudioNode = wet;
+  let started = false;
+
+  const wireFx = () => {
+    const type = String(params.type ?? "phaser");
+    try {
+      wet.disconnect();
+    } catch {
+      /* noop */
+    }
+    if (type === "comb") {
+      delay.delayTime.value = Number(params.delayMs ?? 8) / 1000;
+      feedback.gain.value = Number(params.feedback ?? 0.62);
+      input.connect(delay);
+      delay.connect(feedback);
+      feedback.connect(delay);
+      delay.connect(wet);
+      fxPath = delay;
+    } else if (type === "flanger") {
+      delay.delayTime.value = 0.003;
+      feedback.gain.value = Number(params.feedback ?? 0.45);
+      input.connect(delay);
+      delay.connect(feedback);
+      feedback.connect(delay);
+      delay.connect(wet);
+      modScale.gain.value = 0.0025;
+      modOsc.connect(modScale);
+      modScale.connect(delay.delayTime);
+      fxPath = delay;
+    } else {
+      let prev: AudioNode = input;
+      for (const stage of phaserStages) {
+        prev.connect(stage);
+        prev = stage;
+      }
+      prev.connect(wet);
+      modScale.gain.value = 500;
+      modOsc.connect(modScale);
+      modScale.connect(phaserStages[0].frequency);
+      fxPath = phaserStages[phaserStages.length - 1];
+    }
+  };
+
+  wireFx();
+
+  const applyParams = (atTime: number) => {
+    const mix = Number(params.mix ?? 0.55);
+    const depth = Number(params.depth ?? 0.7);
+    wet.gain.setTargetAtTime(mix, atTime, 0.02);
+    dry.gain.setTargetAtTime(1 - mix, atTime, 0.02);
+    output.gain.setTargetAtTime(Number(params.gain ?? 0.8), atTime, 0.02);
+    depthGain.gain.setTargetAtTime(depth, atTime, 0.02);
+    modOsc.frequency.setTargetAtTime(Number(params.rate ?? 0.4), atTime, 0.02);
+  };
+  applyParams(ctx.currentTime);
+
+  return {
+    id,
+    kind: "modFx",
+    getOutput: (handle) => (handle === "audio-out" ? output : null),
+    getInput: (handle) => (handle === "audio-in" ? input : null),
+    getParam: (handle) => {
+      if (handle === "cv-depth") return depthGain.gain;
+      return null;
+    },
+    getTap: () => output,
+    setParams: (p, atTime) => {
+      const typeChanged = p.type !== undefined && p.type !== params.type;
+      Object.assign(params, p);
+      if (typeChanged) wireFx();
+      applyParams(atTime);
+    },
+    start: (atTime) => {
+      if (started) return;
+      modOsc.start(atTime);
+      started = true;
+    },
+    stop: (atTime) => {
+      if (!started) return;
+      try {
+        modOsc.stop(atTime);
+      } catch {
+        /* noop */
+      }
+      started = false;
+    },
+    dispose: () => {
+      try {
+        if (started) modOsc.stop();
+      } catch {
+        /* noop */
+      }
+      input.disconnect();
+      output.disconnect();
+      dry.disconnect();
+      wet.disconnect();
+      delay.disconnect();
+      feedback.disconnect();
+      modOsc.disconnect();
+      modScale.disconnect();
+      depthGain.disconnect();
+      phaserStages.forEach((s) => s.disconnect());
+    },
+  };
+}
+
+function createFilterBankRuntime(
+  ctx: AudioContext,
+  id: string,
+  params: Record<string, number | string | boolean>
+): RuntimeNode {
+  const input = ctx.createGain();
+  const output = ctx.createGain();
+  const f1 = ctx.createBiquadFilter();
+  const f2 = ctx.createBiquadFilter();
+  const mixA = ctx.createGain();
+  const mixB = ctx.createGain();
+
+  f1.type = "lowpass";
+  f2.type = "lowpass";
+  f1.frequency.value = Number(params.f1Cutoff ?? 900);
+  f2.frequency.value = Number(params.f2Cutoff ?? 3200);
+  f1.Q.value = Number(params.f1Res ?? 4);
+  f2.Q.value = Number(params.f2Res ?? 2);
+  output.gain.value = Number(params.gain ?? 0.8);
+
+  const route = () => {
+    try {
+      input.disconnect();
+      f1.disconnect();
+      f2.disconnect();
+      mixA.disconnect();
+      mixB.disconnect();
+    } catch {
+      /* noop */
+    }
+    const mode = String(params.mode ?? "serial");
+    if (mode === "parallel") {
+      input.connect(f1);
+      input.connect(f2);
+      f1.connect(mixA);
+      f2.connect(mixB);
+      mixA.gain.value = 0.55;
+      mixB.gain.value = 0.45;
+      mixA.connect(output);
+      mixB.connect(output);
+    } else {
+      input.connect(f1);
+      f1.connect(f2);
+      f2.connect(output);
+    }
+  };
+  route();
+
+  return {
+    id,
+    kind: "filterBank",
+    getOutput: (handle) => (handle === "audio-out" ? output : null),
+    getInput: (handle) => (handle === "audio-in" ? input : null),
+    getParam: (handle) => {
+      if (handle === "cv-cutoff") return f1.frequency;
+      if (handle === "cv-cutoff-b") return f2.frequency;
+      return null;
+    },
+    getTap: () => output,
+    setParams: (p, atTime) => {
+      const modeChanged = p.mode !== undefined && p.mode !== params.mode;
+      Object.assign(params, p);
+      if (modeChanged) route();
+      if (p.f1Cutoff !== undefined) {
+        f1.frequency.setTargetAtTime(Number(p.f1Cutoff), atTime, 0.02);
+      }
+      if (p.f2Cutoff !== undefined) {
+        f2.frequency.setTargetAtTime(Number(p.f2Cutoff), atTime, 0.02);
+      }
+      if (p.f1Res !== undefined) {
+        f1.Q.setTargetAtTime(Number(p.f1Res), atTime, 0.02);
+      }
+      if (p.f2Res !== undefined) {
+        f2.Q.setTargetAtTime(Number(p.f2Res), atTime, 0.02);
+      }
+      if (p.gain !== undefined) {
+        output.gain.setTargetAtTime(Number(p.gain), atTime, 0.02);
+      }
+    },
+    start: () => {},
+    stop: () => {},
+    dispose: () => {
+      input.disconnect();
+      output.disconnect();
+      f1.disconnect();
+      f2.disconnect();
+      mixA.disconnect();
+      mixB.disconnect();
+    },
+  };
+}
+
 export function createRuntimeNode(
   ctx: AudioContext,
   kind: NodeKind,
@@ -1245,6 +1619,12 @@ export function createRuntimeNode(
       return createFormantRuntime(ctx, id, params);
     case "noise":
       return createNoiseRuntime(ctx, id, params);
+    case "multiband":
+      return createMultibandRuntime(ctx, id, params);
+    case "modFx":
+      return createModFxRuntime(ctx, id, params);
+    case "filterBank":
+      return createFilterBankRuntime(ctx, id, params);
     default:
       return null;
   }

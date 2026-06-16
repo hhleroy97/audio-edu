@@ -11,6 +11,8 @@ export const LFO_SYNC_OPTIONS: { id: LfoSyncDivision; label: string }[] = [
   { id: "1/8t", label: "1/8T" },
 ];
 
+import { lfoRateMultiplier } from "./lfo-ratio";
+
 /** One LFO cycle per division at `bpm` (quarter-note = one beat in 4/4). */
 export function syncedLfoHz(bpm: number, sync: string): number {
   const beatHz = bpm / 60;
@@ -33,6 +35,7 @@ export function resolveLfoRateHz(
   transportBpm: number
 ): number {
   const sync = String(params.sync ?? "free");
-  if (sync === "free") return Number(params.rate ?? 2);
-  return syncedLfoHz(transportBpm, sync);
+  const base =
+    sync === "free" ? Number(params.rate ?? 2) : syncedLfoHz(transportBpm, sync);
+  return base * lfoRateMultiplier(params.rateRatio);
 }

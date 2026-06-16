@@ -80,11 +80,11 @@ Ranked **P0 → P3** (ship order). Each item: *what*, *why (research/industry)*,
 
 | # | Feature | Enables | Grounding | Status |
 |---|---------|---------|-----------|--------|
-| **11** | **Multiband dynamics (OTT-style)** (3–4 bands, upward + downward) | Loud, dense, “finished” bass weight | McCormack FFT DRC (2017); EDMProd OTT on riddim | ❌ Not built |
-| **12** | **Glide / portamento** (mono, 20–80 ms, legato) | Riddim pitch slides between roots | Preset Drive mono glide 20–40 ms | ❌ Not built |
-| **13** | **Comb / flanger / phaser** (short delay, `cv-depth`) | Metallic riddim variants (DSF thread) | DSF community techniques | ❌ Not built |
-| **14** | **Dual-LFO ratio chains** (LFO2 = 0.5× or 2× LFO1 → FM index + cutoff) | Complex evolving growls | Preset Drive FM guide; DDSP multi-target mod | ⚠️ Single LFO node |
-| **15** | **Serial / parallel filter routing** (osc A→F1→F2 vs split) | Growl sculpting independent of sub | Preset Drive growl routing section | ❌ Single filter in series |
+| **11** | **Multiband dynamics (OTT-style)** (3–4 bands, upward + downward) | Loud, dense, “finished” bass weight | McCormack FFT DRC (2017); EDMProd OTT on riddim | ✅ Shipped (`multiband` node) |
+| **12** | **Glide / portamento** (mono, 20–80 ms, legato) | Riddim pitch slides between roots | Preset Drive mono glide 20–40 ms | ✅ Shipped (`glideMs` on osc/fm/wavetable) |
+| **13** | **Comb / flanger / phaser** (short delay, `cv-depth`) | Metallic riddim variants (DSF thread) | DSF community techniques | ✅ Shipped (`modFx` node) |
+| **14** | **Dual-LFO ratio chains** (LFO2 = 0.5× or 2× LFO1 → FM index + cutoff) | Complex evolving growls | Preset Drive FM guide; DDSP multi-target mod | ✅ Shipped (`rateRatio` on LFO) |
+| **15** | **Serial / parallel filter routing** (osc A→F1→F2 vs split) | Growl sculpting independent of sub | Preset Drive growl routing section | ✅ Shipped (`filterBank` node) |
 
 ### P3 — Workflow, analysis, and song-level context
 
@@ -134,12 +134,13 @@ Shipped as of this roadmap:
 
 - Oscillator, detune/unison, envelope (amp + bipolar CV out), LFO (incl. custom curves + tempo sync),
   filter, mixer (2-ch), wavetable crossfade, FM pair, distortion, layer stack, formant bank,
-  noise osc, mod matrix, scope tap, 15 riddim-oriented presets
+  noise osc, mod matrix, multiband OTT, mod FX, filter bank, glide, scope tap,
+  18 riddim-oriented presets
 - Teaches: sub, saw body, wobble, pitch bite, layer stack, WT morph, env→filter, yoi formants,
   noise fizz, custom LFO stutter
 
-**Covers ~65%** of the sound inventory above (archetypes A–F + partial metallic).  
-**Missing ~35%** is concentrated in P2–P3 (OTT, glide, comb/flange, resample, transport grid).
+**Covers ~80%** of the sound inventory above (archetypes A–F + metallic + polish).  
+**Missing ~20%** is concentrated in P3 (resample, M/S, descriptors, ducking, grid UI).
 
 ---
 
